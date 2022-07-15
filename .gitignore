@@ -96,7 +96,7 @@ __pypackages__/
 
 # Celery stuff
 celerybeat-schedule
-celerybeat.pid
+blackcelerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Mac
+.DS_Store
