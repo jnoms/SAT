@@ -8,7 +8,9 @@ authors = ["jnoms <jasonlnomburg@gmail.com>"]
 python = "^3.10"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = ">=7"
+flake8 = "^4.0.1"
+black = {version = "^22.6.0", allow-prereleases = true}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
