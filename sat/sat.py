@@ -1,5 +1,5 @@
-import os
-import sys
+#!/usr/bin/env python
+
 import argparse
 
 

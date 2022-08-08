@@ -129,7 +129,7 @@ def filter_clusters(cluster_coords, plddt_array, min_length, min_avg_plddt):
             msg = f"Something went wrong - number of residues parsed for plddt"
             msg += f" is not the same length as the cluster. Cluser in question is"
             msg += f" c_start: {c_start}, c_end: {c_end}"
-            raise ValueErorr(msg)
+            raise ValueError(msg)
 
         filtered_cluster_coords.append((c_start, c_end))
 
