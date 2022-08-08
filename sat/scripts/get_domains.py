@@ -4,20 +4,11 @@
 
 import json
 import numpy as np
-
-try:
-    import networkx as nx
-    from networkx.algorithms import community
-except ImportError:
-    print(
-        'ERROR: This method requires NetworkX (>=2.6.2) to be installed. Please install it using "pip install networkx" '
-        "in a Python >=3.7 environment and try again."
-    )
-    import sys
-
-    sys.exit()
-
+import networkx as nx
+from networkx.algorithms import community
 from Bio.PDB import *
+
+from .utils import pdb_to_structure_object, make_output_dir, talk_to_me
 
 # ------------------------------------------------------------------------------------ #
 # Functions
@@ -55,17 +46,21 @@ def domains_from_pae_matrix_networkx(
     is still liscenced under the original MIT license of that source. See
     https://github.com/tristanic/pae_to_domains/blob/main/LICENSE.
 
-    Takes a predicted aligned error (PAE) matrix representing the predicted error in distances between each
-    pair of residues in a model, and uses a graph-based community clustering algorithm to partition the model
-    into approximately rigid groups.
+    Takes a predicted aligned error (PAE) matrix representing the predicted error in
+    distances between each pair of residues in a model, and uses a graph-based community
+    clustering algorithm to partition the model into approximately rigid groups.
     Arguments:
-        * pae_matrix: a (n_residues x n_residues) numpy array. Diagonal elements should be set to some non-zero
-          value to avoid divide-by-zero warnings
-        * pae_power (optional, default=1): each edge in the graph will be weighted proportional to (1/pae**pae_power)
-        * pae_cutoff (optional, default=5): graph edges will only be created for residue pairs with pae<pae_cutoff
-        * graph_resolution (optional, default=1): regulates how aggressively the clustering algorithm is. Smaller values
-          lead to larger clusters. Value should be larger than zero, and values larger than 5 are unlikely to be useful.
-    Returns: a series of lists, where each list contains the indices of residues belonging to one cluster.
+        * pae_matrix: a (n_residues x n_residues) numpy array. Diagonal elements should
+        be set to some non-zero value to avoid divide-by-zero warnings
+        * pae_power (optional, default=1): each edge in the graph will be weighted
+        proportional to (1/pae**pae_power)
+        * pae_cutoff (optional, default=5): graph edges will only be created for
+        residue pairs with pae<pae_cutoff
+        * graph_resolution (optional, default=1): regulates how aggressively the
+        clustering algorithm is. Smaller values lead to larger clusters. Value should
+        be larger than zero, and values larger than 5 are unlikely to be useful.
+    Returns: a series of lists, where each list contains the indices of residues
+    belonging to one cluster.
     """
     weights = 1 / pae_matrix**pae_power
 
@@ -150,10 +145,11 @@ def write_structure_subset(structure, start, end, outfile, is_zero_indexed=True)
 
 def get_domains_main(args):
 
-    print("hello from get_domains")
-
     # Find clusters from json file.
+    talk_to_me("Reading PAE json file.")
     pae_matrix, plddt_array = parse_json_file(args.pae_path)
+
+    talk_to_me("Finding clusters from PAE matrix.")
     clusters = domains_from_pae_matrix_networkx(
         pae_matrix,
         pae_power=args.pae_power,
@@ -162,18 +158,24 @@ def get_domains_main(args):
     )
 
     # Convert clusters to cluster coordinates. Keep them 0-indexed for now.
+    talk_to_me("Converting clusters to cluster coordinates")
     cluster_coords = clusters_to_coordinates(clusters)
 
     # Filter clusters based on length and average plddt
+    talk_to_me("Filtering cluster coordinates by length and pLDDT.")
     cluster_coords = filter_clusters(
         cluster_coords, plddt_array, min_length=50, min_avg_plddt=60
     )
 
     # Parse structure
-    parser = PDBParser()
-    structure = parser.get_structure("structure", args.structure_file_path)
+    talk_to_me("Parsing structure.")
+    structure = pdb_to_structure_object(args.structure_file_path)
+
+    # Generate output directory if necessary
+    make_output_dir(args.output_prefix, is_dir=False)
 
     # Write to output directory
+    talk_to_me("Writing domains to output pdb files.")
     for i, coords in enumerate(cluster_coords):
         i += 1
         start, end = coords
