@@ -2,7 +2,17 @@
 Structural Analysis Toolkit - A python package for manipulation of structural data and identification of shared structural features.
 
 # Installation
-to do
+1. Clone this repository
+2. Create a conda environment that contains the poetry package manager
+```
+conda create --name SAT -c conda-forge poetry
+```
+3. Activate environment. Enter the SAT directory that contains the pyproject.toml file, and download the dependencies using poetry!
+```
+conda activate SAT
+poetry install
+```
+4. Finished! The SAT conda environment will now contain all dependencies.
 
 # Quick start
 
