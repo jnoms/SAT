@@ -78,6 +78,20 @@ def remove_redundant_domains_main(args):
                 elif domain2.pLDDT > domain1.pLDDT:
                     loosers.add(domain2)
                     continue
+
+                # Final case - if length and pLDDT are the same, need to make sure that
+                # just one of them is added to the loosers.
+                if (
+                    len(domain1.seq) == len(domain2.seq)
+                    and domain2.pLDDT == domain1.pLDDT
+                ):
+                    if domain1 in loosers:
+                        continue
+                    elif domain2 in loosers:
+                        continue
+                    else:
+                        loosers.add(domain1)
+
     filtered_domains = [domain for domain in domains if domain not in loosers]
 
     # Write to output to the same basename
