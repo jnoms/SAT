@@ -8,7 +8,8 @@ import networkx as nx
 from networkx.algorithms import community
 from Bio.PDB import *
 
-from .utils import pdb_to_structure_object, make_output_dir, talk_to_me
+from .utils.misc import make_output_dir, talk_to_me
+from .utils.structure import pdb_to_structure_object
 
 # ------------------------------------------------------------------------------------ #
 # Functions

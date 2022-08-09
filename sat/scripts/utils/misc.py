@@ -1,6 +1,5 @@
 import pathlib
 import os
-from Bio.PDB import PDBParser
 import sys
 
 
@@ -24,21 +23,11 @@ def make_output_dir(path, is_dir=False):
     Notably, if the path is the a directory it skips the dirname finding and just makes
     that directory
     """
-    out_dir = os.path.dirname(path)
-    pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
-
-
-# ------------------------------------------------------------------------------------ #
-# Structure related
-# ------------------------------------------------------------------------------------ #
-def pdb_to_structure_object(pdb_file_path, structure_name="structure"):
-    """
-    Given the path to a pdb file and the name of the structure, returns a biopython
-    structure object.
-    """
-    parser = PDBParser()
-    structure = parser.get_structure(structure_name, pdb_file_path)
-    return structure
+    if is_dir == False:
+        out_dir = os.path.dirname(path)
+        pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
+    else:
+        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
 if __name__ == "__main__":

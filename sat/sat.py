@@ -100,20 +100,40 @@ def main():
     parser_get_domains.set_defaults(func=call_get_domains)
 
     # -------------------------------------------------------------------------------- #
-    # Parser for call_X subcommand
+    # Parser for remove_redundant_domains subcommand
     # -------------------------------------------------------------------------------- #
-    parser_call_X = subparsers.add_parser("call_X", help="Doing another cool thingy")
-    parser_call_X.add_argument(
+    parser_remove_redundant_domains = subparsers.add_parser(
+        "remove_redundant_domains",
+        help=(
+            """Remove PDB files that overlap. If a structure has a primary amino acid 
+            sequence that overlaps another structure in the input, the structure with 
+            the longer length will be output. If structures are the same length, the 
+            structure with the highest average pLDDT will be output. If a structure has 
+            no overlap with any other structures, it will be output."""
+        ),
+    )
+    parser_remove_redundant_domains.add_argument(
         "-i",
-        "--input",
+        "--input_structure_glob",
         type=str,
         required=True,
         default="",
         help="""
-        input here
+        Glob specifying the structures to be compared. Remember to wrap the glob in
+        quotes!
         """,
     )
-    parser_call_X.set_defaults(func=call_X)
+    parser_remove_redundant_domains.add_argument(
+        "-o",
+        "--output_dir",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to the output directory in which the filtered files will be saved. 
+        """,
+    )
+    parser_remove_redundant_domains.set_defaults(func=call_remove_redundant_domains)
 
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
@@ -126,8 +146,10 @@ def call_get_domains(args):
     get_domains_main(args)
 
 
-def call_X(args):
-    print(args.input)
+def call_remove_redundant_domains(args):
+    from scripts.remove_redundant_domains import remove_redundant_domains_main
+
+    remove_redundant_domains_main(args)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
-from sat.scripts.get_domains import *
+from sat.scripts.get_domains import filter_clusters
+import numpy as np
 
 
 def test_filter_clusters():
