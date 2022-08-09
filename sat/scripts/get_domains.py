@@ -1,6 +1,6 @@
-# # ------------------------------------------------------------------------------------ #
-# # Import dependencies
-# # ------------------------------------------------------------------------------------ #
+# ------------------------------------------------------------------------------------ #
+# Import dependencies
+# ------------------------------------------------------------------------------------ #
 
 import json
 import numpy as np
@@ -27,7 +27,7 @@ def parse_json_file(pae_json_file):
         data = json.load(f)
 
     # Colabfold format only
-    if not "pae" in data.keys() or not "plddt" in data.keys():
+    if "pae" not in data.keys() or "plddt" not in data.keys():
         msg = "This script is only configured for the colabfold PAE format."
         raise ValueError(msg)
 
@@ -122,8 +122,8 @@ def filter_clusters(cluster_coords, plddt_array, min_length, min_avg_plddt):
 
         # Sanity check
         if num_residues != cluster_length:
-            msg = f"Something went wrong - number of residues parsed for plddt"
-            msg += f" is not the same length as the cluster. Cluser in question is"
+            msg = "Something went wrong - number of residues parsed for plddt"
+            msg += " is not the same length as the cluster. Cluser in question is"
             msg += f" c_start: {c_start}, c_end: {c_end}"
             raise ValueError(msg)
 
