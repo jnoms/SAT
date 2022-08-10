@@ -21,7 +21,8 @@ def is_overlapping(seq1, seq2, end_overlap=15):
     Determines if two strings, seq1 and seq2, either:
     1) are the same,
     2) contain one or the other, or
-    3) either sequence is more than one half of the other sequence
+    3) if, after trimming the first and last 15 nucleotides of one of the sequences, it
+       fits in the other sequence.
 
     If so, returns True.
     """
