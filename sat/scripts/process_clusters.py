@@ -48,9 +48,6 @@ def parse_cluster_files(cluster_file_path: str):
     Given a path to the cluster file, reads in clusters to the format of
     cluster_rep:set(cluster_members). Note that the cluster_rep will be in the
     cluster_members.
-
-    If a cluster only has one member, and that member is just the cluster_rep, that
-    cluster is skipped and not included in the output.
     """
     clusters = dict()
     with open(cluster_file_path) as infile:
@@ -63,25 +60,7 @@ def parse_cluster_files(cluster_file_path: str):
             else:
                 clusters[cluster_rep].append(cluster_member)
 
-    # If there is only one cluster_member (it is probably cluster_rep), it is useless.
-    # So remove it.
-    filtered_clusters = dict()
-    for cluster_rep, cluster_members in clusters.items():
-        if len(cluster_members) > 1:
-            filtered_clusters[cluster_rep] = cluster_members
-        elif len(cluster_members) == 1:
-            if cluster_rep == cluster_members[0]:
-                continue
-            else:
-                msg = (
-                    "Have a situation where there is only one member to a cluster "
-                    "in the cluster file, but the cluster_rep is not that member. This "
-                    f"is pretty weird. cluster_rep: {cluster_rep}, cluster_members[0]: "
-                    f"{cluster_members[0]}"
-                )
-                raise ValueError(msg)
-
-    return filtered_clusters
+    return clusters
 
 
 def generate_cluster_lookup_dict(clusters: dict):
