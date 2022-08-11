@@ -212,7 +212,7 @@ def main():
             """
             Takes in a foldseek alignment file and adds taxonomy information for the
             query and target. Notably, the query taxonID  is assumed to be
-            query_name.stripl('.pdb').split('__')[-1] - e.g. the last value in the
+            query_name.rstrip('.pdb').split('__')[-1] - e.g. the last value in the
             double-underscore-delimited list. In contrast, the target taxonID is assumed
             to be at that location OR can be present in the taxonid field outputted
             by foldseek.
@@ -266,7 +266,7 @@ def main():
         Where is the query_taxid located? Options:
         - 0: Indicates that the query_taxid is not present or not desired in the output.
         - 1: Indicates that the query_taxid is present in the query name of the
-            alignment as query_name.stripl('.pdb').split('__')[-1]
+            alignment as query_name.rstrip('.pdb').split('__')[-1]
         """,
     )
     parser_add_taxonomy_to_alignments.add_argument(
@@ -281,7 +281,7 @@ def main():
         Where is the target_taxid located? Options:
         - 0: Indicates that the target_taxid is not present or not desired in the output
         - 1: Indicates that the target_taxid is present in the query name of the
-            alignment as target_name.stripl('.pdb').split('__')[-1]
+            alignment as target_name.rstrip('.pdb').split('__')[-1]
         -2:  Indicates that the target_taxid is present in the taxid field of the
             alignment file.
         """,

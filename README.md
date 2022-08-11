@@ -131,13 +131,13 @@ python sat.py add_taxonomy_to_alignments \
 
     0: Indicates that the query_taxid is not present or not desired in the output.
 
-    1: Indicates that the query_taxid is present in the query name of the alignment as query_name.stripl('.pdb').split('__')[-1]
+    1: Indicates that the query_taxid is present in the query name of the alignment as query_name.rstrip('.pdb').split('__')[-1]
 
 `-t --target_taxid_location [1]`: Options are {0, 1, 2}.
 
     0: Indicates that the target_taxid is not present or not desired in the output.
 
-    1: Indicates that the target_taxid is present in the query name of the alignment as query_name.stripl('.pdb').split('__')[-1]
+    1: Indicates that the target_taxid is present in the query name of the alignment as query_name.rstrip('.pdb').split('__')[-1]
 
     2: Indicates that the target_taxid is present in the taxid field of the alignment file.
 
