@@ -80,6 +80,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "ete3"
+version = "3.1.2"
+description = "A Python Environment for (phylogenetic) Tree Exploration"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "flake8"
 version = "4.0.1"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -365,7 +373,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10,<3.12"
-content-hash = "a6064c1b7ce43e37a9952136a7c7b16c87607d3fe456f1c181e681fd5d866166"
+content-hash = "55174440e6b545868c6b1125f982522ec645f21e283dc7282f4886de4add0192"
 
 [metadata.files]
 atomicwrites = []
@@ -406,6 +414,9 @@ colorama = []
 cycler = [
     {file = "cycler-0.11.0-py3-none-any.whl", hash = "sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3"},
     {file = "cycler-0.11.0.tar.gz", hash = "sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f"},
+]
+ete3 = [
+    {file = "ete3-3.1.2.tar.gz", hash = "sha256:4fc987b8c529889d6608fab1101f1455cb5cbd42722788de6aea9c7d0a8e59e9"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},

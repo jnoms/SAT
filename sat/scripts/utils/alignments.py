@@ -1,4 +1,9 @@
 from .structure import pdb_to_structure_object, structure_to_pLDDT, structure_to_seq
+from .ete3_taxonomy import get_cannonical_lineage
+
+from collections import Counter
+import numpy as np
+import matplotlib as plt
 
 
 # ------------------------------------------------------------------------------------ #
@@ -140,7 +145,7 @@ class Alignment_object:
     the alignment_entry at index i corresponds to the alignment_field at index i.
     """
 
-    def __init__(self, alignment_entries, alignment_fields):
+    def __init__(self, alignment_entries: list, alignment_fields: list):
         if len(alignment_fields) != len(alignment_entries):
             msg = "alignment_fields and alignment_entries must be the same length!"
             raise ValueError(msg)
@@ -152,7 +157,7 @@ class Alignment_object:
 
         self.alignment_fields = alignment_fields
 
-    def trim_by_plddt(self, pLDDTs, threshold):
+    def trim_by_plddt(self, pLDDTs: dict, threshold: int):
         """
         Trims the alignment to remove query sequences at the ends if they have
         a pLDDT below threshold.
@@ -182,15 +187,51 @@ class Alignment_object:
             self.qend -= 1
             qend_pLDDT = pLDDTs[self.qend]
 
-    def write_output(self, fields):
+    def write_output(self, fields: list, sep: str = "\t"):
         """
-        Returns the desired fields as a tab-delimited string followed by a \n
+        Returns the desired fields as a tab-delimited string followed by a \\n.
         """
         out = []
         for field in fields:
-            val = str(self.__dict__[field])
+            val = self.__dict__[field]
+            if type(val) == list:
+                val = [str(v) for v in val]
+                val = sep.join(val)
+            elif type(val) in {float, int}:
+                val = str(val)
             out.append(val)
-        return "\t".join(out) + "\n"
+        return sep.join(out) + "\n"
+
+    def add_query_lineage(self, query_taxid_location: int, taxonomy_levels: list):
+        """
+        Returns the taxonomy of the query. The query taxid must be built into the query
+        name. - e.g. query_taxid_location must be set to 1.
+        """
+        query_taxid_location = int(query_taxid_location)
+        if query_taxid_location == 0:
+            self.query_lineage = ""
+        elif query_taxid_location == 2:
+            msg = "query_taxid_location must be set to 1, which indicates in the name.."
+            msg += " there is no support for option 2."
+            raise ValueError(msg)
+        elif query_taxid_location == 1:
+            taxid = self.query.rstrip(".pdb").split("__")[-1]
+            self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
+
+    def add_target_lineage(self, target_taxid_location, taxonomy_levels):
+        """
+        Returns the taxonomy of the target. The target taxid can either be present
+        in the target name, or in the taxid field.
+        """
+        if target_taxid_location == 0:
+            self.target_lineage = ""
+            return
+        elif target_taxid_location == 1:
+            taxid = self.target.rstrip(".pdb").split("__")[-1]
+            self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
+        elif target_taxid_location == 2:
+            taxid = self.taxid
+            self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
 
 # ------------------------------------------------------------------------------------ #

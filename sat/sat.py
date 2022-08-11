@@ -108,7 +108,7 @@ def main():
             """Remove PDB files that overlap. If a structure has a primary amino acid
             sequence that overlaps another structure in the input, the structure with
             the longer length will be output. If structures are the same length, the
-            structure with the highest average pLDDT will be output. If a structure has 
+            structure with the highest average pLDDT will be output. If a structure has
             no overlap with any other structures, it will be output."""
         ),
     )
@@ -130,7 +130,7 @@ def main():
         required=True,
         default="",
         help="""
-        Path to the output directory in which the filtered files will be saved. 
+        Path to the output directory in which the filtered files will be saved.
         """,
     )
     parser_remove_redundant_domains.set_defaults(func=call_remove_redundant_domains)
@@ -143,12 +143,12 @@ def main():
         help=(
             """
             Labels a foldseek all-by-all alignment output with clustering information
-            from foldseek cluster. Only alignments that are present in a cluster are 
-            kept, and only one alignment for every query-target pair. The output file 
-            is an alignment file with three added columns: 
-            - cluster_ID: ID of the cluster, starting at 1. A lower number indicates a 
+            from foldseek cluster. Only alignments that are present in a cluster are
+            kept, and only one alignment for every query-target pair. The output file
+            is an alignment file with three added columns:
+            - cluster_ID: ID of the cluster, starting at 1. A lower number indicates a
                 larger cluster
-            - cluster_rep: The name of the structure that is the cluster representative 
+            - cluster_rep: The name of the structure that is the cluster representative
                 chosen by foldseek cluster
             - cluster_count: The number of structures in the cluster.
             """
@@ -189,16 +189,120 @@ def main():
         "--alignment_fields",
         type=str,
         required=False,
-        default="query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,alntmscore",
+        default=(
+            "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
+            "evalue,bits,alntmscore"
+        ),
         help="""
-        A comma-delimited string of the fields in the input foldseek alignment file. Make
-        sure to wrap in quotes!
+        A comma-delimited string of the fields in the input foldseek alignment file.
+        Make sure to wrap in quotes!
 
         Default: 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,
         evalue,bits,alntmscore'
         """,
     )
     parser_process_clusters.set_defaults(func=call_process_clusters)
+
+    # -------------------------------------------------------------------------------- #
+    # Parser for add_taxonomy_to_alignments subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_add_taxonomy_to_alignments = subparsers.add_parser(
+        "add_taxonomy_to_alignments",
+        help=(
+            """
+            Takes in a foldseek alignment file and adds taxonomy information for the
+            query and target. Notably, the query taxonID  is assumed to be
+            query_name.stripl('.pdb').split('__')[-1] - e.g. the last value in the
+            double-underscore-delimited list. In contrast, the target taxonID is assumed
+            to be at that location OR can be present in the taxonid field outputted
+            by foldseek.
+            """
+        ),
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to the foldseek alignment file.
+        """,
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to the output file.
+        """,
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default=(
+            "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
+            "evalue,bits,alntmscore,cluster_ID,cluster_rep,cluster_count"
+        ),
+        help="""
+        Fields present in the alignment file.
+        Default: query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,
+        evalue,bits,alntmscore,cluster_ID,cluster_rep,cluster_count
+        """,
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-q",
+        "--query_taxid_location",
+        type=int,
+        required=False,
+        default=1,
+        choices=[0, 1],
+        help="""
+        Default: 1
+        Where is the query_taxid located? Options:
+        - 0: Indicates that the query_taxid is not present or not desired in the output.
+        - 1: Indicates that the query_taxid is present in the query name of the
+            alignment as query_name.stripl('.pdb').split('__')[-1]
+        """,
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-t",
+        "--target_taxid_location",
+        type=int,
+        required=False,
+        default=1,
+        choices=[0, 1, 2],
+        help="""
+        Default: 1
+        Where is the target_taxid located? Options:
+        - 0: Indicates that the target_taxid is not present or not desired in the output
+        - 1: Indicates that the target_taxid is present in the query name of the
+            alignment as target_name.stripl('.pdb').split('__')[-1]
+        -2:  Indicates that the target_taxid is present in the taxid field of the
+            alignment file.
+        """,
+    )
+    parser_add_taxonomy_to_alignments.add_argument(
+        "-T",
+        "--taxonomy_levels",
+        type=str,
+        required=False,
+        default="superkingdom,phylum,class,order,family,genus,species",
+        help="""
+        Default: 1
+        Where is the target_taxid located? Options:
+        - 0: Indicates that the target_taxid is not present or not desired in the output
+        - 1: Indicates that the target_taxid is present in the query name of the
+            alignment as target_name.stripl('.pdb').split('__')[-1]
+        -2:  Indicates that the target_taxid is present in the taxid field of the
+            alignment file.
+        """,
+    )
+    parser_add_taxonomy_to_alignments.set_defaults(func=call_add_taxonomy_to_alignments)
 
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
@@ -222,6 +326,12 @@ def call_process_clusters(args):
 
     args.alignment_fields = args.alignment_fields.split(",")
     process_clusters_main(args)
+
+
+def call_add_taxonomy_to_alignments(args):
+    from scripts.add_taxonomy_to_alignments import add_taxonomy_to_alignments_main
+
+    add_taxonomy_to_alignments_main(args)
 
 
 if __name__ == "__main__":
