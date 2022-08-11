@@ -16,6 +16,7 @@ poetry install
 
 # SAT get_domains
 ## Extract separate domain structures from a predicted structure.
+### This uses the PAE information to cluster residues that likely fall into linear domains. Notably, the script is currently only configured to process colabfold-generated PAE files. 
 
 Inputs:
 1) structure (PDB format)
