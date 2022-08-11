@@ -50,6 +50,8 @@ def add_taxonomy_to_alignments_main(args):
 
     # Label with taxonomy and generate an output string
     talk_to_me("Labeling taxonomies.")
+    progress = 0
+    total = len(alignment_groups)
     for query, alignment_group in alignment_groups.items():
         for alignment in alignment_group.alignments:
             output_fields = args.alignment_fields
@@ -64,6 +66,10 @@ def add_taxonomy_to_alignments_main(args):
                 )
                 output_fields = output_fields + ["target_lineage"]
             out += alignment.write_output(output_fields)
+
+        progress += 1
+        if progress % 100 == 0:
+            talk_to_me(f"Progress: {progress}/{total}")
 
     # Write output file
     talk_to_me("Writing output file.")
