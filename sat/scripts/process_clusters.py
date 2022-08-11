@@ -168,6 +168,10 @@ def process_clusters_main(args):
 
     # Final processing and save to outfile
     talk_to_me("Final processing and writing output file.")
+
+    progress = 0
+    total = len(alignment_clusters)
+
     out = ""
     for rep, alignment_cluster in alignment_clusters.items():
         alignment_cluster.remove_redundant_alignments()
@@ -178,6 +182,9 @@ def process_clusters_main(args):
                 "cluster_count",
             ]
             out += alignment.write_output(output_fields)
+        progress += 1
+        if progress % 100 == 0:
+            talk_to_me(f"Progress: {progress}/{total}")
 
     make_output_dir(args.output_file)
     with open(args.output_file, "w") as outfile:
