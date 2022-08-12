@@ -202,49 +202,52 @@ class Alignment_object:
             out.append(val)
         return sep.join(out) + "\n"
 
-    def remove_domain_from_taxID(taxid):
-        """
-        get_domains appends _domain-{i} to the end of each header. This needs to be
-        stripped off to get the taxonID.
-        """
+    def add_taxid(self, query_or_target, location):
+        if not query_or_target in {"query", "target"}:
+            msg = "Must specify if you want the taxonID of the query or of the target"
+            raise ValueError(msg)
 
-        return taxid
+        field_name = f"{query_or_target}_taxid"
 
-    def add_query_lineage(self, query_taxid_location: int, taxonomy_levels: list):
+        if location == 0:
+            self.__dict__[field_name] = ""
+            return
+        elif location == 1:
+            taxid = self.__dict__[query_or_target].rstrip(".pdb").split("__")[-1]
+            if "domain" in taxid:
+                while "_" in taxid:
+                    taxid = taxid[:-1]
+            self.__dict__[field_name] = taxid
+        elif location == 2:
+            if query_or_target == "query":
+                msg = "For query, location option 2 is not allowed."
+                raise ValueError(msg)
+            taxid = self.taxid
+            if "domain" in taxid:
+                while "_" in taxid:
+                    taxid = taxid[:-1]
+            self.__dict__[field_name] = taxid
+
+    def add_query_lineage(self, taxonomy_levels: list):
         """
         Returns the taxonomy of the query. The query taxid must be built into the query
         name. - e.g. query_taxid_location must be set to 1.
         """
-        query_taxid_location = int(query_taxid_location)
-        if query_taxid_location == 0:
+        taxid = self.query_taxid
+        if taxid == "":
             self.query_lineage = ""
-        elif query_taxid_location == 2:
-            msg = "query_taxid_location must be set to 1, which indicates in the name.."
-            msg += " there is no support for option 2."
-            raise ValueError(msg)
-        elif query_taxid_location == 1:
-            taxid = self.query.rstrip(".pdb").split("__")[-1]
-            if "domain" in taxid:
-                while "_" in taxid:
-                    taxid = taxid[:-1]
+        else:
             self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
-    def add_target_lineage(self, target_taxid_location, taxonomy_levels):
+    def add_target_lineage(self, taxonomy_levels):
         """
         Returns the taxonomy of the target. The target taxid can either be present
         in the target name, or in the taxid field.
         """
-        if target_taxid_location == 0:
+        taxid = self.target_taxid
+        if taxid == "":
             self.target_lineage = ""
-            return
-        elif target_taxid_location == 1:
-            taxid = self.target.rstrip(".pdb").split("__")[-1]
-            if "domain" in taxid:
-                while "_" in taxid:
-                    taxid = taxid[:-1]
-            self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
-        elif target_taxid_location == 2:
-            taxid = self.taxid
+        else:
             self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
 

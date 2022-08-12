@@ -49,22 +49,37 @@ def add_taxonomy_to_alignments_main(args):
     out = "\t".join(args.alignment_fields + taxonomy_cols) + "\n"
 
     # Label with taxonomy and generate an output string
+    # Have a lineage lookup dict to vastly reduce the search speed by holding relevant
+    # taxonIDs in memory.
     talk_to_me("Labeling taxonomies.")
+    lineage_lookup = dict()
     progress = 0
     total = len(alignment_groups)
     for query, alignment_group in alignment_groups.items():
         for alignment in alignment_group.alignments:
             output_fields = args.alignment_fields
+
+            # Deal with query lineage if specified
             if args.query_taxid_location != 0:
-                alignment.add_query_lineage(
-                    args.query_taxid_location, args.taxonomy_levels
-                )
+                alignment.add_taxid("query", args.query_taxid_location)
+                if alignment.query_taxid in lineage_lookup:
+                    alignment.query_lineage = lineage_lookup[alignment.query_taxid]
+                else:
+                    alignment.add_query_lineage(args.taxonomy_levels)
+                    lineage_lookup[alignment.query_taxid] = alignment.query_lineage
                 output_fields = output_fields + ["query_lineage"]
+
+            # Deal with target lineage if specified
             if args.target_taxid_location != 0:
-                alignment.add_target_lineage(
-                    args.target_taxid_location, args.taxonomy_levels
-                )
+                alignment.add_taxid("target", args.target_taxid_location)
+                if alignment.target_taxid in lineage_lookup:
+                    alignment.target_lineage = lineage_lookup[alignment.target_taxid]
+                else:
+                    alignment.add_target_lineage(args.taxonomy_levels)
+                    lineage_lookup[alignment.target_taxid] = alignment.target_lineage
                 output_fields = output_fields + ["target_lineage"]
+
+            # Write output
             out += alignment.write_output(output_fields)
 
         progress += 1
