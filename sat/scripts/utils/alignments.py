@@ -207,7 +207,7 @@ class Alignment_object:
         get_domains appends _domain-{i} to the end of each header. This needs to be
         stripped off to get the taxonID.
         """
-        
+
         return taxid
 
     def add_query_lineage(self, query_taxid_location: int, taxonomy_levels: list):
@@ -241,7 +241,7 @@ class Alignment_object:
             taxid = self.target.rstrip(".pdb").split("__")[-1]
             if "domain" in taxid:
                 while "_" in taxid:
-                    taxid = taxid[:-1
+                    taxid = taxid[:-1]
             self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
         elif target_taxid_location == 2:
             taxid = self.taxid
