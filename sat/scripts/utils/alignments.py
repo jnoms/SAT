@@ -202,6 +202,16 @@ class Alignment_object:
             out.append(val)
         return sep.join(out) + "\n"
 
+    def remove_domain_from_taxID(taxid):
+        """
+        get_domains appends _domain-{i} to the end of each header. This needs to be
+        stripped off to get the taxonID.
+        """
+        if "domain" in taxid:
+            while "_" in taxid:
+                taxid = taxid[:-1]
+        return taxid
+
     def add_query_lineage(self, query_taxid_location: int, taxonomy_levels: list):
         """
         Returns the taxonomy of the query. The query taxid must be built into the query
@@ -216,6 +226,7 @@ class Alignment_object:
             raise ValueError(msg)
         elif query_taxid_location == 1:
             taxid = self.query.rstrip(".pdb").split("__")[-1]
+            taxid = self.remove_domain_from_taxID(taxid)
             self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
     def add_target_lineage(self, target_taxid_location, taxonomy_levels):
@@ -228,6 +239,7 @@ class Alignment_object:
             return
         elif target_taxid_location == 1:
             taxid = self.target.rstrip(".pdb").split("__")[-1]
+            taxid = self.remove_domain_from_taxID(taxid)
             self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
         elif target_taxid_location == 2:
             taxid = self.taxid
