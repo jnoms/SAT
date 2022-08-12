@@ -304,6 +304,52 @@ def main():
     )
     parser_add_taxonomy_to_alignments.set_defaults(func=call_add_taxonomy_to_alignments)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for structure_to_seq subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_structure_to_seq = subparsers.add_parser(
+        "structure_to_seq",
+        help=(
+            """
+            Simple subcommand that returns the amino-acid sequence of a specified
+            structure (in pdb format). The AA sequence will be APPENDED to the outfile
+            if specified, or printed to the screen if -o --out_file is not specified.
+            """
+        ),
+    )
+    parser_structure_to_seq.add_argument(
+        "-s",
+        "--structure_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file in pdb format.
+        """,
+    )
+    parser_structure_to_seq.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to a file the sequence will be appended to. If left blank, sequence will be
+        printed to the screen.
+        """,
+    )
+    parser_structure_to_seq.add_argument(
+        "-H",
+        "--header",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Header of the entry if writing to a fasta. Only required if -o --out_file is 
+        specified.
+        """,
+    )
+    parser_structure_to_seq.set_defaults(func=call_structure_to_seq)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -332,6 +378,12 @@ def call_add_taxonomy_to_alignments(args):
     from scripts.add_taxonomy_to_alignments import add_taxonomy_to_alignments_main
 
     add_taxonomy_to_alignments_main(args)
+
+
+def call_structure_to_seq(args):
+    from scripts.structure_to_seq import structure_to_seq_main
+
+    structure_to_seq_main(args)
 
 
 if __name__ == "__main__":

@@ -144,6 +144,32 @@ python sat.py add_taxonomy_to_alignments \
 
 `-T --taxonomy_levels ["superkingdom,phylum,class,order,family,genus,species"]`: Comma-delimited string of the levels you want as taxonomy information in the output. Make sure to wrap in quotes.
 
+# SAT structure_to_seq
+## Simple subcommand to produce the amino-acid sequence from a structure file.
+### Can append the sequence to an outfile if provided, or will print to screen.
+
+Inputs:
+1) A structure file in pdb format.
+
+Output:
+1) The amino acid sequence printed to the screen or appended to an output file.
+
+## Usage
+```
+python sat.py structure_to_seq \
+-s structure.pdb \
+-o sequence.fasta \
+-H header_of_the_sequence
+```
+
+## Required Parameters
+`-s --structure_file`: Path to the structure file.
+
+
+## Optional Parameters
+`-o --output_file`: Path to the output fasta that will be APPENDED to. If not specified, the amino acid sequence will simply be written to the screen.  
+`-H --header`: String that is used as the header in the fasta (no need to include the >). This is only required if -o is specified.
+
 # Planned improvements
 get_domains
 - Add functionality to parse PAE json files from additional sources

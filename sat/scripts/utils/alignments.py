@@ -203,7 +203,7 @@ class Alignment_object:
         return sep.join(out) + "\n"
 
     def add_taxid(self, query_or_target, location):
-        if not query_or_target in {"query", "target"}:
+        if query_or_target not in {"query", "target"}:
             msg = "Must specify if you want the taxonID of the query or of the target"
             raise ValueError(msg)
 
