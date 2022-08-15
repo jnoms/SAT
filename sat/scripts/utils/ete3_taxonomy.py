@@ -1,17 +1,7 @@
+from xxlimited import Str
 from ete3 import NCBITaxa
 
 ncbi = NCBITaxa()
-
-canonical_prefixes = {
-    "superkingdom": "sk__",
-    "kingdom": "k__",
-    "phylum": "p__",
-    "class": "c__",
-    "order": "o__",
-    "family": "f__",
-    "genus": "g__",
-    "species": "s__",
-}
 
 
 def name_to_taxID(name: str):
@@ -78,46 +68,71 @@ def get_lineage(taxonID: int):
 
 def get_cannonical_lineage(
     taxonID: int,
-    desired_levels: int = list(canonical_prefixes.keys()),
-    prefix_dictionary: dict = canonical_prefixes,
+    desired_levels: str = [
+        "superkingdom",
+        "kingdom",
+        "phylum",
+        "class",
+        "order",
+        "family",
+        "genus",
+        "species",
+    ],
+    terminal_as_species=True,
 ):
     """
     taxonID: interger taxonID
+
     desired_levels: list of desired levels - e.g. ['superkingdom', 'species']
-    prefix_dictionary: A dict with the desired levels as the keys and an abbreviation as
-        the value. This abbreviation will be appended to the start of the taxonomy.
-        E.g. 'species':'s__' will append s__ to the species name.
+
+    terminal_as_species:
+        If species is the last level in desired levels but the taxonID is a level below
+        species, will save the terminal/last level in place of the species. This is
+        helpful in some cases where a viral taxonID is an unranked level more
+        specific than species and multiple viruses share the same species taxonID.
 
     This function outputs the lineage as the NAMES of each taxon.
     """
 
-    for level in desired_levels:
-        if level not in prefix_dictionary:
-            prefix_dictionary[level] = ""
+    # Check input
+    if type(desired_levels) != list:
+        msg = "Desired levels should be a list! It should be ordered coherently."
+        raise ValueError(msg)
 
     # Get a list of lineage and a list of their ranks
     lineage = get_lineage(taxonID)
     levels = [get_level(taxon) for taxon in lineage]
 
+    # Override species as terminal if specified. If species is the last level
+    # requested but isn't the last level of the lineage, replace the species taxonID
+    # with the terminal taxonID
+    if terminal_as_species is True and "species" in levels:
+        if desired_levels[-1] == "species":
+            species_i = levels.index("species")
+            if species_i + 1 < len(levels):
+                lineage[species_i] = lineage[-1]
+
+    # Make lookup dict for easy conversion of level to taxonID
+    taxonID_lookup = dict(zip(levels, lineage))
+
     cannonical_lineage = []
     # Iterate over each of the levels in prefix dictionary
-    for level, prefix in prefix_dictionary.items():
+    for level in desired_levels:
 
         if level not in desired_levels:
             continue
 
         # If the level isn't here, it is unknown
-        if level not in set(levels):
+        if level not in taxonID_lookup:
             cannonical_lineage.append("")
             continue
 
         # Get the taxon name
-        index = levels.index(level)
-        taxon = lineage[index]
-        name = get_name(taxon)
+        taxonID = taxonID_lookup[level]
+        name = get_name(taxonID)
 
         # Report it out with the lineage
-        cannonical_lineage.append(prefix + name)
+        cannonical_lineage.append(name)
 
     return cannonical_lineage
 

@@ -228,7 +228,19 @@ class Alignment_object:
                     taxid = taxid[:-1]
             self.__dict__[field_name] = taxid
 
-    def add_query_lineage(self, taxonomy_levels: list):
+    def add_query_lineage(
+        self,
+        taxonomy_levels: list = [
+            "superkingdom",
+            "kingdom",
+            "phylum",
+            "class",
+            "order",
+            "family",
+            "genus",
+            "species",
+        ],
+    ):
         """
         Returns the taxonomy of the query. The query taxid must be built into the query
         name. - e.g. query_taxid_location must be set to 1.
@@ -239,7 +251,19 @@ class Alignment_object:
         else:
             self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
-    def add_target_lineage(self, taxonomy_levels):
+    def add_target_lineage(
+        self,
+        taxonomy_levels: list = [
+            "superkingdom",
+            "kingdom",
+            "phylum",
+            "class",
+            "order",
+            "family",
+            "genus",
+            "species",
+        ],
+    ):
         """
         Returns the taxonomy of the target. The target taxid can either be present
         in the target name, or in the taxid field.
