@@ -97,6 +97,28 @@ def main():
         unlikely to be useful.
         """,
     )
+    parser_get_domains.add_argument(
+        "-l",
+        "--min_domain_length",
+        type=int,
+        required=False,
+        default=50,
+        help="""
+        Default: 50
+        A domain must be at least this long to be called.
+        """,
+    )
+    parser_get_domains.add_argument(
+        "-P",
+        "--min_domain_plddt",
+        type=int,
+        required=False,
+        default=60,
+        help="""
+        Default: 60
+        A domain must have an average pLDDT of at least this to be called.
+        """,
+    )
     parser_get_domains.set_defaults(func=call_get_domains)
 
     # -------------------------------------------------------------------------------- #

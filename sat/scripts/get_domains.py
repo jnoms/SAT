@@ -78,70 +78,74 @@ def domains_from_pae_matrix_networkx(
     return clusters
 
 
-def clusters_to_coordinates(clusters):
-    """
-    clusters is a list of FrozenSet objects containing the 0-indexed position
-    of every residue in a cluster. This function returns the first and last
-    position - note that coordinates are STILL 0 indexed.
-    """
-    cluster_coords = []
-    for cluster in clusters:
-        c_start = min(cluster)
-        c_end = max(cluster)
-        cluster_coords.append((c_start, c_end))
-
-    return cluster_coords
-
-
-def filter_clusters(cluster_coords, plddt_array, min_length, min_avg_plddt):
+def filter_clusters(clusters, plddt_array, min_length, min_avg_plddt):
     """
     Filters clusters to keep those that are longer than a minimum length and
     have an average pLDDT higher than a minimum value.
 
-    Returns a list of tuples with filtered cluster coordinates.
+    clusters is a list, where each item is a cluster. Each cluster is represented as
+    a FrozenSet of positions present in the domain. Notably, the coordinates are
+    1-indexed!
+
+    plddt_array is a numpy array wich the plddt at each residue.
     """
 
-    filtered_cluster_coords = []
-    for c_start, c_end in cluster_coords:
+    filtered_clusters = []
+    for cluster in clusters:
 
         # Length filter
-        cluster_length = c_end - c_start
+        cluster_length = len(cluster)
         if cluster_length < min_length:
             continue
 
         # pLDDT filter
         plddt_sum = 0
         num_residues = 0
-        for pos in range(c_start, c_end):
-            plddt = plddt_array[pos]
+        for pos in cluster:
+
+            # Because the positions in clusters are 1-indexed but I am subsetting a
+            # vector, need to -1 to convert it to 0-indexed.
+            plddt = plddt_array[pos - 1]
             plddt_sum += plddt
             num_residues += 1
+
         pLDDT_avg = plddt_sum / num_residues
         if pLDDT_avg < min_avg_plddt:
             continue
 
         # Sanity check
         if num_residues != cluster_length:
-            msg = "Something went wrong - number of residues parsed for plddt"
-            msg += " is not the same length as the cluster. Cluser in question is"
+            msg = f"Something went wrong - number of residues parsed for plddt"
+            msg += f" is not the same length as the cluster. Cluser in question is"
             msg += f" c_start: {c_start}, c_end: {c_end}"
-            raise ValueError(msg)
+            raise ValueErorr(msg)
 
-        filtered_cluster_coords.append((c_start, c_end))
+        filtered_clusters.append(cluster)
 
-    return filtered_cluster_coords
+    return filtered_clusters
 
 
-def write_structure_subset(structure, start, end, outfile, is_zero_indexed=True):
+def write_structure_subset(structure, residues_to_keep, outfile):
     """
     Writes a pdb outfile that is just a subset of the input structure from the
-    residue start to the residue end. Note that the pdb file is 1-indexed. If
-    the start and end positions are 0 indexed, indicate that accordingly.
-    """
-    if is_zero_indexed:
-        start += 1
+    residue start to the residue end. Note that the pdb file is 1-indexed, so the
+    coordinates are expected to be 1-indexed as well.
 
-    Dice.extract(structure, "A", start, end, outfile)
+    - structure: biopython structure object
+    - residues_to_keep: some iterable/list of numbers, where each number is the position
+        of one of the residues to keep.
+    """
+
+    class ResSelect(Select):
+        def accept_residue(self, res):
+            if res.id[1] in residues_to_keep:
+                return True
+            else:
+                return False
+
+    io = PDBIO()
+    io.set_structure(structure)
+    io.save(outfile, ResSelect())
 
 
 def get_domains_main(args):
@@ -158,14 +162,13 @@ def get_domains_main(args):
         graph_resolution=args.graph_resolution,
     )
 
-    # Convert clusters to cluster coordinates. Keep them 0-indexed for now.
-    talk_to_me("Converting clusters to cluster coordinates")
-    cluster_coords = clusters_to_coordinates(clusters)
-
     # Filter clusters based on length and average plddt
     talk_to_me("Filtering cluster coordinates by length and pLDDT.")
-    cluster_coords = filter_clusters(
-        cluster_coords, plddt_array, min_length=50, min_avg_plddt=60
+    clusters = filter_clusters(
+        clusters,
+        plddt_array,
+        min_length=args.min_domain_length,
+        min_avg_plddt=args.min_domain_plddt,
     )
 
     # Parse structure
@@ -177,15 +180,11 @@ def get_domains_main(args):
 
     # Write to output directory
     talk_to_me("Writing domains to output pdb files.")
-    for i, coords in enumerate(cluster_coords):
+    i = 0
+    for cluster in clusters:
         i += 1
-        start, end = coords
         write_structure_subset(
-            structure,
-            start,
-            end,
-            f"{args.output_prefix}_domain-{i}.pdb",
-            is_zero_indexed=True,
+            structure, cluster, f"{args.output_prefix}_domain-{i}.pdb"
         )
 
 
