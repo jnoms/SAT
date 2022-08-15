@@ -344,7 +344,7 @@ def main():
         required=False,
         default="",
         help="""
-        Header of the entry if writing to a fasta. Only required if -o --out_file is 
+        Header of the entry if writing to a fasta. Only required if -o --out_file is
         specified.
         """,
     )
