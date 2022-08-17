@@ -372,6 +372,39 @@ def main():
     )
     parser_structure_to_seq.set_defaults(func=call_structure_to_seq)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for rebase_structure subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_rebase_structure = subparsers.add_parser(
+        "rebase_structure",
+        help=(
+            """
+            Simple subcommand that renumbers all residues in a structure such that
+            the first residue is #1 and all residues are sequential (e.g. it takes out
+            numeric gaps in residue numbers).
+            """
+        ),
+    )
+    parser_rebase_structure.add_argument(
+        "-s",
+        "--structure_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file in pdb format.
+        """,
+    )
+    parser_rebase_structure.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output structure file.
+        """,
+    )
+    parser_rebase_structure.set_defaults(func=call_rebase_structure_main)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -406,6 +439,12 @@ def call_structure_to_seq(args):
     from scripts.structure_to_seq import structure_to_seq_main
 
     structure_to_seq_main(args)
+
+
+def call_rebase_structure_main(args):
+    from scripts.rebase_structure import rebase_structure_main
+
+    rebase_structure_main(args)
 
 
 if __name__ == "__main__":

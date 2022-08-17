@@ -14,6 +14,14 @@ poetry install
 ```
 4. Finished! The SAT conda environment will now contain all dependencies.
 
+# List of subcommands
+`sat get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
+`sat remove_redundant_domains` - Removes domains that have strongly overlapping primary amino-acid sequences.  
+`sat process_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
+`sat add_taxonomy_to_alignments` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
+`sat structure_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
+`sat rebase_structure` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
+
 # SAT get_domains
 ## Extract separate domain structures from a predicted structure.
 ### This uses the PAE information to cluster residues that likely fall into linear domains. Notably, the script is currently only configured to process colabfold-generated PAE files. 
@@ -169,6 +177,27 @@ python sat.py structure_to_seq \
 ## Optional Parameters
 `-o --output_file`: Path to the output fasta that will be APPENDED to. If not specified, the amino acid sequence will simply be written to the screen.  
 `-H --header`: String that is used as the header in the fasta (no need to include the >). This is only required if -o is specified.
+
+# SAT rebase_structure
+## Simple subcommand that renumbers all residues in a structure such that the first residue is #1 and all residues are sequential (e.g. it takes out numeric gaps in residue numbers).
+
+Inputs:
+1) A structure file in pdb format.
+
+Output:
+1) Path to the rebased structure output file.
+
+## Usage
+```
+python sat.py rebase_structure \
+-s structure.pdb \
+-o rebased_structure.pdb
+```
+
+## Required Parameters
+`-s --structure_file`: Path to the structure file.
+`-o --output_file`: Path to the output, rebased structure.
+
 
 # Planned improvements
 get_domains

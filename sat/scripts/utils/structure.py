@@ -75,6 +75,22 @@ def write_structure_to_pdb(structure, path):
     io.save(path)
 
 
+def rebase_structure(structure):
+    """
+    Input is a biopython structure object. This function renumbers all residues such
+    that the first residue starts at 1 and all residues are sequential - so, it takes
+    out number gaps.
+
+    Note that this function acts in-place. It doesn't return anything - it just edits
+    the structure that is input.
+    """
+    for i, residue in enumerate(structure.get_residues()):
+        i += 1
+        res_id = list(residue.id)
+        res_id[1] = i
+        residue.id = tuple(res_id)
+
+
 if __name__ == "__main__":
     msg = "This script has utilities and functions. Don't call it directly!"
     raise ValueError(msg)
