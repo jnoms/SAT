@@ -183,6 +183,11 @@ def load_cluster_objects(cluster_file_path: str, alignment_groups: dict):
 
     cluster_objects = []
     for foldseek_cluster_rep, cluster_members in clusters.items():
+
+        # Skip clusters that only have one member (aka the cluster_rep).
+        if len(cluster_members) == 1:
+            continue
+
         cluster = Cluster(foldseek_cluster_rep)
 
         for member in cluster_members:
