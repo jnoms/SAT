@@ -164,13 +164,13 @@ def main():
         "process_clusters",
         help=(
             """
-            This subcommand incorporates clustering information from foldseek cluster 
+            This subcommand incorporates clustering information from foldseek cluster
             into the foldseek alignment tabular output file. Notably, there are two
             possible outputs from this script:
             1) An output alignment file where, for each cluster, only the 'top' query
                 (aka the one with the highest number of alignments or, if there is a
                 tie, the one with the highest average TMscore).
-            2) An output alignment file containing all non-redundant alingments. Here, 
+            2) An output alignment file containing all non-redundant alingments. Here,
                 all self-self alignments are removed. Furthermore, because this file
                 arose from all-by-all alignments, there will be two alignments for each
                 pair of items. Only one will be present in the output file.
