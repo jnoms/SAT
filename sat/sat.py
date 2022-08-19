@@ -284,12 +284,12 @@ def main():
         required=False,
         default=(
             "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
-            "evalue,bits,alntmscore,cluster_ID,cluster_rep,cluster_count"
+            "evalue,bits,alntmscore,cluster_ID,cluster_count,top_query"
         ),
         help="""
         Fields present in the alignment file.
         Default: query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,
-        evalue,bits,alntmscore,cluster_ID,cluster_rep,cluster_count
+        evalue,bits,alntmscore,cluster_ID,cluster_count,top_query"
         """,
     )
     parser_add_taxonomy_to_alignments.add_argument(
