@@ -1,4 +1,4 @@
-from Bio.PDB import PDBParser, PDBIO
+from Bio.PDB import PDBParser, PDBIO, Select
 from Bio.SeqUtils import seq1
 
 

@@ -6,7 +6,6 @@ import json
 import numpy as np
 import networkx as nx
 from networkx.algorithms import community
-from Bio.PDB import *
 
 from .utils.misc import make_output_dir, talk_to_me
 from .utils.structure import pdb_to_structure_object, write_structure_subset
@@ -115,10 +114,10 @@ def filter_clusters(clusters, plddt_array, min_length, min_avg_plddt):
 
         # Sanity check
         if num_residues != cluster_length:
-            msg = f"Something went wrong - number of residues parsed for plddt"
-            msg += f" is not the same length as the cluster. Cluser in question is"
-            msg += f" c_start: {c_start}, c_end: {c_end}"
-            raise ValueErorr(msg)
+            msg = "Something went wrong - number of residues parsed for plddt"
+            msg += " is not the same length as the cluster. Cluser in question is"
+            msg += f"{cluster}"
+            raise ValueError(msg)
 
         filtered_clusters.append(cluster)
 
