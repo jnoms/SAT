@@ -174,6 +174,10 @@ def main():
                 all self-self alignments are removed. Furthermore, because this file
                 arose from all-by-all alignments, there will be two alignments for each
                 pair of items. Only one will be present in the output file.
+
+
+            Notably, this script adds the fields "cluster_ID", "cluster_count", and 
+            "top_query" to the output files.
             """
         ),
     )
