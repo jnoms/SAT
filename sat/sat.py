@@ -164,15 +164,16 @@ def main():
         "process_clusters",
         help=(
             """
-            Labels a foldseek all-by-all alignment output with clustering information
-            from foldseek cluster. Only alignments that are present in a cluster are
-            kept, and only one alignment for every query-target pair. The output file
-            is an alignment file with three added columns:
-            - cluster_ID: ID of the cluster, starting at 1. A lower number indicates a
-                larger cluster
-            - cluster_rep: The name of the structure that is the cluster representative
-                chosen by foldseek cluster
-            - cluster_count: The number of structures in the cluster.
+            This subcommand incorporates clustering information from foldseek cluster 
+            into the foldseek alignment tabular output file. Notably, there are two
+            possible outputs from this script:
+            1) An output alignment file where, for each cluster, only the 'top' query
+                (aka the one with the highest number of alignments or, if there is a
+                tie, the one with the highest average TMscore).
+            2) An output alignment file containing all non-redundant alingments. Here, 
+                all self-self alignments are removed. Furthermore, because this file
+                arose from all-by-all alignments, there will be two alignments for each
+                pair of items. Only one will be present in the output file.
             """
         ),
     )
@@ -197,10 +198,20 @@ def main():
         """,
     )
     parser_process_clusters.add_argument(
-        "-o",
-        "--output_file",
+        "-1",
+        "--top_query_per_cluster_out",
         type=str,
-        required=True,
+        required=False,
+        default="",
+        help="""
+        Path to the output file.
+        """,
+    )
+    parser_process_clusters.add_argument(
+        "-2",
+        "--all_nonredundant_out",
+        type=str,
+        required=False,
         default="",
         help="""
         Path to the output file.
@@ -425,7 +436,6 @@ def call_remove_redundant_domains(args):
 def call_process_clusters(args):
     from scripts.process_clusters import process_clusters_main
 
-    args.alignment_fields = args.alignment_fields.split(",")
     process_clusters_main(args)
 
 
