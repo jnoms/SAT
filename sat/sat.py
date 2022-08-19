@@ -173,10 +173,11 @@ def main():
             2) An output alignment file containing all non-redundant alingments. Here,
                 all self-self alignments are removed. Furthermore, because this file
                 arose from all-by-all alignments, there will be two alignments for each
-                pair of items. Only one will be present in the output file.
+                pair of items. Only one will be present in the output file. Finally,
+                Plese NOTE!! that only alignments with both the query and target in the
+                SAME CLUSTER are kept - cross-cluster alignments are removed.
 
-
-            Notably, this script adds the fields "cluster_ID", "cluster_count", and 
+            This script adds the fields "cluster_ID", "cluster_count", and
             "top_query" to the output files.
             """
         ),

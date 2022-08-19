@@ -186,7 +186,23 @@ def load_cluster_objects(cluster_file_path: str, alignment_groups: dict):
         cluster = Cluster(foldseek_cluster_rep)
 
         for member in cluster_members:
+
+            # Look up the alignment_group for the cluster member - e.g.
+            # all of the alignments with that member as the query
             member_alignment_group = alignment_groups[member]
+
+            # Remove any alignments whose targets are not in the same cluster
+            for i, alignment in enumerate(member_alignment_group.alignments):
+                if alignment.target not in cluster_members:
+                    msg = (
+                        f"Found a cluster with a query, {alignment.query}, who has an"
+                        f" alignment against a target, {alignment.target}, that is not"
+                        " in the same cluster. The foldseek_cluster_rep is "
+                        f"{foldseek_cluster_rep}"
+                    )
+                    print(msg)
+                    del member_alignment_group.alignments[i]
+
             cluster.alignment_groups.append(member_alignment_group)
             cluster.cluster_members.add(member)
 

@@ -3,7 +3,7 @@ from .ete3_taxonomy import get_cannonical_lineage
 
 from collections import Counter
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 
 # ------------------------------------------------------------------------------------ #
@@ -66,7 +66,7 @@ class Alignment_group:
         for alignment in self.alignments:
 
             # Working with 1-indexed positions, so want end to be "inclusive"
-            for i in range(alignment.qstart, alignment.qend + 1):
+            for i in range(int(alignment.qstart), int(alignment.qend) + 1):
                 c[i] += 1 * 1 / float(alignment.fident)
 
         # Return array of coverages at each position. Array length is equal to query_len
@@ -97,7 +97,7 @@ class Alignment_group:
         for alignment in self.alignments:
 
             # Working with 1-indexed positions, so want end to be "inclusive"
-            for i in range(alignment.qstart, alignment.qend + 1):
+            for i in range(int(alignment.qstart), int(alignment.qend) + 1):
                 c[i] += 1
 
         # Return array of coverages at each position. Array length is equal to query_len
