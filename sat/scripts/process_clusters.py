@@ -45,6 +45,10 @@ def process_clusters_main(args):
         make_output_dir(args.all_nonredundant_out)
         all_nonredundant_out_outfile = open(args.all_nonredundant_out, "w")
 
+    # Keeping track...
+    total = len(cluster_objects)
+    progress = 0
+
     talk_to_me("Processing clusters and writing to output file(s)")
     for cluster in cluster_objects:
 
@@ -69,6 +73,11 @@ def process_clusters_main(args):
                 args.alignment_fields, cluster_fields
             )
             all_nonredundant_out_outfile.write(out)
+
+        # Update progress
+        progress += 1
+        if progress % 100 == 0:
+            talk_to_me(f"Progress: {progress}/{total}")
 
     # Close the output files
     if args.top_query_per_cluster_out != "":
