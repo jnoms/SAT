@@ -75,6 +75,29 @@ def write_structure_to_pdb(structure, path):
     io.save(path)
 
 
+def write_structure_subset(structure, residues_to_keep, outfile):
+    """
+    Writes a pdb outfile that is just a subset of the input structure from the
+    residue start to the residue end. Note that the pdb file is 1-indexed, so the
+    coordinates are expected to be 1-indexed as well.
+
+    - structure: biopython structure object
+    - residues_to_keep: some iterable/list of numbers, where each number is the position
+        of one of the residues to keep.
+    """
+
+    class ResSelect(Select):
+        def accept_residue(self, res):
+            if res.id[1] in residues_to_keep:
+                return True
+            else:
+                return False
+
+    io = PDBIO()
+    io.set_structure(structure)
+    io.save(outfile, ResSelect())
+
+
 def rebase_structure(structure):
     """
     Input is a biopython structure object. This function renumbers all residues such

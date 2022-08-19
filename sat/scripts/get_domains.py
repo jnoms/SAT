@@ -9,7 +9,7 @@ from networkx.algorithms import community
 from Bio.PDB import *
 
 from .utils.misc import make_output_dir, talk_to_me
-from .utils.structure import pdb_to_structure_object
+from .utils.structure import pdb_to_structure_object, write_structure_subset
 
 # ------------------------------------------------------------------------------------ #
 # Functions
@@ -123,29 +123,6 @@ def filter_clusters(clusters, plddt_array, min_length, min_avg_plddt):
         filtered_clusters.append(cluster)
 
     return filtered_clusters
-
-
-def write_structure_subset(structure, residues_to_keep, outfile):
-    """
-    Writes a pdb outfile that is just a subset of the input structure from the
-    residue start to the residue end. Note that the pdb file is 1-indexed, so the
-    coordinates are expected to be 1-indexed as well.
-
-    - structure: biopython structure object
-    - residues_to_keep: some iterable/list of numbers, where each number is the position
-        of one of the residues to keep.
-    """
-
-    class ResSelect(Select):
-        def accept_residue(self, res):
-            if res.id[1] in residues_to_keep:
-                return True
-            else:
-                return False
-
-    io = PDBIO()
-    io.set_structure(structure)
-    io.save(outfile, ResSelect())
 
 
 def get_domains_main(args):
