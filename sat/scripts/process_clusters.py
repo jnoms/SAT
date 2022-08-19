@@ -29,43 +29,52 @@ def process_clusters_main(args):
     talk_to_me("Loading cluster objects.")
     cluster_objects = load_cluster_objects(args.cluster_file, alignment_groups)
 
-    # Load cluster_ID (ranked clusters by # of items/queries), cluster count, and
-    # top query.
-    add_cluster_ID(cluster_objects)
-    for cluster in cluster_objects:
-        cluster.add_top_query()
-        cluster.add_cluster_count()
-
     # For output fields, will be outputting the alignments using args.alignment_fields.
     # But also want to include some items from the cluster objects.
     cluster_fields = ["cluster_ID", "cluster_count", "top_query"]
 
-    # Determine the top query (e.g. the query that has the highest number of alignments
-    # or, if there is a tie, the highest average TMscore). Then output the alignments
-    # for that query.
-    if args.top_query_per_cluster_out != "":
-        talk_to_me("Writing alignments for the top query per cluster")
-        out = ""
-        for cluster in cluster_objects:
-            out += cluster.write_top_query_alignments(
-                args.alignment_fields, cluster_fields
-            )
+    # Load cluster_ID (ranked clusters by # of items/queries)
+    add_cluster_ID(cluster_objects)
 
+    # Make any output directories that are necessary, and open output files
+    if args.top_query_per_cluster_out != "":
         make_output_dir(args.top_query_per_cluster_out)
-        with open(args.top_query_per_cluster_out, "w") as outfile:
-            outfile.write(out)
+        top_query_per_cluster_out_outfile = open(args.top_query_per_cluster_out, "w")
 
     if args.all_nonredundant_out != "":
-        talk_to_me("Writing out all non-redundant alignments.")
-        out = ""
-        for cluster in cluster_objects:
-            out += cluster.write_all_nonredundant_alignments(
+        make_output_dir(args.all_nonredundant_out)
+        all_nonredundant_out_outfile = open(args.all_nonredundant_out, "w")
+
+    talk_to_me("Processing clusters and writing to output file(s)")
+    for cluster in cluster_objects:
+
+        # Adding the top_query and the cluser count
+        cluster.add_top_query()
+        cluster.add_cluster_count()
+
+        # Writing out the alignments of the top query for each cluster - e.g. the query
+        # with the most alignments or, if a tie, the query with the highest average
+        # TMscore.
+        if args.top_query_per_cluster_out != "":
+            out = cluster.write_top_query_alignments(
                 args.alignment_fields, cluster_fields
             )
+            top_query_per_cluster_out_outfile.write(out)
 
-        make_output_dir(args.all_nonredundant_out)
-        with open(args.all_nonredundant_out, "w") as outfile:
-            outfile.write(out)
+        # Writing out all non-redundant alignments that make it into a cluster object.
+        # Note that alignments with a query and target not in the same cluster are
+        # excluded.
+        if args.all_nonredundant_out != "":
+            out = cluster.write_all_nonredundant_alignments(
+                args.alignment_fields, cluster_fields
+            )
+            all_nonredundant_out_outfile.write(out)
+
+    # Close the output files
+    if args.top_query_per_cluster_out != "":
+        top_query_per_cluster_out_outfile.close()
+    if args.all_nonredundant_out != "":
+        all_nonredundant_out_outfile.close()
 
 
 if __name__ == "__main__":
