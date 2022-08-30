@@ -2,6 +2,8 @@
 
 import argparse
 
+from scripts.utils.misc import arg_str2bool
+
 
 def main():
 
@@ -435,6 +437,95 @@ def main():
     )
     parser_rebase_structure.set_defaults(func=call_rebase_structure_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for chunk_fasta subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_chunk_fasta = subparsers.add_parser(
+        "chunk_fasta",
+        help=(
+            """
+            Tool to split sequences in an input fasta into overlapping or not
+            overlapping chunks. Can write all resultant sequences to a single output
+            file, or to separate output files (one per header). The header of 
+            chunks are >PART{N}_{header}.
+
+            For example, if a sequence is 2300AA long but you desire sequences
+            of 1000 max, this script can either generate the following:
+            1) 1-1000, 1001-2000, 2001-2300. (if -v is NOT specified)
+            2) 1-1000, 501-1500, 1001-2000, 1501-2300, 2001-2300 (if -v is specified)
+            """
+        ),
+    )
+    parser_chunk_fasta.add_argument(
+        "-i",
+        "--in_fasta",
+        type=str,
+        required=True,
+        help="""
+        Path to the input fasta. 
+        """,
+    )
+    parser_chunk_fasta.add_argument(
+        "-o",
+        "--out_fasta",
+        type=str,
+        required=True,
+        help="""
+        Path to the output fasta. If -n is specified, will put every fasta entry
+        into a separate file and the entry in the -o switch will specify the
+        base path - should be a directory in this case.
+        """,
+    )
+    parser_chunk_fasta.add_argument(
+        "-m",
+        "--max_seq_length",
+        type=int,
+        required=True,
+        help="""
+        The maximum sequence length.
+        """,
+    )
+    parser_chunk_fasta.add_argument(
+        "-s",
+        "--minimum_sequence_output_size",
+        type=int,
+        required=False,
+        default=50,
+        help="""
+        Will not output any sequences below this size. This is because colabfold
+        fails when sequences are very small. [50]
+        """,
+    )
+    parser_chunk_fasta.add_argument(
+        "-v",
+        "--overlapping_chunks",
+        type=arg_str2bool,
+        required=False,
+        default=False,
+        nargs="?",
+        const=True,
+        help="""
+        If specified, each chunk will overlap by max_seq_length/2. If not
+        specified, chunks will be just
+        1:max_seq_length, max_seq_length+1:max_seq_length*2, etc
+        """,
+    )
+    parser_chunk_fasta.add_argument(
+        "-n",
+        "--individual",
+        type=arg_str2bool,
+        required=False,
+        default=False,
+        nargs="?",
+        const=True,
+        help="""
+        If specified, each fasta entry will be passed to a separate file 
+        named by its header. Furthermore, it will assume that args.out_fasta is
+        the base path.
+        """,
+    )
+    parser_chunk_fasta.set_defaults(func=call_chunk_fasta_main)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -474,6 +565,12 @@ def call_rebase_structure_main(args):
     from scripts.rebase_structure import rebase_structure_main
 
     rebase_structure_main(args)
+
+
+def call_chunk_fasta_main(args):
+    from scripts.chunk_fasta import chunk_fasta_main
+
+    chunk_fasta_main(args)
 
 
 if __name__ == "__main__":

@@ -15,12 +15,19 @@ poetry install
 4. Finished! The SAT conda environment will now contain all dependencies.
 
 # List of subcommands
+
+## Structure-focused
 `sat get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
-`sat remove_redundant_domains` - Removes domains that have strongly overlapping primary amino-acid sequences.  
-`sat process_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
-`sat add_taxonomy_to_alignments` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
+`sat remove_redundant_domains` - Removes domains that have strongly overlapping primary amino-acid sequences.   
 `sat structure_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
 `sat rebase_structure` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
+
+## Foldseek-focused
+`sat process_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
+`sat add_taxonomy_to_alignments` - Adds specified taxonomic levels for the query and/or target of foldseek alignments. 
+
+## Fasta-focused  
+`sat chunk_fasta` - Splits a fasta file into overlapping or non-overlapping chunks.
 
 # SAT get_domains
 ## Extract separate domain structures from a predicted structure.
@@ -195,8 +202,35 @@ python sat.py rebase_structure \
 ```
 
 ## Required Parameters
-`-s --structure_file`: Path to the structure file.
+`-s --structure_file`: Path to the structure file.  
 `-o --output_file`: Path to the output, rebased structure.
+
+
+# SAT chunk_fasta
+## Splits entries into a fasta into overlapping or non-overlapping chunks. This is helpful when you want to split up sequences that are too long to effectively use for structure prediction. This subcommand is able to generate overlapping sequences. 
+
+Inputs:
+1) A fasta containing one or more sequences.
+
+Output:
+1) Either a single fasta or multiple fastas (named by header) containing overlapping or not overlapping sequences with a maximum and minimum length.
+
+## Usage
+```
+python sat.py chunk_fasta \
+-i input.fasta \ 
+-o output.fasta # or output_dir/ if -n is specified
+```
+
+## Required Parameters
+`-i --in_fasta`: Path to the input fasta file.  
+`-o --out_fasta`: Path to a singular fasta output file. If -n is specified and multiple fastas are desired, the entry here will be used as the BASE directory and output files will be {BASE}/{header}.fasta
+`-m --max_seq_length`: Maximum length of an output sequence. If an input sequence is longer than this, it will be chunked.  
+
+## Optional Parameters
+`-s --minimum_sequence_output_size [50]`: Minimum length of an output sequence. If a sequence or chunk is below this size it will be discarded.  
+`-v --overlapping_chunks [False]`: This is a boolean flag. If you specify -v in the command line, each chunk will overlap by round(max_seq_length/2). If not specified, chunks will not be overlapping.  
+`-n --individual [False]`: This is a boolean flag. If you specify -n in the command line, each resultant fasta will be passed to a separate file named by its header. It will assume that --out_fasta specifies the path to the output directory... individual filenames will be named by their header.
 
 
 # Planned improvements
