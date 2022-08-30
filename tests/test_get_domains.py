@@ -2,7 +2,7 @@ from sat.scripts.get_domains import filter_clusters, smooth_array, plddt_trim_cl
 import numpy as np
 
 
-def test_filter_clusters():
+def test_filter_clusters_two_good():
 
     # Two clusters are all good
     cluster_coords = [(1, 2, 3, 4), (6, 7, 8, 9, 10)]  # 0 indexed
@@ -11,6 +11,8 @@ def test_filter_clusters():
     observed = filter_clusters(cluster_coords, plddt_array, 3, 60)
     assert desired == observed
 
+
+def test_filter_clusters_one_below_plddt():
     # One cluster below plddt
     cluster_coords = [(1, 2, 3, 4), (6, 7, 8, 9, 10)]  # 0 indexed
     plddt_array = np.array([10, 10, 10, 70, 70, 70, 60, 70, 50, 90])
@@ -18,6 +20,8 @@ def test_filter_clusters():
     observed = filter_clusters(cluster_coords, plddt_array, 3, 60)
     assert desired == observed
 
+
+def test_filter_clusters_both_below_plddt():
     # Both clusters below plddt
     cluster_coords = [(1, 2, 3, 4), (6, 7, 8, 9, 10)]  # 0 indexed
     plddt_array = np.array([10, 10, 10, 70, 70, 70, 60, 10, 10, 100])
@@ -25,6 +29,8 @@ def test_filter_clusters():
     observed = filter_clusters(cluster_coords, plddt_array, 3, 60)
     assert desired == observed
 
+
+def test_filter_clusters_three_clust_one_filtered():
     # three clusters - one filtered
     cluster_coords = [(1, 2, 3, 4), (6, 7, 8, 9, 10), (12, 13, 14, 15)]  # 0 indexed
     plddt_array = np.array(
