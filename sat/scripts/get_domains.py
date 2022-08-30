@@ -6,6 +6,8 @@ import json
 import numpy as np
 import networkx as nx
 from networkx.algorithms import community
+from itertools import groupby
+import matplotlib.pyplot as plt
 
 from .utils.misc import make_output_dir, talk_to_me
 from .utils.structure import pdb_to_structure_object, write_structure_subset
@@ -77,6 +79,68 @@ def domains_from_pae_matrix_networkx(
     return clusters
 
 
+def smooth_array(in_arr, threshold=5, n=20, block_replace=1):
+    """
+    This function takes in a 1 dimensional array of values, where lower values are
+    'good'. It finds groups of values that are lower than the threshold value. If
+    a 'good' group ends but the subequent 'bad' group (e.g. has values > threshold) is
+    not long (is less long than n), it now considers that formerly-bad group to be
+    good. Then, it overrides all good values as block_replace.
+
+    In terms of taking in an array from a PAE matrix, this function:
+    - finds regions of the vector that have a PAE below threshold
+    - if two regions of PAE below threshold are separated by a region of PAE
+      above threshold that is less long than n, the regions are merged.
+    - all pae regions below threshold (including the converted, formerly-above-threshold
+      regions) are converted to block_replace.
+    """
+    status = in_arr < threshold
+
+    # (bool, count). Note that grouped_status is essentially 1-indexed.
+    grouped_status = [(k, sum(1 for i in g)) for k, g in groupby(status)]
+
+    pos_to_smooth = set()  # set with indices of positions to smooth
+    i = 0
+    for (status, length) in grouped_status:
+
+        i += length
+
+        # If the stretch is at the start, won't correct a False but will correct a
+        # true.
+        if i - length == 0 and not status:
+            continue
+
+        # If the stretch is at the end, won't correct a False but will correct a
+        # true.
+        if i == len(in_arr) and not status:
+            continue
+
+        # If true or if false but under length, will smooth it
+        if status:
+            pos_to_smooth.update(range(i - length, i))
+        elif length < n and not status:
+            pos_to_smooth.update(range(i - length, i))
+
+    out_arr = []
+    for i, val in enumerate(in_arr):
+        if i in pos_to_smooth:
+            out_arr.append(block_replace)
+        else:
+            out_arr.append(val)
+    out_arr = np.array(out_arr)
+    return out_arr
+
+
+def visualize_PAE(pae_matrix):
+    """
+    Given a PAE matrix, returns a matplotlib heatmap of the residues.
+    """
+    plt.imshow(np.asarray(pae_matrix))
+    plt.xlabel("Residue 1")
+    plt.ylabel("Residue 2")
+    return plt
+
+
 def filter_clusters(clusters, plddt_array, min_length, min_avg_plddt):
     """
     Filters clusters to keep those that are longer than a minimum length and
@@ -124,11 +188,59 @@ def filter_clusters(clusters, plddt_array, min_length, min_avg_plddt):
     return filtered_clusters
 
 
+def plddt_trim_clusters(clusters, plddt_array, min_avg_plddt):
+    """
+    clusters is a list of Frozensets, where each Frozenset contains the 1-indexed
+    positions of residues belonging to a domain.
+
+    Unlike filter_clusters (which just removes clusters with an average pLDDT below
+    the threshold), this function trims residues on the N and C sides of the cluster
+    that are below the threshold.
+
+    Remember, the positions in clusters are 1-indexed! So need to -1 to get 0 index
+    when looking up in the plddt_array.
+    """
+    out_clusters = []
+    for cluster in clusters:
+        cluster = list(cluster)
+        to_trim = []
+
+        # Working from the start, add positions to the to_trim until there is a residue
+        # that has sufficiently high plddt.
+        for pos in cluster:
+            i = pos - 1
+            plddt = plddt_array[i]
+            if plddt < min_avg_plddt:
+                to_trim.append(pos)
+            else:
+                break
+
+        # Working from the end, add positions to the to_trim until there is a residue
+        # that has sufficiently high plddt.
+        for pos in cluster[::-1]:
+            i = pos - 1
+            plddt = plddt_array[i]
+            if plddt < min_avg_plddt:
+                to_trim.append(pos)
+            else:
+                break
+
+        cluster = set(cluster) - set(to_trim)
+        cluster = frozenset(cluster)
+        out_clusters.append(cluster)
+
+    return out_clusters
+
+
 def get_domains_main(args):
 
-    # Find clusters from json file.
     talk_to_me("Reading PAE json file.")
     pae_matrix, plddt_array = parse_json_file(args.pae_path)
+
+    if args.smooth_n != 0:
+        talk_to_me("Smoothing out PAE matrix.")
+        pae_matrix = np.apply_along_axis(smooth_array, 0, pae_matrix, n=args.smooth_n)
+        pae_matrix = np.apply_along_axis(smooth_array, 1, pae_matrix, n=args.smooth_n)
 
     talk_to_me("Finding clusters from PAE matrix.")
     clusters = domains_from_pae_matrix_networkx(
@@ -138,7 +250,6 @@ def get_domains_main(args):
         graph_resolution=args.graph_resolution,
     )
 
-    # Filter clusters based on length and average plddt
     talk_to_me("Filtering cluster coordinates by length and pLDDT.")
     clusters = filter_clusters(
         clusters,
@@ -147,14 +258,18 @@ def get_domains_main(args):
         min_avg_plddt=args.min_domain_plddt,
     )
 
-    # Parse structure
+    talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
+    clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
+
+    if len(clusters) == 0:
+        talk_to_me("No domains were found that passed filtration. Exiting.")
+        quit()
+
     talk_to_me("Parsing structure.")
     structure = pdb_to_structure_object(args.structure_file_path)
 
-    # Generate output directory if necessary
     make_output_dir(args.output_prefix, is_dir=False)
 
-    # Write to output directory
     talk_to_me("Writing domains to output pdb files.")
     i = 0
     for cluster in clusters:
