@@ -1,5 +1,7 @@
 # SAT
-Structural Analysis Toolkit - A python package for manipulation of structural data and identification of shared structural features.
+Structural Analysis Toolkit - A python package for manipulation of structural data and identification of shared structural features.  
+
+![Tests](https://github.com/jnoms/SAT/actions/workflows/main.yml/badge.svg)
 
 # Installation
 1. Clone this repository
