@@ -157,6 +157,15 @@ class Alignment_object:
 
         self.alignment_fields = alignment_fields
 
+    def __eq__(self, other):
+        """
+        Lets you compare two alignment objects to one another. Helpful for tests.
+
+        To use: one_alignment_obj.__eq__(another_alignment_obj) will return True
+        if the slots contain the same values.
+        """
+        return self.__dict__ == other.__dict__
+
     def trim_by_plddt(self, pLDDTs: dict, threshold: int):
         """
         Trims the alignment to remove query sequences at the ends if they have

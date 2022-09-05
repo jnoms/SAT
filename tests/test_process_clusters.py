@@ -1,6 +1,15 @@
-from sat.scripts.utils.alignments import Alignment_group, Alignment_object
+from sat.scripts.utils.alignments import (
+    Alignment_group,
+    Alignment_object,
+    parse_alignment,
+)
 from sat.scripts.utils.clusters import Cluster
+from sat.scripts.process_clusters import process_clusters_main
 
+
+# ------------------------------------------------------------------------------------ #
+# Individual function tests
+# ------------------------------------------------------------------------------------ #
 aln1 = Alignment_object(["seq1", "seq2", "0.9"], ["query", "target", "alntmscore"])
 aln2 = Alignment_object(["seq1", "seq3", "0.8"], ["query", "target", "alntmscore"])
 aln3 = Alignment_object(["seq1", "seq4", "0.9"], ["query", "target", "alntmscore"])
@@ -114,3 +123,83 @@ def test_Cluster_write_all_nonredundant_alignments():
     )
 
     assert cluster1_observed == cluster1_expected
+
+
+# ------------------------------------------------------------------------------------ #
+# Whole-script tests
+# ------------------------------------------------------------------------------------ #
+def test_process_clusters_top_query(tmp_path):
+
+    # Define inputs
+    class args:
+        pass
+
+    args.alignment_file = "tests/test_data/foldseek_related/clusters_alignment.m8"
+    args.cluster_file = "tests/test_data/foldseek_related/clusters.tsv"
+    args.top_query_per_cluster_out = f"{tmp_path}/top_query_per_cluster.m8"
+    args.alignment_fields = (
+        "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
+        "evalue,bits,alntmscore"
+    )
+    args.all_nonredundant_out = ""
+    # args.all_nonredundant_out = f"{tmp_path}/all_non_redundant_out.m8"
+
+    # Run the script
+    process_clusters_main(args)
+
+    # Validate the outputs
+    expected = parse_alignment(
+        "tests/test_data/foldseek_related/top_query_per_cluster.m8",
+        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
+    )
+    observed = parse_alignment(
+        f"{tmp_path}/top_query_per_cluster.m8",
+        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
+    )
+
+    # Note!!! - there is some ambiguity... The problem is that .most_common()
+    # is pretty random when two items have the same count. This means that during
+    # Cluster.get_top_query() if two items have the same target count and same avg TM
+    # score, the assignment of top_query is random between the two. Thus, I check if
+    # the query is present first.
+    for query, align_obj in expected.items():
+        if query in observed:
+            assert align_obj.__eq__(observed[query])
+
+
+def test_process_clusters_all_nonredundant(tmp_path):
+
+    # Define inputs
+    class args:
+        pass
+
+    args.alignment_file = "tests/test_data/foldseek_related/clusters_alignment.m8"
+    args.cluster_file = "tests/test_data/foldseek_related/clusters.tsv"
+    args.all_nonredundant_out = f"{tmp_path}/all_non_redundant_out.m8"
+    args.top_query_per_cluster_out = ""
+    args.alignment_fields = (
+        "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
+        "evalue,bits,alntmscore"
+    )
+
+    # Run the script
+    process_clusters_main(args)
+
+    # Validate the outputs
+    expected = parse_alignment(
+        "tests/test_data/foldseek_related/all_non_redundant_out.m8",
+        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
+    )
+    observed = parse_alignment(
+        f"{tmp_path}/all_non_redundant_out.m8",
+        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
+    )
+
+    # Note!!! - there is some ambiguity... The problem is that .most_common()
+    # is pretty random when two items have the same count. This means that during
+    # Cluster.get_top_query() if two items have the same target count and same avg TM
+    # score, the assignment of top_query is random between the two. Thus, I check if
+    # the query is present first.
+    for query, align_obj in expected.items():
+        if query in observed:
+            assert align_obj.__eq__(observed[query])

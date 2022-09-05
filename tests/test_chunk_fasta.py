@@ -33,7 +33,7 @@ def test_chunk_fasta_nonoverlapping(tmp_path):
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/t.fasta"
+    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
@@ -57,7 +57,7 @@ def test_chunk_fasta_nonoverlapping_two(tmp_path):
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/t.fasta"
+    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 10
@@ -82,7 +82,7 @@ def test_chunk_fasta_overlapping(tmp_path):
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/t.fasta"
+    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
@@ -107,7 +107,7 @@ def test_chunk_fasta_overlapping_individual(tmp_path):
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/t.fasta"
+    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
     args.out_fasta = f"{tmp_path}/observed"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
