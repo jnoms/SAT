@@ -9,9 +9,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "ci"
   ci:
     strategy:
       matrix:
@@ -19,13 +17,13 @@ jobs:
         poetry-version: ["1.1.14"]
         os: [ubuntu-18.04]
         
-    # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      # Note - can swap order of setup-python and install poetry if there
+      # is difficulty with python version, though this in turn will require
+      # you to figure out an alternative method of cacheing.
       - name: Install poetry
         uses: abatilo/actions-poetry@v2.0.0
         with:
