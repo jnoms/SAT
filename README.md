@@ -4,17 +4,38 @@ Structural Analysis Toolkit - A python package for manipulation of structural da
 ![Tests](https://github.com/jnoms/SAT/actions/workflows/main.yml/badge.svg)
 
 # Installation
+There are two methods to install this package - in a poetry environment, or within a conda environment.
+
+## Installation in a poetry environment
+1. Make sure the [Poetry package manager](https://python-poetry.org/) is installed.
+1. Clone this repository
+2. Enter the SAT directory, and install the package via poetry. This will download all dependencies into a poetry virtual environment.
+```
+poetry install
+```
+3. Now, you can run SAT in the following way:
+```
+poetry run sat.py <subcommand>
+```
+
+## Installation in a conda environment
+1. Make sure the [conda package manager](https://docs.conda.io/en/latest/miniconda.html) is installed.
 1. Clone this repository
 2. Create a conda environment that contains the poetry package manager
 ```
 conda create --name SAT -c conda-forge poetry
 ```
-3. Activate environment. Enter the SAT directory that contains the pyproject.toml file, and download the dependencies using poetry!
+3. Activate environment. Enter the SAT directory and download the dependencies using poetry. Dependencies will be downloaded specifically into that conda environment.
 ```
 conda activate SAT
 poetry install
 ```
-4. Finished! The SAT conda environment will now contain all dependencies.
+4. The SAT conda environment will now contain all dependencies. You can run SAT in the following way:
+```
+conda activate SAT #if conda enviornment is not active  
+
+sat.py <subcommand>
+```
 
 # List of subcommands
 
