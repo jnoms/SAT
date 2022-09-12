@@ -1,8 +1,5 @@
-from sat.scripts.utils.alignments import (
-    Alignment_group,
-    Alignment_object,
-    parse_alignment,
-)
+from sat.scripts.utils.Foldseek_Dataset import Foldseek_Dataset
+from sat.scripts.utils.alignments import Alignment_group, Alignment_object
 from sat.scripts.utils.clusters import Cluster
 from sat.scripts.process_clusters import process_clusters_main
 
@@ -142,20 +139,22 @@ def test_process_clusters_top_query(tmp_path):
         "evalue,bits,alntmscore"
     )
     args.all_nonredundant_out = ""
-    # args.all_nonredundant_out = f"{tmp_path}/all_non_redundant_out.m8"
 
     # Run the script
     process_clusters_main(args)
+    fields = args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"]
 
     # Validate the outputs
-    expected = parse_alignment(
+    expected = Foldseek_Dataset()
+    expected.parse_alignment(
         "tests/test_data/foldseek_related/top_query_per_cluster.m8",
-        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
+        fields,
     )
-    observed = parse_alignment(
-        f"{tmp_path}/top_query_per_cluster.m8",
-        args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
-    )
+    expected = expected.alignment_groups
+
+    observed = Foldseek_Dataset()
+    observed.parse_alignment(f"{tmp_path}/top_query_per_cluster.m8", fields)
+    observed = observed.alignment_groups
 
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during
@@ -186,14 +185,19 @@ def test_process_clusters_all_nonredundant(tmp_path):
     process_clusters_main(args)
 
     # Validate the outputs
-    expected = parse_alignment(
+    expected = Foldseek_Dataset()
+    expected.parse_alignment(
         "tests/test_data/foldseek_related/all_non_redundant_out.m8",
         args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
     )
-    observed = parse_alignment(
+    expected = expected.alignment_groups
+
+    observed = Foldseek_Dataset()
+    observed.parse_alignment(
         f"{tmp_path}/all_non_redundant_out.m8",
         args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
     )
+    observed = observed.alignment_groups
 
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during

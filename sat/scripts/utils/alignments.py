@@ -1,6 +1,4 @@
 from .structure import pdb_to_structure_object, structure_to_pLDDT, structure_to_seq
-from .ete3_taxonomy import get_cannonical_lineage
-
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -211,77 +209,78 @@ class Alignment_object:
             out.append(val)
         return sep.join(out) + "\n"
 
-    def add_taxid(self, query_or_target, location):
-        if query_or_target not in {"query", "target"}:
-            msg = "Must specify if you want the taxonID of the query or of the target"
-            raise ValueError(msg)
+    # def add_taxid(self, query_or_target, location):
+    #     if query_or_target not in {"query", "target"}:
+    #         msg = "Must specify if you want the taxonID of the query or of the target"
+    #         raise ValueError(msg)
 
-        field_name = f"{query_or_target}_taxid"
+    #     field_name = f"{query_or_target}_taxid"
 
-        if location == 0:
-            self.__dict__[field_name] = ""
-            return
-        elif location == 1:
-            taxid = self.__dict__[query_or_target].rstrip(".pdb").split("__")[-1]
-            if "domain" in taxid:
-                while "_" in taxid:
-                    taxid = taxid[:-1]
-            self.__dict__[field_name] = taxid
-        elif location == 2:
-            if query_or_target == "query":
-                msg = "For query, location option 2 is not allowed."
-                raise ValueError(msg)
-            taxid = self.taxid
-            if "domain" in taxid:
-                while "_" in taxid:
-                    taxid = taxid[:-1]
-            self.__dict__[field_name] = taxid
+    #     if location == 0:
+    #         self.__dict__[field_name] = ""
+    #         return
+    #     elif location == 1:
+    #         taxid = self.__dict__[query_or_target].rstrip(".pdb").split("__")[-1]
+    #         if "domain" in taxid:
+    #             while "_" in taxid:
+    #                 taxid = taxid[:-1]
+    #         self.__dict__[field_name] = taxid
+    #     elif location == 2:
+    #         if query_or_target == "query":
+    #             msg = "For query, location option 2 is not allowed."
+    #             raise ValueError(msg)
+    #         taxid = self.taxid
+    #         if "domain" in taxid:
+    #             while "_" in taxid:
+    #                 taxid = taxid[:-1]
+    #         self.__dict__[field_name] = taxid
 
-    def add_query_lineage(
-        self,
-        taxonomy_levels: list = [
-            "superkingdom",
-            "kingdom",
-            "phylum",
-            "class",
-            "order",
-            "family",
-            "genus",
-            "species",
-        ],
-    ):
-        """
-        Returns the taxonomy of the query. The query taxid must be built into the query
-        name. - e.g. query_taxid_location must be set to 1.
-        """
-        taxid = self.query_taxid
-        if taxid == "":
-            self.query_lineage = ""
-        else:
-            self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
+    # def add_query_lineage(
+    #     self,
+    #     taxonomy_levels: list = [
+    #         "superkingdom",
+    #         "kingdom",
+    #         "phylum",
+    #         "class",
+    #         "order",
+    #         "family",
+    #         "genus",
+    #         "species",
+    #     ],
+    # ):
+    #     """
+    #     Returns the taxonomy of the query. The query taxid must be built into the
+    #     query
+    #     name. - e.g. query_taxid_location must be set to 1.
+    #     """
+    #     taxid = self.query_taxid
+    #     if taxid == "":
+    #         self.query_lineage = ""
+    #     else:
+    #         self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
-    def add_target_lineage(
-        self,
-        taxonomy_levels: list = [
-            "superkingdom",
-            "kingdom",
-            "phylum",
-            "class",
-            "order",
-            "family",
-            "genus",
-            "species",
-        ],
-    ):
-        """
-        Returns the taxonomy of the target. The target taxid can either be present
-        in the target name, or in the taxid field.
-        """
-        taxid = self.target_taxid
-        if taxid == "":
-            self.target_lineage = ""
-        else:
-            self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
+    # def add_target_lineage(
+    #     self,
+    #     taxonomy_levels: list = [
+    #         "superkingdom",
+    #         "kingdom",
+    #         "phylum",
+    #         "class",
+    #         "order",
+    #         "family",
+    #         "genus",
+    #         "species",
+    #     ],
+    # ):
+    #     """
+    #     Returns the taxonomy of the target. The target taxid can either be present
+    #     in the target name, or in the taxid field.
+    #     """
+    #     taxid = self.target_taxid
+    #     if taxid == "":
+    #         self.target_lineage = ""
+    #     else:
+    #         self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
 
 
 # ------------------------------------------------------------------------------------ #
