@@ -1,18 +1,36 @@
-from re import X
-from xxlimited import Str
+from multiprocessing.managers import ValueProxy
 from ete3 import NCBITaxa
+
 
 ncbi = NCBITaxa()
 
 
 class Taxon:
-    def __init__(self, taxonID, is_name=False):
+    def __init__(self, taxonID, taxonomy_levels="", populate_class=True, is_name=False):
+        """
+        If populate_class is true, will add the following slots to the object:
+        - lineage
+        - canonical_lineage
+
+        taxonomy_levels should be a list of taxonomy levels.
+        """
         if not is_name:
             self.taxonID = taxonID
         else:
             taxonID = self.name_to_taxID(taxonID)
+            self.taxonID = taxonID
 
-    def name_to_taxID(name: str):
+        if populate_class:
+            if taxonomy_levels == "":
+                msg = "If you want to prepopulate the Taxon object, you need to provide"
+                msg += " the taxonomy_levels upon instantiation!"
+                raise ValueError(msg)
+            self.lineage = self.get_lineage(self.taxonID)
+            self.canonical_lineage = self.get_cannonical_lineage(
+                self.taxonID, taxonomy_levels
+            )
+
+    def name_to_taxID(self, name: str):
         """
         Given name, returns taxonID. If the name taxonID can't be found,
         will try to strip any following numbers from the name. Otherwise,
@@ -28,11 +46,11 @@ class Taxon:
             except:
                 return "X"
 
-    def get_level(self):
+    def get_level(self, taxonID):
         """
         Given a single taxonID, returns the taxonomic level.
         """
-        level = list(ncbi.get_rank([self.taxonID]).values())
+        level = list(ncbi.get_rank([taxonID]).values())
 
         # Unknown taxonID would yield [], which can't be indexed by [0] to get the
         # string
@@ -42,11 +60,11 @@ class Taxon:
             level = level[0]
         return level
 
-    def get_name(self):
+    def get_name(self, taxonID):
         """
         Given a single taxonID, returns the name of the taxon.
         """
-        name = list(ncbi.get_taxid_translator([self.taxonID]).values())
+        name = list(ncbi.get_taxid_translator([taxonID]).values())
 
         # Unknown taxonID would yield [], which can't be indexed by [0] to get the
         # string
@@ -58,15 +76,15 @@ class Taxon:
         name = name.replace(" ", "_")
         return name
 
-    def get_lineage(self):
+    def get_lineage(self, taxonID):
         """
         Given a taxonID, returns a list of all taxonIDs in its lineage.
         """
         try:
-            lineage = ncbi.get_lineage(self.taxonID)
+            lineage = ncbi.get_lineage(taxonID)
         except ValueError:
-            print("Cannot find taxonID " + str(self.taxonID))
-            lineage = [self.taxonID]
+            print("Cannot find taxonID " + str(taxonID))
+            lineage = [taxonID]
         if lineage is None:
             lineage = [0]
 
@@ -74,6 +92,7 @@ class Taxon:
 
     def get_cannonical_lineage(
         self,
+        taxonID,
         desired_levels: str = [
             "superkingdom",
             "kingdom",
@@ -107,8 +126,8 @@ class Taxon:
             raise ValueError(msg)
 
         # Get a list of lineage and a list of their ranks
-        lineage = self.get_lineage(self.taxonID)
-        levels = [self.get_level(taxon) for taxon in lineage]
+        lineage = self.get_lineage(taxonID)
+        levels = [self.get_level(taxonID) for taxonID in lineage]
 
         # Override species as terminal if specified. If species is the last level
         # requested but isn't the last level of the lineage, replace the species taxonID

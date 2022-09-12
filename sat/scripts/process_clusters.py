@@ -32,33 +32,22 @@ def process_clusters_main(args):
     # Load cluster_ID (ranked clusters by # of items/queries)
     data.add_cluster_ID()
 
+    output_fields = args.alignment_fields
+
     # Generate outputs
-    if args.top_query_per_cluster_out != "" and args.all_nonredundant_out != "":
+    talk_to_me("Generating and writing outputs.")
+    out = data.write_out_cluster_alignments(output_fields)
+
+    # Write outputs
+    if args.top_query_per_cluster_out != "":
         make_output_dir(args.top_query_per_cluster_out)
+        with open(args.top_query_per_cluster_out, "w") as outfile:
+            outfile.write(out["top"])
+
+    if args.all_nonredundant_out != "":
         make_output_dir(args.all_nonredundant_out)
-        with open(args.top_query_per_cluster_out, "w") as top_out, open(
-            args.all_nonredundant_out
-        ) as nr_out:
-            out = data.write_out_cluster_alignments(
-                args.alignment_fields, top_or_nonredundant="both"
-            )
-            top_out.write(out["top"])
-            nr_out.write(out["nr"])
-
-    elif args.top_query_per_cluster_out != "" and args.all_nonredundant_out == "":
-        make_output_dir(args.top_query_per_cluster_out)
-        with open(args.top_query_per_cluster_out, "w") as top_out:
-            out = data.write_out_cluster_alignments(
-                args.alignment_fields, top_or_nonredundant="top"
-            )
-            top_out.write(out["top"])
-
-    elif args.top_query_per_cluster_out == "" and args.all_nonredundant_out != "":
-        with open(args.all_nonredundant_out, "w") as nr_out:
-            out = data.write_out_cluster_alignments(
-                args.alignment_fields, top_or_nonredundant="nr"
-            )
-            nr_out.write(out["nr"])
+        with open(args.all_nonredundant_out, "w") as outfile:
+            outfile.write(out["nr"])
 
 
 if __name__ == "__main__":

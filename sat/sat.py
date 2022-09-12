@@ -309,35 +309,26 @@ def main():
         """,
     )
     parser_add_taxonomy_to_alignments.add_argument(
-        "-q",
-        "--query_taxid_location",
-        type=int,
+        "-d",
+        "--taxonID_finder_delimiter",
+        type=str,
         required=False,
-        default=1,
-        choices=[0, 1],
+        default="__",
         help="""
-        Default: 1
-        Where is the query_taxid located? Options:
-        - 0: Indicates that the query_taxid is not present or not desired in the output.
-        - 1: Indicates that the query_taxid is present in the query name of the
-            alignment as query_name.rstrip('.pdb').split('__')[-1]
+        This script will try to find the taxonID in the query or target strings of each
+        alignment (although if there is a taxid column in the alignment_object, it will 
+        use that taxonID for the target taxonID). To parse for the taxonID, this is 
+        the delimiter.
         """,
     )
     parser_add_taxonomy_to_alignments.add_argument(
-        "-t",
-        "--target_taxid_location",
+        "-p",
+        "--taxonID_finder_pos",
         type=int,
         required=False,
-        default=1,
-        choices=[0, 1, 2],
+        default=-1,
         help="""
-        Default: 1
-        Where is the target_taxid located? Options:
-        - 0: Indicates that the target_taxid is not present or not desired in the output
-        - 1: Indicates that the target_taxid is present in the query name of the
-            alignment as target_name.rstrip('.pdb').split('__')[-1]
-        -2:  Indicates that the target_taxid is present in the taxid field of the
-            alignment file.
+        This is where in the delimited string the taxonID is located.
         """,
     )
     parser_add_taxonomy_to_alignments.add_argument(

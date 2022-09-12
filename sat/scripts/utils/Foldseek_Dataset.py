@@ -1,6 +1,7 @@
 from .alignments import Alignment_group, Alignment_object
 from .misc import talk_to_me
 from .clusters import Cluster
+from .ete3_taxonomy import Taxon
 
 
 # ------------------------------------------------------------------------------------ #
@@ -31,7 +32,7 @@ class Foldseek_Dataset:
       for reading in data and such.
     """
 
-    def parse_alignment(self, alignment_file_path, alignment_fields):
+    def parse_alignment(self, alignment_file_path, alignment_fields=""):
         """
         Given an input path, parses the alignment file into a dictionary of
         structure query:Alingment_group, where each Alignment_group contains
@@ -42,6 +43,19 @@ class Foldseek_Dataset:
         """
         alignments_dict = dict()
         with open(alignment_file_path) as infile:
+
+            # Check if the first line is a header - if so, and alignment_fields is
+            # an empty string, use those as the alignment_fields
+            if alignment_fields == "":
+                for line in infile:
+                    if line.startswith("query"):
+                        alignment_fields = line.rstrip("\n").split("\t")
+                        break
+                    else:
+                        msg = "alignment_fields has not been passed to parse_alignment,"
+                        msg += " which is only allowed when the first line has headers!"
+                        msg += " (e.g. first line should start with 'query')"
+                        raise ValueError(msg)
 
             for line in infile:
                 line = line.rstrip("\n").split("\t")
@@ -81,6 +95,10 @@ class Foldseek_Dataset:
 
         with open(cluster_file_path) as infile:
             for line in infile:
+                # Skip header if there is one
+                if line.startswith("query"):
+                    continue
+
                 line = line.rstrip("\n").split("\t")
                 foldseek_cluster_rep, member = line
                 if foldseek_cluster_rep not in clusters:
@@ -145,7 +163,7 @@ class Foldseek_Dataset:
     def write_out_cluster_alignments(
         self,
         alignment_fields,
-        top_or_nonredundant,
+        top_or_nonredundant="both",
         cluster_fields=["cluster_ID", "cluster_count", "top_query"],
     ):
         """
@@ -199,6 +217,52 @@ class Foldseek_Dataset:
             if progress % 100 == 0:
                 talk_to_me(f"Progress: {progress}/{total}")
 
+        return out
+
+    def add_taxon_to_alignments(self, taxonomy_levels, delimiter="__", pos=-1):
+        """
+        Iterates through all alignment_groups and all alignment_objects and adds the
+        query and target taxonIDs as a Taxon object in the query_taxonID and
+        target_taxonID slots of the alignment_objects.
+        """
+
+        # Keep track of Taxa I've already made
+        seen_taxa = dict()
+
+        for query, alignment_group in self.alignment_groups.items():
+            for alignment in alignment_group.alignments:
+                alignment.add_query_taxonID(delimiter=delimiter, pos=pos)
+                alignment.add_target_taxonID(delimiter=delimiter, pos=pos)
+
+                if alignment.query_taxonID in seen_taxa:
+                    alignment.query_taxon = seen_taxa[alignment.query_taxonID]
+                else:
+                    alignment.query_taxon = Taxon(
+                        alignment.query_taxonID, taxonomy_levels
+                    )
+                    seen_taxa[alignment.query_taxonID] = alignment.query_taxon
+
+                if alignment.target_taxonID in seen_taxa:
+                    alignment.target_taxon = seen_taxa[alignment.target_taxonID]
+                else:
+                    alignment.target_taxon = Taxon(
+                        alignment.target_taxonID, taxonomy_levels
+                    )
+                    seen_taxa[alignment.target_taxonID] = alignment.target_taxon
+
+    def write_out_alignments(self, alignment_fields):
+        """
+        This differs from write_out_cluster_alignments because that one will iterate
+        over cluster objects, while this one iterates directly over the alignments.
+
+        This returns a string with the output from all of the alignment_objects, where
+        alignment_fields are the slots (in the correct order!) that you want in the
+        output. Output will be delimited by \\t.
+        """
+        out = ""
+        for query, alignment_group in self.alignment_groups.items():
+            for alignment in alignment_group.alignments:
+                out += alignment.write_output(alignment_fields)
         return out
 
 

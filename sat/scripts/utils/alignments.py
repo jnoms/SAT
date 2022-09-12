@@ -1,4 +1,6 @@
 from .structure import pdb_to_structure_object, structure_to_pLDDT, structure_to_seq
+from .ete3_taxonomy import Taxon
+
 from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -197,90 +199,53 @@ class Alignment_object:
     def write_output(self, fields: list, sep: str = "\t"):
         """
         Returns the desired fields as a tab-delimited string followed by a \\n.
+
+        If the field is a list, it will delimit each item in the list with the sep.
         """
         out = []
         for field in fields:
             val = self.__dict__[field]
-            if type(val) == list:
+
+            # If the slot is a list, collapse it by the delimiter.
+            if isinstance(val, list):
                 val = [str(v) for v in val]
                 val = sep.join(val)
-            elif type(val) in {float, int}:
+            elif isinstance(val, float) or isinstance(val, int):
                 val = str(val)
+
+            # If the slot is a Taxon object, output the collapsed canonical_lineage.
+            elif isinstance(val, Taxon):
+                val = val.canonical_lineage
+                val = sep.join(val)
             out.append(val)
         return sep.join(out) + "\n"
 
-    # def add_taxid(self, query_or_target, location):
-    #     if query_or_target not in {"query", "target"}:
-    #         msg = "Must specify if you want the taxonID of the query or of the target"
-    #         raise ValueError(msg)
+    def add_query_taxonID(self, delimiter="__", pos=-1):
+        """
+        This will search the query column string for the taxonID and add it to the
+        query_taxonID slot of the alignment_object
+        """
+        query_taxonID = self.query.split(delimiter)[pos].rstrip(".pdb")
+        if "domain" in query_taxonID:
+            while "_" in query_taxonID:
+                query_taxonID = query_taxonID[:-1]
+        self.query_taxonID = query_taxonID
 
-    #     field_name = f"{query_or_target}_taxid"
-
-    #     if location == 0:
-    #         self.__dict__[field_name] = ""
-    #         return
-    #     elif location == 1:
-    #         taxid = self.__dict__[query_or_target].rstrip(".pdb").split("__")[-1]
-    #         if "domain" in taxid:
-    #             while "_" in taxid:
-    #                 taxid = taxid[:-1]
-    #         self.__dict__[field_name] = taxid
-    #     elif location == 2:
-    #         if query_or_target == "query":
-    #             msg = "For query, location option 2 is not allowed."
-    #             raise ValueError(msg)
-    #         taxid = self.taxid
-    #         if "domain" in taxid:
-    #             while "_" in taxid:
-    #                 taxid = taxid[:-1]
-    #         self.__dict__[field_name] = taxid
-
-    # def add_query_lineage(
-    #     self,
-    #     taxonomy_levels: list = [
-    #         "superkingdom",
-    #         "kingdom",
-    #         "phylum",
-    #         "class",
-    #         "order",
-    #         "family",
-    #         "genus",
-    #         "species",
-    #     ],
-    # ):
-    #     """
-    #     Returns the taxonomy of the query. The query taxid must be built into the
-    #     query
-    #     name. - e.g. query_taxid_location must be set to 1.
-    #     """
-    #     taxid = self.query_taxid
-    #     if taxid == "":
-    #         self.query_lineage = ""
-    #     else:
-    #         self.query_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
-
-    # def add_target_lineage(
-    #     self,
-    #     taxonomy_levels: list = [
-    #         "superkingdom",
-    #         "kingdom",
-    #         "phylum",
-    #         "class",
-    #         "order",
-    #         "family",
-    #         "genus",
-    #         "species",
-    #     ],
-    # ):
-    #     """
-    #     Returns the taxonomy of the target. The target taxid can either be present
-    #     in the target name, or in the taxid field.
-    #     """
-    #     taxid = self.target_taxid
-    #     if taxid == "":
-    #         self.target_lineage = ""
-    #     else:
-    #         self.target_lineage = get_cannonical_lineage(taxid, taxonomy_levels)
+    def add_target_taxonID(self, delimiter="__", pos=-1, field_priority=True):
+        """
+        Adds the target taxonID. Here, if field_priority is set to true, it will first
+        check if there is a taxid slot which was from the foldseek column... this column
+        would have the target taxonID. If field_priority is false, will ignore that
+        and take it from the string of the target_name
+        """
+        if field_priority and hasattr(self, "taxid"):
+            self.target_taxonID = self.taxid
+        else:
+            target_taxonID = self.target.split(delimiter)[pos].rstrip(".pdb")
+            if "domain" in target_taxonID:
+                while "_" in target_taxonID:
+                    target_taxonID = target_taxonID[:-1]
+            self.target_taxonID = target_taxonID
 
 
 # ------------------------------------------------------------------------------------ #
