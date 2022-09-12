@@ -1,5 +1,5 @@
-from multiprocessing.managers import ValueProxy
 from ete3 import NCBITaxa
+from collections import Counter
 
 
 ncbi = NCBITaxa()
@@ -159,6 +159,51 @@ class Taxon:
             cannonical_lineage.append(name)
 
         return cannonical_lineage
+
+
+def taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels, observed_taxa=dict()):
+    """
+    Takes in a list or set of taxonIDs and returns a nested dictionary of structure:
+    taxonomy_level --> taxon --> count.
+
+    e.g.
+
+    result['family']['polyomaviridae'] would yield 3 if there were 3 taxonIDs in the
+    input that are from the family polyomaviridae.
+
+    observed_taxa lets you input a dictionary of structure taxonID:Taxon() object to
+    avoid searching the taxa database multiple times.
+    """
+
+    # Load taxon objects
+    taxon_objects = []
+    for taxonID in taxonIDs:
+
+        if taxonID in observed_taxa:
+            taxon_objects.append(observed_taxa[taxonID])
+        else:
+            taxon_object = Taxon(taxonID, taxonomy_levels)
+            taxon_objects.append(taxon_object)
+            observed_taxa[taxonID] = taxon_object
+
+    # Count each taxon object at each level
+    taxa_counts = dict()
+    for i, level in enumerate(taxonomy_levels):
+
+        for taxon_object in taxon_objects:
+
+            lineage = taxon_object.canonical_lineage
+            if lineage is None:
+                continue
+
+            taxa = lineage[i]
+
+            if level not in taxa_counts:
+                taxa_counts[level] = Counter()
+
+            taxa_counts[level][taxa] += 1
+
+    return taxa_counts, observed_taxa
 
 
 if __name__ == "__main__":

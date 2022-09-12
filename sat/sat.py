@@ -338,13 +338,7 @@ def main():
         required=False,
         default="superkingdom,phylum,class,order,family,genus,species",
         help="""
-        Default: 1
-        Where is the target_taxid located? Options:
-        - 0: Indicates that the target_taxid is not present or not desired in the output
-        - 1: Indicates that the target_taxid is present in the query name of the
-            alignment as target_name.stripl('.pdb').split('__')[-1]
-        -2:  Indicates that the target_taxid is present in the taxid field of the
-            alignment file.
+        These are the taxonomic levels to include in the output file.
         """,
     )
     parser_add_taxonomy_to_alignments.set_defaults(func=call_add_taxonomy_to_alignments)
@@ -517,6 +511,52 @@ def main():
     )
     parser_chunk_fasta.set_defaults(func=call_chunk_fasta_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for cluster_taxa_counts subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_cluster_taxa_counts = subparsers.add_parser(
+        "cluster_taxa_counts",
+        help=(
+            """
+            This takes in a processed alignment file (typically generated from a
+            foldseek alignment that was then processed through process_clusters and 
+            add_taxonomy_to_alignment) and returns, for each cluster, the number of 
+            taxa at each taxonomic level and their names. The output file has the 
+            following columns:
+            cluster_ID, cluster_rep, level, taxon, count.
+            """
+        ),
+    )
+    parser_cluster_taxa_counts.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the alignment file.
+        """,
+    )
+    parser_cluster_taxa_counts.add_argument(
+        "-o",
+        "--outfile",
+        type=str,
+        required=True,
+        help="""
+        Path to the output count file.
+        """,
+    )
+    parser_cluster_taxa_counts.add_argument(
+        "-t",
+        "--taxonomy_levels",
+        type=str,
+        required=False,
+        default="superkingdom,phylum,class,order,family,genus,species",
+        help="""
+        Taxonomy levels to count and output
+        """,
+    )
+    parser_cluster_taxa_counts.set_defaults(func=call_parser_cluster_taxa_counts_main)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -562,6 +602,12 @@ def call_chunk_fasta_main(args):
     from scripts.chunk_fasta import chunk_fasta_main
 
     chunk_fasta_main(args)
+
+
+def call_parser_cluster_taxa_counts_main(args):
+    from scripts.cluster_taxa_counts import cluster_taxa_counts_main
+
+    cluster_taxa_counts_main(args)
 
 
 if __name__ == "__main__":

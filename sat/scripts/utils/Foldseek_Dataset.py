@@ -1,8 +1,7 @@
 from .alignments import Alignment_group, Alignment_object
 from .misc import talk_to_me
 from .clusters import Cluster
-from .ete3_taxonomy import Taxon
-
+from .ete3_taxonomy import Taxon, taxonID_list_to_lineage_counts
 
 # ------------------------------------------------------------------------------------ #
 # Classes
@@ -263,6 +262,54 @@ class Foldseek_Dataset:
         for query, alignment_group in self.alignment_groups.items():
             for alignment in alignment_group.alignments:
                 out += alignment.write_output(alignment_fields)
+        return out
+
+    def write_out_cluster_taxa_count(self, taxonomy_levels):
+        """
+        This function iterates through each alignment and counts the taxons at every
+        level in each cluster. Result is a tab-delimited string of columns cluster_ID,
+        top_query, level, taxon, count.
+
+        Notably, this function requires that each alignment has the slots
+        cluster_ID, top_query, query_taxonID, and target_taxonID. Typically this
+        will come by parsing an alignment file that has been processed through
+        process_clusters and then add_taxonomy_to_alignments.
+        """
+
+        cluster_taxa_dict = dict()
+        for query, alignment_group in self.alignment_groups.items():
+            for alignment in alignment_group.alignments:
+                cluster = alignment.cluster_ID
+                top_query = alignment.top_query
+                key = tuple([cluster, top_query])
+
+                query_taxonID = alignment.query_taxonID
+                target_taxonID = alignment.target_taxonID
+
+                if key not in cluster_taxa_dict:
+                    cluster_taxa_dict[key] = set()
+
+                cluster_taxa_dict[key].add(query_taxonID)
+                cluster_taxa_dict[key].add(target_taxonID)
+
+        # Outputing observed_taxa each time to avoid repetitive taxonID lookups, which
+        # can be very slow.
+        observed_taxa = dict()
+        out = "\t".join(["cluster_ID", "top_query", "level", "taxon", "count"]) + "\n"
+        for (cluster_ID, top_query), taxonIDs in cluster_taxa_dict.items():
+            counts_dict, observed_taxa = taxonID_list_to_lineage_counts(
+                taxonIDs, taxonomy_levels, observed_taxa
+            )
+            for level, c in counts_dict.items():
+                for taxon, count in c.items():
+                    line = (
+                        "\t".join(
+                            [cluster_ID, top_query, level, str(taxon), str(count)]
+                        )
+                        + "\n"
+                    )
+                    out += line
+
         return out
 
 
