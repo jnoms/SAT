@@ -81,14 +81,10 @@ class Taxon:
         Given a taxonID, returns a list of all taxonIDs in its lineage.
         """
         try:
-            lineage = ncbi.get_lineage(taxonID)
+            return ncbi.get_lineage(taxonID)
         except ValueError:
             print("Cannot find taxonID " + str(taxonID))
-            lineage = [taxonID]
-        if lineage is None:
-            lineage = [0]
-
-        return lineage
+            return None
 
     def get_cannonical_lineage(
         self,
@@ -127,6 +123,8 @@ class Taxon:
 
         # Get a list of lineage and a list of their ranks
         lineage = self.get_lineage(taxonID)
+        if lineage is None:
+            return None
         levels = [self.get_level(taxonID) for taxonID in lineage]
 
         # Override species as terminal if specified. If species is the last level
