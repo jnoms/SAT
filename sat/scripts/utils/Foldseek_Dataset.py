@@ -199,7 +199,7 @@ class Foldseek_Dataset:
             # query with the most alignments or, if a tie, the query with the highest
             # average TMscore.
             if top_or_nonredundant in ["top", "both"]:
-                out["top"] = cluster.write_top_query_alignments(
+                out["top"] += cluster.write_top_query_alignments(
                     alignment_fields, cluster_fields
                 )
 
@@ -207,7 +207,7 @@ class Foldseek_Dataset:
             # object. Note that alignments with a query and target not in the same
             # cluster are excluded.
             if top_or_nonredundant in ["nr", "both"]:
-                out["nr"] = cluster.write_all_nonredundant_alignments(
+                out["nr"] += cluster.write_all_nonredundant_alignments(
                     alignment_fields, cluster_fields
                 )
 
