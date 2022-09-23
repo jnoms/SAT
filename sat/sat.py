@@ -557,6 +557,73 @@ def main():
     )
     parser_cluster_taxa_counts.set_defaults(func=call_parser_cluster_taxa_counts_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for query_uniprot subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_query_uniprot = subparsers.add_parser(
+        "query_uniprot",
+        help=(
+            """
+            This subcommand takes in a file that contains uniprotIDs (or alphafold IDs, 
+            even if they are formatted like e.g. AF-K0EZQ3-F1-model_v2.pdb.gz). You just
+            need to specify the 0-indexed column position of the ID.
+
+            This script uses the uniprot REST API to download information for each
+            uniprotID. It offers the funcionality to save a cache containing the raw
+            download information to prevent unncessary downloading.
+
+            Besides making or updating a cache file, the main purpose of this script
+            is to output a flat, tab-delimited file with the columns uniprotID,
+            geneName, and fullName (fullName is a descriptive protein name).
+            """
+        ),
+    )
+    parser_query_uniprot.add_argument(
+        "-i",
+        "--infile",
+        type=str,
+        required=True,
+        help="""
+        Path to the input file that contains the uniprot IDs. If there are multiple
+        columns, this must be tab-delimited.
+        """,
+    )
+    parser_query_uniprot.add_argument(
+        "-o",
+        "--uniprot_lookup_output",
+        type=str,
+        required=True,
+        help="""
+        This is the main output file. Will be a tab-delimited file with the columns
+        uniprotID, geneName, fullName
+        """,
+    )
+    parser_query_uniprot.add_argument(
+        "-c",
+        "--infile_col",
+        type=int,
+        required=False,
+        default=1,
+        help="""
+        Default: 1
+        This is the 0-indexed column holding the uniprot of alphafold IDs.
+        """,
+    )
+    parser_query_uniprot.add_argument(
+        "-u",
+        "--uniprot_cache",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        A pkl file containing a cache from former uniprot downloads. This is optional.
+        If specified, this file will be read in and will be updated with this script's 
+        downloads.
+        """,
+    )
+
+    parser_query_uniprot.set_defaults(func=call_query_uniprot_main)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -608,6 +675,12 @@ def call_parser_cluster_taxa_counts_main(args):
     from scripts.cluster_taxa_counts import cluster_taxa_counts_main
 
     cluster_taxa_counts_main(args)
+
+
+def call_query_uniprot_main(args):
+    from scripts.query_uniprot import query_uniprot_main
+
+    query_uniprot_main(args)
 
 
 if __name__ == "__main__":

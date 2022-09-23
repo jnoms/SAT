@@ -48,6 +48,8 @@ sat.py <subcommand>
 ## Foldseek-focused
 `sat process_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
 `sat add_taxonomy_to_alignments` - Adds specified taxonomic levels for the query and/or target of foldseek alignments. 
+`sat cluster_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
+`sat query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
 
 ## Fasta-focused  
 `sat chunk_fasta` - Splits a fasta file into overlapping or non-overlapping chunks.
@@ -65,7 +67,7 @@ Output:
 
 ## Usage
 ```
-python sat.py get_domains \
+sat.py get_domains \
 -s sturucture.pdb \
 -p pae.json \
 -o output/structure_prefix
@@ -97,7 +99,7 @@ Output:
 
 ## Usage
 ```
-python sat.py remove_redundant_domains \
+sat.py remove_redundant_domains \
 -i "path/to/structures/*pdb" \
 -o output_directory
 ```
@@ -123,7 +125,7 @@ Output:
 
 ## Usage
 ```
-python sat.py process_clusters \
+sat.py process_clusters \
 -a alignment.m8 \
 -c clusters.tsv \
 -o result.m8
@@ -153,7 +155,7 @@ Output:
 
 ## Usage
 ```
-python sat.py add_taxonomy_to_alignments \
+sat.py add_taxonomy_to_alignments \
 -a alignment.m8 \
 -o result.m8
 ```
@@ -194,7 +196,7 @@ Output:
 
 ## Usage
 ```
-python sat.py structure_to_seq \
+sat.py structure_to_seq \
 -s structure.pdb \
 -o sequence.fasta \
 -H header_of_the_sequence
@@ -219,7 +221,7 @@ Output:
 
 ## Usage
 ```
-python sat.py rebase_structure \
+sat.py rebase_structure \
 -s structure.pdb \
 -o rebased_structure.pdb
 ```
@@ -240,7 +242,7 @@ Output:
 
 ## Usage
 ```
-python sat.py chunk_fasta \
+sat.py chunk_fasta \
 -i input.fasta \ 
 -o output.fasta # or output_dir/ if -n is specified
 ```
@@ -255,6 +257,55 @@ python sat.py chunk_fasta \
 `-v --overlapping_chunks [False]`: This is a boolean flag. If you specify -v in the command line, each chunk will overlap by round(max_seq_length/2). If not specified, chunks will not be overlapping.  
 `-n --individual [False]`: This is a boolean flag. If you specify -n in the command line, each resultant fasta will be passed to a separate file named by its header. It will assume that --out_fasta specifies the path to the output directory... individual filenames will be named by their header.
 
+# SAT cluster_taxa_counts
+## This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through process_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
+
+Inputs:
+1) A foldseek alignment file (typically processed through process_clusters and add_taxonomy_to_alignment).
+
+Output:
+1) A tidy output file with counts, for each cluster, for the number of members of each cluster in every taxon at each desired level.
+
+## Usage
+```
+sat.py cluster_taxa_counts \
+-a alignment.m8 \ 
+-o result.m8
+```
+
+## Required Parameters
+`-a --alignment_file`: Path to the alignment file.
+`-o --outfile`: Path to the output count file.
+
+## Optional Parameters
+`-t --taxonomy_levels ["superkingdom,phylum,class,order,family,genus,species"]`: Taxonomy levels to count and output
+
+# SAT query_uniprot
+## This script takes alphafold IDs (or raw uniprot IDs) and uses the Uniprot REST API to get information on the geneName and fullName (an informative name of the protein) for each ID. You can specify in which column of the infile the IDs live.
+
+Inputs:
+1) A single-column or tab-delimited file, with one of the columns containing alphafold IDs or uniprot IDs. Note that the ID will be found as the second item in a dash-delimited list if dashes are present (as they are in alphafold IDs).
+2) Optional, but recommended: A cache file or file path. This will save the downloaded uniprot contents to a pkl binary file. Subsequent future runs will only query uniprot if the information is not in the cache.
+
+Output:
+1) A tab-delimited file with the columns uniprotID, geneName, and fullName
+
+## Usage
+```
+sat.py query uniprot \
+-i some_file.m8 \ 
+-o result.tsv \
+-c 1 \
+-u cache.pkl
+```
+
+## Required Parameters
+`-i --infile`: Path to the input file that contains the uniprot IDs. If there are multiple columns, this must be tab-delimited.
+`-o --uniprot_lookup_output`: This is the main output file. Will be a tab-delimited file with the columns uniprotID, geneName, fullName.
+
+## Optional Parameters
+`-c --infile_col [1]`: This is the 0-indexed column holding the uniprot of alphafold IDs.
+`-u --uniprot_cache`: A pkl file containing a cache from former uniprot downloads. This is optional. If specified, this file will be read in and will be updated with this script's downloads.
 
 # Planned improvements
 get_domains
