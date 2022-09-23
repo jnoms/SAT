@@ -54,7 +54,7 @@ def test_query_uniprot_main_full_cache(tmp_path):
     args.infile = "tests/test_data/foldseek_related/af2_foldseek_result_small.m8"
     args.uniprot_lookup_output = f"{tmp_path}/result.tsv"
     args.infile_col = 1
-    args.uniprot_cache = "af2_foldseek_result_small_uniprot_cache.pkl"
+    args.uniprot_cache = "{tmp_path}/af2_foldseek_result_small_uniprot_cache.pkl"
 
     # Run script
     query_uniprot_main(args)
