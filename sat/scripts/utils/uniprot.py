@@ -34,7 +34,7 @@ class uniprot_object:
         for field in fields:
             field_value = str(self.__dict__[field]).replace(delimiter, "_")
             out += field_value + delimiter
-        return out.rstrip(delimiter) + "\n"
+        return out.removesuffix(delimiter) + "\n"
 
 
 # ------------------------------------------------------------------------------------ #

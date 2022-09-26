@@ -124,7 +124,7 @@ class Taxon:
         # Get a list of lineage and a list of their ranks
         lineage = self.get_lineage(taxonID)
         if lineage is None:
-            return None
+            return ["" for _ in desired_levels]
         levels = [self.get_level(taxonID) for taxonID in lineage]
 
         # Override species as terminal if specified. If species is the last level

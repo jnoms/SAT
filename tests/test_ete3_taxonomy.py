@@ -44,16 +44,21 @@ def test_taxonID_list_to_lineage_counts_unknown_taxa():
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
 
     expected = {
-        "superkingdom": Counter({"Viruses": 2, "Bacteria": 1}),
-        "phylum": Counter({"Nucleocytoviricota": 2, "Bacteroidetes": 1}),
-        "class": Counter({"Pokkesviricetes": 2, "Sphingobacteriia": 1}),
-        "order": Counter({"Chitovirales": 2, "Sphingobacteriales": 1}),
-        "family": Counter({"Poxviridae": 2, "Sphingobacteriaceae": 1}),
+        "superkingdom": Counter({"Viruses": 2, "Bacteria": 1, "": 1}),
+        "phylum": Counter({"Nucleocytoviricota": 2, "Bacteroidetes": 1, "": 1}),
+        "class": Counter({"Pokkesviricetes": 2, "Sphingobacteriia": 1, "": 1}),
+        "order": Counter({"Chitovirales": 2, "Sphingobacteriales": 1, "": 1}),
+        "family": Counter({"Poxviridae": 2, "Sphingobacteriaceae": 1, "": 1}),
         "genus": Counter(
-            {"Centapoxvirus": 1, "Sphingobacterium": 1, "Orthopoxvirus": 1}
+            {"Centapoxvirus": 1, "Sphingobacterium": 1, "Orthopoxvirus": 1, "": 1}
         ),
         "species": Counter(
-            {"NY_014_poxvirus": 1, "Sphingobacterium_mizutaii": 1, "Akhmeta_virus": 1}
+            {
+                "NY_014_poxvirus": 1,
+                "Sphingobacterium_mizutaii": 1,
+                "Akhmeta_virus": 1,
+                "": 1,
+            }
         ),
     }
 
