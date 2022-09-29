@@ -18,6 +18,11 @@ pytest = ">=7"
 flake8 = "^4.0.1"
 black = {version = "^22.6.0", allow-prereleases = true}
 
+[tool.pytest.ini_options]
+markers = [
+    "ete3: marks tests that query an ete3 database (deselect with '-m \"not ete3\"')",
+]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

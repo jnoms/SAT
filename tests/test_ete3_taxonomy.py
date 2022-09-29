@@ -2,7 +2,10 @@ from sat.scripts.utils.ete3_taxonomy import taxonID_list_to_lineage_counts
 
 from collections import Counter
 
+import pytest
 
+
+@pytest.mark.ete3
 def test_taxonID_list_to_lineage_counts_multi():
     taxonIDs = {"2025360", "2200830", "1010"}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
@@ -27,6 +30,7 @@ def test_taxonID_list_to_lineage_counts_multi():
             assert expected[level][taxon] == count
 
 
+@pytest.mark.ete3
 def test_taxonID_list_to_lineage_counts_empty():
     taxonIDs = {}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
@@ -39,6 +43,7 @@ def test_taxonID_list_to_lineage_counts_empty():
             assert expected[level][taxon] == count
 
 
+@pytest.mark.ete3
 def test_taxonID_list_to_lineage_counts_unknown_taxa():
     taxonIDs = {"2025360", "2200830", "1010", "324123412421412421"}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
