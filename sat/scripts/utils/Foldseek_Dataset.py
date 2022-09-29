@@ -3,6 +3,7 @@ from .misc import talk_to_me
 from .clusters import Cluster
 from .ete3_taxonomy import Taxon, taxonID_list_to_lineage_counts
 
+
 # ------------------------------------------------------------------------------------ #
 # Classes
 # ------------------------------------------------------------------------------------ #
@@ -39,6 +40,11 @@ class Foldseek_Dataset:
 
         Stores this dictionary in the alignment_groups slot of the Foldseek_Dataset
         object.
+
+        Note that this function checks for a header in the input file. If a header is
+        present and alignment_fields is not provided, it will use the header as the
+        alignment fields and will store the alignment_fields list in the
+        Foldseek_Dataset object's input_alignment_fields attribute.
         """
         alignments_dict = dict()
         with open(alignment_file_path) as infile:
@@ -49,6 +55,7 @@ class Foldseek_Dataset:
                 for line in infile:
                     if line.startswith("query"):
                         alignment_fields = line.rstrip("\n").split("\t")
+                        self.input_alignment_fields = alignment_fields
                         break
                     else:
                         msg = "alignment_fields has not been passed to parse_alignment,"
@@ -57,6 +64,10 @@ class Foldseek_Dataset:
                         raise ValueError(msg)
 
             for line in infile:
+                # It's okay if there is a header, but need to remove it
+                if line.startswith("query"):
+                    continue
+
                 line = line.rstrip("\n").split("\t")
 
                 if len(line) != len(alignment_fields):

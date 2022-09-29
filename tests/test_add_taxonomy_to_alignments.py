@@ -38,11 +38,11 @@ def test_add_taxonomy_to_alignments_main(tmp_path):
 
     # Check content
     for query, alignment_group in expected.alignment_groups.items():
-        assert query in expected.alignment_groups
+        assert query in observed.alignment_groups
         for alignment in alignment_group.alignments:
-            assert alignment in expected.alignment_groups[query].alignments
+            assert alignment in observed.alignment_groups[query].alignments
 
-            expected_alignment = [
+            observed_alignment = [
                 a for a in expected.alignment_groups[query].alignments if a == alignment
             ][0]
-            assert alignment.__eq__(expected_alignment)
+            assert alignment.__eq__(observed_alignment)
