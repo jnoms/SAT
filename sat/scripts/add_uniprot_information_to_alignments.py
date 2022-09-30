@@ -31,7 +31,16 @@ def parse_uniprot_information(uniprot_file_path):
 
         for line in infile:
             line = line.rstrip("\n").strip("\t").split("\t")
-            accession, geneName, fullName = line
+            if len(line) == 3:
+                accession, geneName, fullName = line
+            elif len(line) == 1:
+                accession = line[0]
+            else:
+                msg = (
+                    "The uniprot information for line f{line} is shorter than"
+                    "expected! Something is werid."
+                )
+                raise ValueError(msg)
             uo = uniprot_object(accession)
             uo.geneName = geneName
             uo.fullName = fullName
