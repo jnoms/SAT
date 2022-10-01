@@ -679,6 +679,100 @@ def main():
         func=call_add_uniprot_information_to_alignments_main
     )
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for filter_alignments subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_filter_alignments = subparsers.add_parser(
+        "filter_alignments",
+        help=(
+            """
+            This subcommand filters a foldseek alignment file to keep only those 
+            alignments with a value below/above the specified value in a field
+            (alntmscore is a common one). It also only outputs a maximum of N alignments
+            for each query.
+            """
+        ),
+    )
+    parser_filter_alignments.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the alignment file. It is OK if the first row is the header, as long as
+        the first column is 'query'.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output alignment file.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited string of alignment fields. Leave blank if there is a header in
+        the input file.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-x",
+        "--filter_field",
+        type=str,
+        required=False,
+        default="alntmscore",
+        help="""
+        Default: 'alntmscore'
+        String indicating the alignment field which contains the value to be filtered/
+        sorted with.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-N",
+        "--N",
+        type=int,
+        required=False,
+        default=10,
+        help="""
+        Default: 10
+        This is the maximum number of alignments to output for each query. Set to 0 if
+        you want to return all alignments.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-m",
+        "--min_val_filter_field",
+        type=float,
+        required=False,
+        default=0.4,
+        help="""
+        Default: 0.4
+        An alignment must have at least this minimum value in the filter_field for the
+        alignment to be output.
+        """,
+    )
+    parser_filter_alignments.add_argument(
+        "-M",
+        "--max_val_filter_field",
+        type=float,
+        required=False,
+        default=1,
+        help="""
+        Default: 1
+        An alignment must have this value or less in the filter_field for the
+        alignment to be output.
+        """,
+    )
+    parser_filter_alignments.set_defaults(func=call_filter_alignments_main)
+
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
@@ -744,6 +838,12 @@ def call_add_uniprot_information_to_alignments_main(args):
     )
 
     add_uniprot_information_to_alignments_main(args)
+
+
+def call_filter_alignments_main(args):
+    from scripts.filter_alignments import filter_alignments_main
+
+    filter_alignments_main(args)
 
 
 if __name__ == "__main__":

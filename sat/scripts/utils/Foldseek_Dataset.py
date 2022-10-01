@@ -68,7 +68,7 @@ class Foldseek_Dataset:
                 if line.startswith("query"):
                     continue
 
-                line = line.rstrip("\n").split("\t")
+                line = line.rstrip("\n").rstrip("\t").split("\t")
 
                 if len(line) != len(alignment_fields):
                     msg = "The line and alignment_fields don't have the same "

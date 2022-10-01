@@ -51,6 +51,7 @@ sat.py <subcommand>
 `sat cluster_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
 `sat query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
 `sat add_uniprot_information_to_alignments` - After retreiving the uniprot unformation using query_uniprot, adds the information as columns to the alignment file.  
+`sat filter_alignments` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
 
 ## Fasta-focused  
 `sat chunk_fasta` - Splits a fasta file into overlapping or non-overlapping chunks.
@@ -333,6 +334,37 @@ sat.py add_uniprot_information_to_alignments \
 
 ## Optional Parameters
 `-f --alignment_fields [""]`: Comma-delimited list of fields in the input alignment files (aka colnames). If the colnames are the first line in the input file and the first column is 'query', you can leave this blank.  
+
+# SAT filter_alignments
+## This subcommand filters a foldseek alignment file to keep only those alignments with a value below/above the specified value in a field (alntmscore is a common one). It also only outputs a maximum of N alignments for each query.
+
+Inputs:
+1) A foldseek alignment file.
+
+Output:
+1) The filtered alignment file
+
+## Usage
+```
+sat.py filter_alignments \
+-a alignment.m8 \
+-o alignment.filtered.m8 \
+-x alntmscore \
+-N 10 \
+-m 0.4
+```
+The above filters for alignments that have an alntmscore of at least 0.4, and keeps a max of 10 alignments per query.
+
+## Required Parameters
+`-a --alignment_file`: Path to the alignment file. It is OK if the first row is the header, as long as the first column is 'query'.   
+`-o --output_file`: Path to the output file.  
+
+## Optional Parameters
+`-f --alignment_fields [""]`: Comma-delimited list of fields in the input alignment files (aka colnames). If the colnames are the first line in the input file and the first column is 'query', you can leave this blank.  
+`-x --filter_field ["alntmscore"]`: String indicating the alignment field which contains the value to be filtered/sorted with.  
+`-N --N [10]`: This is the maximum number of alignments to output for each query. Set to 0 if you want to return all alignments.  
+`-m --min_val_filter_field [0.4]`: An alignment must have at least this minimum value in the filter_field for the alignment to be output.  
+`-M --max_val_filter_field [1]`: An alignment must have this value or less in the filter_field for the alignment to be output.  
 
 
 # Planned improvements

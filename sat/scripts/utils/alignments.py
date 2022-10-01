@@ -135,6 +135,73 @@ class Alignment_group:
         ax.set_xlabel("Query AA Position")
         return fig
 
+    def filter_alignments(self, filter_field, max_val, min_val):
+        """
+        This function iterates through each alignment in this alignment_object and
+        only keeps alignments that have a value in the slot filter_field that is
+        <= a max_val and >= a min_val.
+
+        This function acts IN PLACE.
+        """
+
+        if max_val < min_val:
+            msg = (
+                f"max_val can't be higher than min_val! max_val: {max_val}, "
+                f"min_val:{min_val}"
+            )
+            raise ValueError(msg)
+
+        filtered_alignments = []
+        for alignment in self.alignments:
+            try:
+                val = alignment.__dict__[filter_field]
+            except KeyError:
+                msg = f"Cannot find the field {filter_field} in the alingments."
+                msg += " Something is wrong!"
+                raise ValueError(msg)
+
+            # Handle scientific notation and convert to float
+            # Update the field as well
+            if isinstance(val, str):
+                try:
+                    val = float(val.replace("E", "e"))
+                except ValueError:
+                    msg = (
+                        f"Detected a string in the field {filter_field} which can't be "
+                        f"converted to a string. The val is {val}."
+                    )
+                    raise ValueError(msg)
+
+            # Override the object with the formatted field
+            alignment.__dict__[filter_field] = val
+
+            if val <= max_val and val >= min_val:
+                filtered_alignments.append(alignment)
+
+        self.alignments = filtered_alignments
+
+    def keep_top_N_alignments(self, filter_field, N):
+        """
+        This function sorts the list of alingments (in self.alignments) such that the
+        alignment with a higher value in the filter_field slot is first, and so on. It
+        then keeps the first N alignments, tossing out the others. This acts in place!
+
+        If N is set to 0, will return all alingments and won't filter.
+        """
+        if self.alignments == []:
+            return
+
+        if N == 0:
+            return
+
+        if filter_field not in self.alignments[0].__dict__:
+            msg = f"Cannot find the field {filter_field} in the alingments."
+            msg += " Something is wrong!"
+            raise ValueError(msg)
+
+        self.alignments.sort(key=lambda x: x.__dict__[filter_field], reverse=True)
+        self.alignments = self.alignments[:N]
+
 
 class Alignment_object:
     """
