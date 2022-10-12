@@ -35,6 +35,8 @@ def read_in_uniprot_IDs(infile, infile_col=0):
     IDs = set()
     with open(infile) as infile:
         for line in infile:
+            if line.startswith("query"):
+                continue
             line = line.split("\t")
             ID = line[infile_col]
             if "-" in ID:

@@ -73,6 +73,8 @@ class Foldseek_Dataset:
                 if len(line) != len(alignment_fields):
                     msg = "The line and alignment_fields don't have the same "
                     msg += "number of entries!"
+                    msg += f"Current line is: {line}"
+                    msg += f"Alignment fields are: {alignment_fields}"
                     raise ValueError(msg)
 
                 alignment = Alignment_object(line, alignment_fields)

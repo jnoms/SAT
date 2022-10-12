@@ -10,7 +10,11 @@ from itertools import groupby
 import matplotlib.pyplot as plt
 
 from .utils.misc import make_output_dir, talk_to_me
-from .utils.structure import pdb_to_structure_object, write_structure_subset
+from .utils.structure import (
+    pdb_to_structure_object,
+    write_structure_subset,
+    write_structure_to_pdb,
+)
 
 # ------------------------------------------------------------------------------------ #
 # Functions
@@ -261,14 +265,17 @@ def get_domains_main(args):
     talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
     clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
 
-    if len(clusters) == 0:
-        talk_to_me("No domains were found that passed filtration. Exiting.")
-        quit()
-
     talk_to_me("Parsing structure.")
     structure = pdb_to_structure_object(args.structure_file_path)
-
     make_output_dir(args.output_prefix, is_dir=False)
+
+    if len(clusters) == 0:
+        talk_to_me(
+            "No domains were found that passed filtration. Thus, outputting "
+            "the full structure."
+        )
+        write_structure_to_pdb(structure, f"{args.output_prefix}.pdb")
+        quit()
 
     talk_to_me("Writing domains to output pdb files.")
     i = 0

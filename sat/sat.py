@@ -126,9 +126,9 @@ def main():
         "--smooth_n",
         type=int,
         required=False,
-        default=20,
+        default=0,
         help="""
-        Default: 20
+        Default: 0
         If set to non-zero value, will smooth out the PAE matrix. If a region of high
         PAE (>5) is less than n residues long and is surrounded by a region of low PAE,
         it will be overridden with a low PAE. Furthermore, all of the low-PAE regions
