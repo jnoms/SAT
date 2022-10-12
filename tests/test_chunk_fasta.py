@@ -1,4 +1,4 @@
-from sat.scripts.chunk_fasta import chunk_seq, chunk_fasta_main
+from sat.scripts.seq_chunk import chunk_seq, seq_chunk_main
 from sat.scripts.utils.misc import read_fasta_to_memory
 
 
@@ -27,13 +27,13 @@ def test_chunk_seq_overlapping_ODD():
 # ------------------------------------------------------------------------------------ #
 # Whole-script tests
 # ------------------------------------------------------------------------------------ #
-def test_chunk_fasta_nonoverlapping(tmp_path):
+def test_seq_chunk_nonoverlapping(tmp_path):
 
     # Define inputs
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
+    args.in_fasta = "tests/test_data/seq_related/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
@@ -41,7 +41,7 @@ def test_chunk_fasta_nonoverlapping(tmp_path):
     args.individual = False
 
     # Run script
-    chunk_fasta_main(args)
+    seq_chunk_main(args)
 
     # Check that the output is expected
     expected = {
@@ -51,13 +51,13 @@ def test_chunk_fasta_nonoverlapping(tmp_path):
     assert read_fasta_to_memory(args.out_fasta) == expected
 
 
-def test_chunk_fasta_nonoverlapping_two(tmp_path):
+def test_seq_chunk_nonoverlapping_two(tmp_path):
 
     # Define inputs
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
+    args.in_fasta = "tests/test_data/seq_related/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 10
@@ -65,7 +65,7 @@ def test_chunk_fasta_nonoverlapping_two(tmp_path):
     args.individual = False
 
     # Run script
-    chunk_fasta_main(args)
+    seq_chunk_main(args)
 
     # Check that the output is expected
     expected = {
@@ -76,13 +76,13 @@ def test_chunk_fasta_nonoverlapping_two(tmp_path):
     assert read_fasta_to_memory(args.out_fasta) == expected
 
 
-def test_chunk_fasta_overlapping(tmp_path):
+def test_seq_chunk_overlapping(tmp_path):
 
     # Define inputs
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
+    args.in_fasta = "tests/test_data/seq_related/t.fasta"
     args.out_fasta = f"{tmp_path}/observed.fasta"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
@@ -90,7 +90,7 @@ def test_chunk_fasta_overlapping(tmp_path):
     args.individual = False
 
     # Run script
-    chunk_fasta_main(args)
+    seq_chunk_main(args)
 
     # Check that the output is expected
     expected = {
@@ -101,13 +101,13 @@ def test_chunk_fasta_overlapping(tmp_path):
     assert read_fasta_to_memory(args.out_fasta) == expected
 
 
-def test_chunk_fasta_overlapping_individual(tmp_path):
+def test_seq_chunk_overlapping_individual(tmp_path):
 
     # Define inputs
     class args:
         pass
 
-    args.in_fasta = "tests/test_data/chunk_fasta/t.fasta"
+    args.in_fasta = "tests/test_data/seq_related/t.fasta"
     args.out_fasta = f"{tmp_path}/observed"
     args.max_seq_length = 50
     args.minimum_sequence_output_size = 20
@@ -115,7 +115,7 @@ def test_chunk_fasta_overlapping_individual(tmp_path):
     args.individual = True
 
     # Run script
-    chunk_fasta_main(args)
+    seq_chunk_main(args)
 
     # Check that the output is expected
     one = read_fasta_to_memory(f"{tmp_path}/observed/PART0_100AA_seq.fasta")

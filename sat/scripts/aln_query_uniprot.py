@@ -126,7 +126,7 @@ def parse_uniprot_results(results):
     return res
 
 
-def query_uniprot_main(args):
+def aln_query_uniprot_main(args):
     talk_to_me("Reading in file to get uniprot IDs")
     IDs = read_in_uniprot_IDs(args.infile, args.infile_col)
 

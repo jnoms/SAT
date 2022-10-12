@@ -12,7 +12,7 @@ def pdb_to_structure_object(pdb_file_path, structure_name="structure"):
     return structure
 
 
-def structure_to_seq(structure):
+def struc_to_seq(structure):
     """
     Takes in a biopython structure object and returns the amino acid sequence as a
     string.
@@ -98,7 +98,7 @@ def write_structure_subset(structure, residues_to_keep, outfile):
     io.save(outfile, ResSelect())
 
 
-def rebase_structure(structure):
+def struc_rebase(structure):
     """
     Input is a biopython structure object. This function renumbers all residues such
     that the first residue starts at 1 and all residues are sequential - so, it takes

@@ -1,4 +1,4 @@
-from sat.scripts.remove_redundant_domains import is_overlapping
+from sat.scripts.struc_remove_redundant import is_overlapping
 
 
 def test_is_overlapping():

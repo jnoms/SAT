@@ -1,8 +1,8 @@
-from sat.scripts.add_taxonomy_to_alignments import add_taxonomy_to_alignments_main
+from sat.scripts.aln_add_taxonomy import aln_add_taxonomy_main
 from sat.scripts.utils.Foldseek_Dataset import Foldseek_Dataset
 
 
-def test_add_taxonomy_to_alignments_main(tmp_path):
+def test_aln_add_taxonomy_main(tmp_path):
 
     # Define inputs
     class args:
@@ -19,7 +19,7 @@ def test_add_taxonomy_to_alignments_main(tmp_path):
     args.taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species"
 
     # Run program
-    add_taxonomy_to_alignments_main(args)
+    aln_add_taxonomy_main(args)
 
     # Compare result with expected
     taxonomy_cols = [f"query_{level}" for level in args.taxonomy_levels]

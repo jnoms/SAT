@@ -1,4 +1,4 @@
-from .structure import pdb_to_structure_object, structure_to_pLDDT, structure_to_seq
+from .structure import pdb_to_structure_object, structure_to_pLDDT, struc_to_seq
 from .ete3_taxonomy import Taxon
 
 from collections import Counter
@@ -40,7 +40,7 @@ class Alignment_group:
         """
         self.structure = pdb_to_structure_object(structure_path)
         self.pLDDTs = structure_to_pLDDT(self.structure)
-        self.seq = structure_to_seq(self.structure)
+        self.seq = struc_to_seq(self.structure)
         self.query_len = len(self.seq)
 
     def add_scaled_alignment_coverage(self):
@@ -135,7 +135,7 @@ class Alignment_group:
         ax.set_xlabel("Query AA Position")
         return fig
 
-    def filter_alignments(self, filter_field, max_val, min_val):
+    def aln_filter(self, filter_field, max_val, min_val):
         """
         This function iterates through each alignment in this alignment_object and
         only keeps alignments that have a value in the slot filter_field that is

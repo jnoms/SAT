@@ -30,7 +30,7 @@ def chunk_seq(seq: str, max_length: int, output_overlapping: bool):
 # ------------------------------------------------------------------------------------ #
 # Main
 # ------------------------------------------------------------------------------------ #
-def chunk_fasta_main(args):
+def seq_chunk_main(args):
     fasta_dict = read_fasta_to_memory(args.in_fasta)
     out_fasta_dict = dict()
 

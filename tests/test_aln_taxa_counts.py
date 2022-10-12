@@ -1,7 +1,7 @@
-from sat.scripts.cluster_taxa_counts import cluster_taxa_counts_main
+from sat.scripts.aln_taxa_counts import aln_taxa_counts_main
 
 
-def test_cluster_taxa_counts_main(tmp_path):
+def test_aln_taxa_counts_main(tmp_path):
 
     # Define inputs
     class args:
@@ -14,7 +14,7 @@ def test_cluster_taxa_counts_main(tmp_path):
     args.taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species"
 
     # Run script
-    cluster_taxa_counts_main(args)
+    aln_taxa_counts_main(args)
 
     # Read observed and expected into a very nested dictionary
     expected = dict()

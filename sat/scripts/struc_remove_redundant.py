@@ -4,7 +4,7 @@
 from .utils.misc import make_output_dir, talk_to_me
 from .utils.structure import (
     pdb_to_structure_object,
-    structure_to_seq,
+    struc_to_seq,
     structure_to_pLDDT,
     write_structure_to_pdb,
 )
@@ -48,7 +48,7 @@ def is_overlapping(seq1, seq2, end_overlap=15):
 # ------------------------------------------------------------------------------------ #
 # Main
 # ------------------------------------------------------------------------------------ #
-def remove_redundant_domains_main(args):
+def struc_remove_redundant_main(args):
 
     # Read in the domains
     talk_to_me("Reading in structures.")
@@ -56,7 +56,7 @@ def remove_redundant_domains_main(args):
     for structure_path in glob(args.input_structure_glob):
         file_basename = os.path.basename(structure_path)
         domain = pdb_to_structure_object(structure_path, file_basename)
-        domain.seq = structure_to_seq(domain)
+        domain.seq = struc_to_seq(domain)
         domain.pLDDT = fmean(structure_to_pLDDT(domain, "l"))
         domains.append(domain)
 

@@ -10,7 +10,7 @@ def validate_and_format_args(args):
     return args
 
 
-def add_taxonomy_to_alignments_main(args):
+def aln_add_taxonomy_main(args):
     args = validate_and_format_args(args)
 
     # Read in alignment file

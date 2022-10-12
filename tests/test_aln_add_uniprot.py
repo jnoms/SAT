@@ -1,10 +1,10 @@
-from sat.scripts.add_uniprot_information_to_alignments import (
-    add_uniprot_information_to_alignments_main,
+from sat.scripts.aln_add_uniprot import (
+    aln_add_uniprot_main,
 )
 from sat.scripts.utils.Foldseek_Dataset import Foldseek_Dataset
 
 
-def test_add_uniprot_information_to_alignments(tmp_path):
+def test_aln_add_uniprot(tmp_path):
 
     # Inputs
     class args:
@@ -23,7 +23,7 @@ def test_add_uniprot_information_to_alignments(tmp_path):
     )
 
     # Running script
-    add_uniprot_information_to_alignments_main(args)
+    aln_add_uniprot_main(args)
 
     # Parse observed and expected
     expected = Foldseek_Dataset()

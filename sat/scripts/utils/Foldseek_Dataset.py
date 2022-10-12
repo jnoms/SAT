@@ -286,7 +286,7 @@ class Foldseek_Dataset:
         Notably, this function requires that each alignment has the slots
         cluster_ID, top_query, query_taxonID, and target_taxonID. Typically this
         will come by parsing an alignment file that has been processed through
-        process_clusters and then add_taxonomy_to_alignments.
+        aln_clusters and then aln_add_taxonomy.
         """
 
         cluster_taxa_dict = dict()

@@ -17,7 +17,7 @@ def format_args(args):
 # ------------------------------------------------------------------------------------ #
 # Main
 # ------------------------------------------------------------------------------------ #
-def process_clusters_main(args):
+def aln_clusters_main(args):
     args = format_args(args)
 
     talk_to_me("Reading in alignment file.")

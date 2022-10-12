@@ -1,4 +1,8 @@
-from sat.scripts.get_domains import filter_clusters, smooth_array, plddt_trim_clusters
+from sat.scripts.struc_get_domains import (
+    filter_clusters,
+    smooth_array,
+    plddt_trim_clusters,
+)
 import numpy as np
 
 

@@ -236,7 +236,7 @@ def plddt_trim_clusters(clusters, plddt_array, min_avg_plddt):
     return out_clusters
 
 
-def get_domains_main(args):
+def struc_get_domains_main(args):
 
     talk_to_me("Reading PAE json file.")
     pae_matrix, plddt_array = parse_json_file(args.pae_path)

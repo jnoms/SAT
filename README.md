@@ -40,23 +40,23 @@ sat.py <subcommand>
 # List of subcommands
 
 ## Structure-focused
-`sat get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
-`sat remove_redundant_domains` - Removes domains that have strongly overlapping primary amino-acid sequences.   
-`sat structure_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
-`sat rebase_structure` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
+`sat struc_get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
+`sat struc_remove_redundant` - Removes domains that have strongly overlapping primary amino-acid sequences.   
+`sat struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
+`sat struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 
 ## Foldseek-focused
-`sat process_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
-`sat add_taxonomy_to_alignments` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
-`sat cluster_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
-`sat query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
-`sat add_uniprot_information_to_alignments` - After retreiving the uniprot unformation using query_uniprot, adds the information as columns to the alignment file.  
-`sat filter_alignments` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
+`sat aln_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
+`sat aln_add_taxonomy` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
+`sat aln_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
+`sat aln_query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
+`sat aln_add_uniprot` - After retreiving the uniprot unformation using aln_query_uniprot, adds the information as columns to the alignment file.  
+`sat aln_filter` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
 
-## Fasta-focused  
-`sat chunk_fasta` - Splits a fasta file into overlapping or non-overlapping chunks.
+## Sequence-focused  
+`sat seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
 
-# SAT get_domains
+# SAT struc_get_domains
 ## Extract separate domain structures from a predicted structure.
 ### This uses the PAE information to cluster residues that likely fall into linear domains. Notably, the script is currently only configured to process colabfold-generated PAE files. 
 
@@ -69,7 +69,7 @@ Output:
 
 ## Usage
 ```
-sat.py get_domains \
+sat.py struc_get_domains \
 -s sturucture.pdb \
 -p pae.json \
 -o output/structure_prefix
@@ -89,7 +89,7 @@ sat.py get_domains \
 
 `-3 --graph_resolution [1]`: Regulates how aggressively the clustering algorithm is. Smaller values lead to larger clusters. Value should be larger than zero, and values larger than 5 are unlikely to be useful.
 
-# SAT remove_redundant_domains
+# SAT struc_remove_redundant
 ## Given a glob specifying multiple structure (often domains), will remove structures that have an overlapping pirmary amino acid sequence. 
 ### Priority is given to the longer structure or, if the sequences are the same length, the structure with the highest pLDDT
 
@@ -101,7 +101,7 @@ Output:
 
 ## Usage
 ```
-sat.py remove_redundant_domains \
+sat.py struc_remove_redundant \
 -i "path/to/structures/*pdb" \
 -o output_directory
 ```
@@ -110,7 +110,7 @@ sat.py remove_redundant_domains \
 
 `-o --output_dir`: Path to the directory that will contain the output, filtered structure files. This script will make the directory if it doesn't exist.
 
-# SAT process_clusters
+# SAT aln_clusters
 ## Adds cluster information from foldseek cluster into the foldseek alignment information.
 ### Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster. Furthermore, all-by-all searchs  result in a redundant query-target and target-query alignment for each entry. These redundant alignments are removed.
 ### This script adds the following fields to the input alignment file:
@@ -127,7 +127,7 @@ Output:
 
 ## Usage
 ```
-sat.py process_clusters \
+sat.py aln_clusters \
 -a alignment.m8 \
 -c clusters.tsv \
 -o result.m8
@@ -143,7 +143,7 @@ sat.py process_clusters \
 ## Optional Parameters
 `-f --alignment_fields ["query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits,alntmscore"]`: A comma-delimited string of the fields in the input foldseek alignment file. Make sure to wrap in quotes!
 
-# SAT add_taxonomy_to_alignments
+# SAT aln_add_taxonomy
 ## Adds taxonomy information to a foldseek alignment
 ### Taxonomy for each query can be built in to the query_name as the final element of the double-underscore-delimited list. 
 ### Taxonomy for each target can either be built in to the target name in a similar manner, or present as the taxid field in the foldseek output.
@@ -157,7 +157,7 @@ Output:
 
 ## Usage
 ```
-sat.py add_taxonomy_to_alignments \
+sat.py aln_add_taxonomy \
 -a alignment.m8 \
 -o result.m8
 ```
@@ -186,7 +186,7 @@ sat.py add_taxonomy_to_alignments \
 
 `-T --taxonomy_levels ["superkingdom,phylum,class,order,family,genus,species"]`: Comma-delimited string of the levels you want as taxonomy information in the output. Make sure to wrap in quotes.
 
-# SAT structure_to_seq
+# SAT struc_to_seq
 ## Simple subcommand to produce the amino-acid sequence from a structure file.
 ### Can append the sequence to an outfile if provided, or will print to screen.
 
@@ -198,7 +198,7 @@ Output:
 
 ## Usage
 ```
-sat.py structure_to_seq \
+sat.py struc_to_seq \
 -s structure.pdb \
 -o sequence.fasta \
 -H header_of_the_sequence
@@ -212,7 +212,7 @@ sat.py structure_to_seq \
 `-o --output_file`: Path to the output fasta that will be APPENDED to. If not specified, the amino acid sequence will simply be written to the screen.  
 `-H --header`: String that is used as the header in the fasta (no need to include the >). This is only required if -o is specified.
 
-# SAT rebase_structure
+# SAT struc_rebase
 ## Simple subcommand that renumbers all residues in a structure such that the first residue is #1 and all residues are sequential (e.g. it takes out numeric gaps in residue numbers).
 
 Inputs:
@@ -223,7 +223,7 @@ Output:
 
 ## Usage
 ```
-sat.py rebase_structure \
+sat.py struc_rebase \
 -s structure.pdb \
 -o rebased_structure.pdb
 ```
@@ -233,7 +233,7 @@ sat.py rebase_structure \
 `-o --output_file`: Path to the output, rebased structure.
 
 
-# SAT chunk_fasta
+# SAT seq_chunk
 ## Splits entries into a fasta into overlapping or non-overlapping chunks. This is helpful when you want to split up sequences that are too long to effectively use for structure prediction. This subcommand is able to generate overlapping sequences. 
 
 Inputs:
@@ -244,7 +244,7 @@ Output:
 
 ## Usage
 ```
-sat.py chunk_fasta \
+sat.py seq_chunk \
 -i input.fasta \ 
 -o output.fasta # or output_dir/ if -n is specified
 ```
@@ -259,18 +259,18 @@ sat.py chunk_fasta \
 `-v --overlapping_chunks [False]`: This is a boolean flag. If you specify -v in the command line, each chunk will overlap by round(max_seq_length/2). If not specified, chunks will not be overlapping.  
 `-n --individual [False]`: This is a boolean flag. If you specify -n in the command line, each resultant fasta will be passed to a separate file named by its header. It will assume that --out_fasta specifies the path to the output directory... individual filenames will be named by their header.
 
-# SAT cluster_taxa_counts
-## This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through process_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
+# SAT aln_taxa_counts
+## This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
 
 Inputs:
-1) A foldseek alignment file (typically processed through process_clusters and add_taxonomy_to_alignment).
+1) A foldseek alignment file (typically processed through aln_clusters and add_taxonomy_to_alignment).
 
 Output:
 1) A tidy output file with counts, for each cluster, for the number of members of each cluster in every taxon at each desired level.
 
 ## Usage
 ```
-sat.py cluster_taxa_counts \
+sat.py aln_taxa_counts \
 -a alignment.m8 \ 
 -o result.m8
 ```
@@ -282,7 +282,7 @@ sat.py cluster_taxa_counts \
 ## Optional Parameters
 `-t --taxonomy_levels ["superkingdom,phylum,class,order,family,genus,species"]`: Taxonomy levels to count and output
 
-# SAT query_uniprot
+# SAT aln_query_uniprot
 ## This script takes alphafold IDs (or raw uniprot IDs) and uses the Uniprot REST API to get information on the geneName and fullName (an informative name of the protein) for each ID. You can specify in which column of the infile the IDs live.
 
 Inputs:
@@ -294,7 +294,7 @@ Output:
 
 ## Usage
 ```
-sat.py query_uniprot \
+sat.py aln_query_uniprot \
 -i some_file.m8 \ 
 -o result.tsv \
 -c 1 \
@@ -309,19 +309,19 @@ sat.py query_uniprot \
 `-c --infile_col [1]`: This is the 0-indexed column holding the uniprot of alphafold IDs.
 `-u --uniprot_cache`: A pkl file containing a cache from former uniprot downloads. This is optional. If specified, this file will be read in and will be updated with this script's downloads.
 
-# SAT add_uniprot_information_to_alignments
-## This script adds the uniprot information garther from query_uniprot to a foldseek alignment file.
+# SAT aln_add_uniprot
+## This script adds the uniprot information garther from aln_query_uniprot to a foldseek alignment file.
 
 Inputs:
 1) A foldseek alignment file.
-2) Uniprot information produced by query_uniprot.
+2) Uniprot information produced by aln_query_uniprot.
 
 Output:
 1) The alignment file with uniprot information added.
 
 ## Usage
 ```
-sat.py add_uniprot_information_to_alignments \
+sat.py aln_add_uniprot \
 -a alignment.m8 \
 -u uniprot_info.tsv \
 -o alignment_w_uniprot.m8
@@ -329,13 +329,13 @@ sat.py add_uniprot_information_to_alignments \
 
 ## Required Parameters
 `-a --alignment_file`: Path to the alignment file. It is OK if the first row is the header, as long as the first column is 'query'.  
-`-u --uniprot_information`: Path to the uniprot information file generated by query_uniprot.  
+`-u --uniprot_information`: Path to the uniprot information file generated by aln_query_uniprot.  
 `-o --output_file`: Path to the output file.  
 
 ## Optional Parameters
 `-f --alignment_fields [""]`: Comma-delimited list of fields in the input alignment files (aka colnames). If the colnames are the first line in the input file and the first column is 'query', you can leave this blank.  
 
-# SAT filter_alignments
+# SAT aln_filter
 ## This subcommand filters a foldseek alignment file to keep only those alignments with a value below/above the specified value in a field (alntmscore is a common one). It also only outputs a maximum of N alignments for each query.
 
 Inputs:
@@ -346,7 +346,7 @@ Output:
 
 ## Usage
 ```
-sat.py filter_alignments \
+sat.py aln_filter \
 -a alignment.m8 \
 -o alignment.filtered.m8 \
 -x alntmscore \
@@ -368,5 +368,5 @@ The above filters for alignments that have an alntmscore of at least 0.4, and ke
 
 
 # Planned improvements
-get_domains
+struc_get_domains
 - Add functionality to parse PAE json files from additional sources

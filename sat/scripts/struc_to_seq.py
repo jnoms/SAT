@@ -1,10 +1,10 @@
-from .utils.structure import pdb_to_structure_object, structure_to_seq
+from .utils.structure import pdb_to_structure_object, struc_to_seq
 from .utils.misc import make_output_dir
 
 
-def structure_to_seq_main(args):
+def struc_to_seq_main(args):
     structure = pdb_to_structure_object(args.structure_file, args.header)
-    seq = structure_to_seq(structure)
+    seq = struc_to_seq(structure)
 
     # Save or print
     if args.out_file == "":

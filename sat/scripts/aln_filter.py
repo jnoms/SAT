@@ -9,7 +9,7 @@ def validate_and_format_args(args):
     return args
 
 
-def filter_alignments_main(args):
+def aln_filter_main(args):
     args = validate_and_format_args(args)
 
     talk_to_me("Reading in alignments.")
@@ -25,7 +25,7 @@ def filter_alignments_main(args):
 
     talk_to_me("Filtering and generating output string.")
     for _, aln_group in data.alignment_groups.items():
-        aln_group.filter_alignments(
+        aln_group.aln_filter(
             args.filter_field, args.max_val_filter_field, args.min_val_filter_field
         )
         aln_group.keep_top_N_alignments(args.filter_field, args.N)

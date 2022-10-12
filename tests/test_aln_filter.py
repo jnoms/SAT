@@ -1,9 +1,9 @@
 from sat.scripts.utils.alignments import Alignment_group, Alignment_object
-from sat.scripts.filter_alignments import filter_alignments_main
+from sat.scripts.aln_filter import aln_filter_main
 from sat.scripts.utils.Foldseek_Dataset import Foldseek_Dataset
 
 
-def test_filter_alignments_func():
+def test_aln_filter_func():
     aln1 = Alignment_object(["q1", "4.2E-01"], ["query", "alntmscore"])
     aln2 = Alignment_object(["q2", "1.2E-01"], ["query", "alntmscore"])
     aln3 = Alignment_object(["q3", "6.0E-01"], ["query", "alntmscore"])
@@ -13,7 +13,7 @@ def test_filter_alignments_func():
     aln_group = Alignment_group("query")
     aln_group.alignments = [aln1, aln2, aln3, aln4, aln5]
 
-    aln_group.filter_alignments("alntmscore", 1, 0.3)
+    aln_group.aln_filter("alntmscore", 1, 0.3)
 
     assert len(aln_group.alignments) == 3
     for q in ["q4", "q2"]:
@@ -37,7 +37,7 @@ def test_keep_top_N_alignments():
         assert q in [aln.query for aln in aln_group.alignments]
 
 
-def test_filter_alignments_script(tmp_path):
+def test_aln_filter_script(tmp_path):
 
     # Define inputs
     class args:
@@ -55,7 +55,7 @@ def test_filter_alignments_script(tmp_path):
     args.max_val_filter_field = 1
 
     # Run script
-    filter_alignments_main(args)
+    aln_filter_main(args)
 
     # Parse expected and observed
     expected = Foldseek_Dataset()

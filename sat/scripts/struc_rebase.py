@@ -1,14 +1,14 @@
 from .utils.structure import (
     pdb_to_structure_object,
     write_structure_to_pdb,
-    rebase_structure,
+    struc_rebase,
 )
 from .utils.misc import make_output_dir
 
 
-def rebase_structure_main(args):
+def struc_rebase_main(args):
     structure = pdb_to_structure_object(args.structure_file)
-    rebase_structure(structure)
+    struc_rebase(structure)
     make_output_dir(args.out_file)
     write_structure_to_pdb(structure, args.out_file)
 

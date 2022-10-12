@@ -64,7 +64,7 @@ def get_uniprot_accession_from_alignment(alignment, field="target"):
 # ------------------------------------------------------------------------------------ #
 # Main
 # ------------------------------------------------------------------------------------ #
-def add_uniprot_information_to_alignments_main(args):
+def aln_add_uniprot_main(args):
     args = process_args(args)
 
     talk_to_me("Reading in alignments.")

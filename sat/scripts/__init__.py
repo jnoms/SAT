@@ -1,1 +1,1 @@
-from .get_domains import *
+from .struc_get_domains import *

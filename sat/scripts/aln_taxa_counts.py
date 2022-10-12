@@ -7,7 +7,7 @@ def format_args(args):
     return args
 
 
-def cluster_taxa_counts_main(args):
+def aln_taxa_counts_main(args):
     args = format_args(args)
 
     talk_to_me("Reading in alignments")

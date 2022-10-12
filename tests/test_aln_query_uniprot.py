@@ -1,8 +1,8 @@
-from sat.scripts.query_uniprot import query_uniprot_main
+from sat.scripts.aln_query_uniprot import aln_query_uniprot_main
 from sat.scripts.utils.uniprot import uniprot_object
 
 
-def test_query_uniprot_main_no_cache(tmp_path):
+def test_aln_query_uniprot_main_no_cache(tmp_path):
 
     # Define args
     class args:
@@ -14,7 +14,7 @@ def test_query_uniprot_main_no_cache(tmp_path):
     args.uniprot_cache = ""
 
     # Run script
-    query_uniprot_main(args)
+    aln_query_uniprot_main(args)
 
     # Parse the expected and observed into a dictionary of uniprot objects
     expected_uniprot_object_dict = dict()
@@ -45,7 +45,7 @@ def test_query_uniprot_main_no_cache(tmp_path):
         assert expected_uo.__eq__(observed_uo)
 
 
-def test_query_uniprot_main_write_cache(tmp_path):
+def test_aln_query_uniprot_main_write_cache(tmp_path):
 
     # Define args
     class args:
@@ -57,7 +57,7 @@ def test_query_uniprot_main_write_cache(tmp_path):
     args.uniprot_cache = f"{tmp_path}/new_cache.pkl"
 
     # Run script
-    query_uniprot_main(args)
+    aln_query_uniprot_main(args)
 
     # Parse the expected and observed into a dictionary of uniprot objects
     expected_uniprot_object_dict = dict()
@@ -88,7 +88,7 @@ def test_query_uniprot_main_write_cache(tmp_path):
         assert expected_uo.__eq__(observed_uo)
 
 
-def test_query_uniprot_main_read_cache(tmp_path):
+def test_aln_query_uniprot_main_read_cache(tmp_path):
 
     # Define args
     class args:
@@ -102,7 +102,7 @@ def test_query_uniprot_main_read_cache(tmp_path):
     )
 
     # Run script
-    query_uniprot_main(args)
+    aln_query_uniprot_main(args)
 
     # Parse the expected and observed into a dictionary of uniprot objects
     expected_uniprot_object_dict = dict()
