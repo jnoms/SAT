@@ -37,6 +37,14 @@ conda activate SAT #if conda enviornment is not active
 sat.py <subcommand>
 ```
 
+## Test installation
+Navigate to the sat directory and enter `pytest` (if using a conda environment) or `poetry run pytest` if using a poetry environment. This will make sure that all tests pass and sat is properly installed.  
+
+## Note on ETE3 
+When you run the tests or the first time you run any taxonomy-related script, ete3 will download a taxonomy database to ~/.etetoolkit/. **This database is 560MB** as of October 2022. Capability to specify the database download location is on the to-do list, but in the interim you can make a symlink from ~/.etetoolkit/ to wherever you want the database to reside (see below). This is particularly important if taxonomy related queries are going slowly, as that probably means your home directory has slow IO so you should symlink to somewhere with faster IO.    
+```ln -s /desired/ete/database/location ~/.etetoolkit```  
+
+
 # List of subcommands
 
 ## Structure-focused
@@ -370,3 +378,6 @@ The above filters for alignments that have an alntmscore of at least 0.4, and ke
 # Planned improvements
 struc_get_domains
 - Add functionality to parse PAE json files from additional sources
+
+ete3  
+- Add ability to specify where the ete3 taxonomy database is downloaded.
