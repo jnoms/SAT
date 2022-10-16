@@ -116,7 +116,7 @@ Splits entries into a fasta into overlapping or non-overlapping chunks. This is 
 
 
 # SAT aln_taxa_counts
-## This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
+This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_taxa_counts -h`](.github/img/aln_taxa_counts.png)  
 
