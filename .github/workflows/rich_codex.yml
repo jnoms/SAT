@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
+  rich_codex:
     strategy:
       matrix:
         python-version: ["3.10"]
@@ -35,7 +35,7 @@ jobs:
       - name: Install package
         run: poetry install
       - name: Make a copy of the argument parser without imports
-        run: grep -v "def call_" -a 6 sat/sat.py > .github/tmp/sat_codex.py && chmod +x .github/tmp/sat_codex.py
+        run: grep -v "def call_" -A 6 sat/sat.py > .github/tmp/sat_codex.py && chmod +x .github/tmp/sat_codex.py
       - name: Generate terminal images with rich-codex
         uses: ewels/rich-codex@v1
         with:
