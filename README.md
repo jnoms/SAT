@@ -65,51 +65,52 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
 
 # SAT struc_get_domains
-## Extract separate domain structures from a predicted structure.
-### This uses the PAE information to cluster residues that likely fall into linear domains. Notably, the script is currently only configured to process colabfold-generated PAE files. 
+Extract separate domain structures from a predicted structure.  
+This uses the PAE information to cluster residues that likely fall into linear domains. Notably, the script is currently only configured to process colabfold-generated PAE files. 
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_get_domains -h`](.github/img/struc_get_domains.png)  
 
 
 # SAT struc_remove_redundant
-## Given a glob specifying multiple structure (often domains), will remove structures that have an overlapping pirmary amino acid sequence. 
-### Priority is given to the longer structure or, if the sequences are the same length, the structure with the highest pLDDT
+Given a glob specifying multiple structure (often domains), will remove structures that have an overlapping pirmary amino acid sequence.   
+Priority is given to the longer structure or, if the sequences are the same length, the structure with the highest pLDDT
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_remove_redundant -h`](.github/img/struc_remove_redundant.png)  
 
 
 # SAT aln_clusters
-## Adds cluster information from foldseek cluster into the foldseek alignment information.
-### Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster. Furthermore, all-by-all searchs  result in a redundant query-target and target-query alignment for each entry. These redundant alignments are removed.
-### This script adds the following fields to the input alignment file:
-### 1) cluster_ID: ID of the cluster, starting at 1. A lower number indicates a larger cluster
-### 2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek
-### 3) cluster_count: The number of structures in the cluster.
+Adds cluster information from foldseek cluster into the foldseek alignment information.  
+Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster. Furthermore, all-by-all searchs  result in a redundant query-target and target-query alignment for each entry. These redundant alignments are removed.  
+This script adds the following fields to the input alignment file:  
+1) cluster_ID: ID of the cluster, starting at 1. A lower number indicates a larger cluster  
+2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek  
+3) cluster_count: The number of structures in the cluster.  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_clusters -h`](.github/img/aln_clusters.png)  
 
 # SAT aln_add_taxonomy
-## Adds taxonomy information to a foldseek alignment
-### Taxonomy for each query can be built in to the query_name as the final element of the double-underscore-delimited list. 
-### Taxonomy for each target can either be built in to the target name in a similar manner, or present as the taxid field in the foldseek output.
-### This script adds the taxonomic names of the query and/or target at the specified levels. 
+Adds taxonomy information to a foldseek alignment  
+- Taxonomy for each query can be built in to the query_name as the final element of the double-underscore-delimited list.   
+- Taxonomy for each target can either be built in to the target name in a similar manner, or present as the taxid field in the foldseek output.  
+- This script adds the taxonomic names of the query and/or target at the specified levels.   
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_add_taxonomy -h`](.github/img/aln_add_taxonomy.png)  
 
 # SAT struc_to_seq
-## Simple subcommand to produce the amino-acid sequence from a structure file.
-### Can append the sequence to an outfile if provided, or will print to screen.
+Simple subcommand to produce the amino-acid sequence from a structure file.  
+
+Can append the sequence to an outfile if provided, or will print to screen.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_to_seq -h`](.github/img/struc_to_seq.png)  
 
 # SAT struc_rebase
-## Simple subcommand that renumbers all residues in a structure such that the first residue is #1 and all residues are sequential (e.g. it takes out numeric gaps in residue numbers).
+Simple subcommand that renumbers all residues in a structure such that the first residue is #1 and all residues are sequential (e.g. it takes out numeric gaps in residue numbers).
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_rebase -h`](.github/img/struc_rebase.png)  
 
 
 # SAT seq_chunk
-## Splits entries into a fasta into overlapping or non-overlapping chunks. This is helpful when you want to split up sequences that are too long to effectively use for structure prediction. This subcommand is able to generate overlapping sequences. 
+Splits entries into a fasta into overlapping or non-overlapping chunks. This is helpful when you want to split up sequences that are too long to effectively use for structure prediction. This subcommand is able to generate overlapping sequences. 
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py seq_chunk -h`](.github/img/seq_chunk.png)  
 
@@ -120,25 +121,25 @@ When you run the tests or the first time you run any taxonomy-related script, et
 ![`poetry run .github/tmp/sat_codex.py aln_taxa_counts -h`](.github/img/aln_taxa_counts.png)  
 
 # SAT aln_query_uniprot
-## This script takes alphafold IDs (or raw uniprot IDs) and uses the Uniprot REST API to get information on the geneName and fullName (an informative name of the protein) for each ID. You can specify in which column of the infile the IDs live.
+This script takes alphafold IDs (or raw uniprot IDs) and uses the Uniprot REST API to get information on the geneName and fullName (an informative name of the protein) for each ID. You can specify in which column of the infile the IDs live.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_query_uniprot -h`](.github/img/aln_query_uniprot.png)  
 
 
 # SAT aln_add_uniprot
-## This script adds the uniprot information garther from aln_query_uniprot to a foldseek alignment file.
+This script adds the uniprot information garther from aln_query_uniprot to a foldseek alignment file.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_add_uniprot -h`](.github/img/aln_add_uniprot.png)  
 
 
 # SAT aln_filter
-## This subcommand filters a foldseek alignment file to keep only those alignments with a value below/above the specified value in a field (alntmscore is a common one). It also only outputs a maximum of N alignments for each query.
+This subcommand filters a foldseek alignment file to keep only those alignments with a value below/above the specified value in a field (alntmscore is a common one). It also only outputs a maximum of N alignments for each query.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_filter -h`](.github/img/aln_filter.png)  
 
 
 # SAT aln_merge
-## This subcommand is used to merge two foldseek alignment files.
+This subcommand is used to merge two foldseek alignment files.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_merge -h`](.github/img/aln_merge.png)  
 
