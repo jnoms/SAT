@@ -172,10 +172,10 @@ def main():
     parser_struc_remove_redundant.set_defaults(func=call_struc_remove_redundant)
 
     # -------------------------------------------------------------------------------- #
-    # Parser for aln_clusters subcommand
+    # Parser for aln_add_clusters subcommand
     # -------------------------------------------------------------------------------- #
-    parser_aln_clusters = subparsers.add_parser(
-        "aln_clusters",
+    parser_aln_add_clusters = subparsers.add_parser(
+        "aln_add_clusters",
         help=(
             """
             This subcommand incorporates clustering information from foldseek cluster
@@ -196,7 +196,7 @@ def main():
             """
         ),
     )
-    parser_aln_clusters.add_argument(
+    parser_aln_add_clusters.add_argument(
         "-a",
         "--alignment_file",
         type=str,
@@ -206,7 +206,7 @@ def main():
         Path to the foldseek alignment file.
         """,
     )
-    parser_aln_clusters.add_argument(
+    parser_aln_add_clusters.add_argument(
         "-c",
         "--cluster_file",
         type=str,
@@ -216,7 +216,7 @@ def main():
         Path to the foldseek cluster tsv file.
         """,
     )
-    parser_aln_clusters.add_argument(
+    parser_aln_add_clusters.add_argument(
         "-1",
         "--top_query_per_cluster_out",
         type=str,
@@ -226,7 +226,7 @@ def main():
         Path to the output file.
         """,
     )
-    parser_aln_clusters.add_argument(
+    parser_aln_add_clusters.add_argument(
         "-2",
         "--all_nonredundant_out",
         type=str,
@@ -236,7 +236,7 @@ def main():
         Path to the output file.
         """,
     )
-    parser_aln_clusters.add_argument(
+    parser_aln_add_clusters.add_argument(
         "-f",
         "--alignment_fields",
         type=str,
@@ -253,7 +253,7 @@ def main():
         evalue,bits,alntmscore'
         """,
     )
-    parser_aln_clusters.set_defaults(func=call_aln_clusters)
+    parser_aln_add_clusters.set_defaults(func=call_aln_add_clusters)
 
     # -------------------------------------------------------------------------------- #
     # Parser for aln_add_taxonomy subcommand
@@ -314,8 +314,8 @@ def main():
         default="__",
         help="""
         This script will try to find the taxonID in the query or target strings of each
-        alignment (although if there is a taxid column in the alignment_object, it will 
-        use that taxonID for the target taxonID). To parse for the taxonID, this is 
+        alignment (although if there is a taxid column in the alignment_object, it will
+        use that taxonID for the target taxonID). To parse for the taxonID, this is
         the delimiter.
         """,
     )
@@ -429,7 +429,7 @@ def main():
             """
             Tool to split sequences in an input fasta into overlapping or not
             overlapping chunks. Can write all resultant sequences to a single output
-            file, or to separate output files (one per header). The header of 
+            file, or to separate output files (one per header). The header of
             chunks are >PART{N}_{header}.
 
             For example, if a sequence is 2300AA long but you desire sequences
@@ -445,7 +445,7 @@ def main():
         type=str,
         required=True,
         help="""
-        Path to the input fasta. 
+        Path to the input fasta.
         """,
     )
     parser_seq_chunk.add_argument(
@@ -502,7 +502,7 @@ def main():
         nargs="?",
         const=True,
         help="""
-        If specified, each fasta entry will be passed to a separate file 
+        If specified, each fasta entry will be passed to a separate file
         named by its header. Furthermore, it will assume that args.out_fasta is
         the base path.
         """,
@@ -517,9 +517,9 @@ def main():
         help=(
             """
             This takes in a processed alignment file (typically generated from a
-            foldseek alignment that was then processed through aln_clusters and 
-            add_taxonomy_to_alignment) and returns, for each cluster, the number of 
-            taxa at each taxonomic level and their names. The output file has the 
+            foldseek alignment that was then processed through aln_add_clusters and
+            add_taxonomy_to_alignment) and returns, for each cluster, the number of
+            taxa at each taxonomic level and their names. The output file has the
             following columns:
             cluster_ID, cluster_rep, level, taxon, count.
             """
@@ -562,7 +562,7 @@ def main():
         "aln_query_uniprot",
         help=(
             """
-            This subcommand takes in a file that contains uniprotIDs (or alphafold IDs, 
+            This subcommand takes in a file that contains uniprotIDs (or alphafold IDs,
             even if they are formatted like e.g. AF-K0EZQ3-F1-model_v2.pdb.gz). You just
             need to specify the 0-indexed column position of the ID.
 
@@ -615,7 +615,7 @@ def main():
         default="",
         help="""
         A pkl file containing a cache from former uniprot downloads. This is optional.
-        If specified, this file will be read in and will be updated with this script's 
+        If specified, this file will be read in and will be updated with this script's
         downloads.
         """,
     )
@@ -628,8 +628,8 @@ def main():
         "aln_add_uniprot",
         help=(
             """
-            This subcommand takes in uniprot information generated by aln_query_uniprot and 
-            adds it to a foldseek alignment.
+            This subcommand takes in uniprot information generated by aln_query_uniprot
+            and adds it to a foldseek alignment.
             """
         ),
     )
@@ -682,7 +682,7 @@ def main():
         "aln_filter",
         help=(
             """
-            This subcommand filters a foldseek alignment file to keep only those 
+            This subcommand filters a foldseek alignment file to keep only those
             alignments with a value below/above the specified value in a field
             (alntmscore is a common one). It also only outputs a maximum of N alignments
             for each query.
@@ -776,7 +776,7 @@ def main():
         "aln_merge",
         help=(
             """
-            This subcommand merges to foldseek alignments. Columns that are present 
+            This subcommand merges to foldseek alignments. Columns that are present
             in one but not present in the other will be carried over.
             """
         ),
@@ -815,7 +815,7 @@ def main():
         required=False,
         default="",
         help="""
-        Alignment fields present in the first alignment file. Can leave blank if the 
+        Alignment fields present in the first alignment file. Can leave blank if the
         alignment file has headers.
         """,
     )
@@ -826,7 +826,7 @@ def main():
         required=False,
         default="",
         help="""
-        Alignment fields present in the first alignment file. Can leave blank if the 
+        Alignment fields present in the second alignment file. Can leave blank if the
         alignment file has headers.
         """,
     )
@@ -863,10 +863,10 @@ def call_struc_remove_redundant(args):
     struc_remove_redundant_main(args)
 
 
-def call_aln_clusters(args):
-    from scripts.aln_clusters import aln_clusters_main
+def call_aln_add_clusters(args):
+    from scripts.aln_add_clusters import aln_add_clusters_main
 
-    aln_clusters_main(args)
+    aln_add_clusters_main(args)
 
 
 def call_aln_add_taxonomy(args):

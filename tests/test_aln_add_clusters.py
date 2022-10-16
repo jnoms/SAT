@@ -1,7 +1,7 @@
 from sat.scripts.utils.Foldseek_Dataset import Foldseek_Dataset
 from sat.scripts.utils.alignments import Alignment_group, Alignment_object
 from sat.scripts.utils.clusters import Cluster
-from sat.scripts.aln_clusters import aln_clusters_main
+from sat.scripts.aln_add_clusters import aln_add_clusters_main
 
 
 # ------------------------------------------------------------------------------------ #
@@ -125,7 +125,7 @@ def test_Cluster_write_all_nonredundant_alignments():
 # ------------------------------------------------------------------------------------ #
 # Whole-script tests
 # ------------------------------------------------------------------------------------ #
-def test_aln_clusters_top_query(tmp_path):
+def test_aln_add_clusters_top_query(tmp_path):
 
     # Define inputs
     class args:
@@ -141,7 +141,7 @@ def test_aln_clusters_top_query(tmp_path):
     args.all_nonredundant_out = ""
 
     # Run the script
-    aln_clusters_main(args)
+    aln_add_clusters_main(args)
     fields = args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"]
 
     # Validate the outputs
@@ -166,7 +166,7 @@ def test_aln_clusters_top_query(tmp_path):
             assert align_obj.__eq__(observed[query])
 
 
-def test_aln_clusters_all_nonredundant(tmp_path):
+def test_aln_add_clusters_all_nonredundant(tmp_path):
 
     # Define inputs
     class args:
@@ -182,7 +182,7 @@ def test_aln_clusters_all_nonredundant(tmp_path):
     )
 
     # Run the script
-    aln_clusters_main(args)
+    aln_add_clusters_main(args)
 
     # Validate the outputs
     expected = Foldseek_Dataset()

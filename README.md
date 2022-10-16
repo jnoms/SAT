@@ -54,7 +54,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 
 ## Foldseek-focused
-`sat aln_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
+`sat aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
 `sat aln_add_taxonomy` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
 `sat aln_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
 `sat aln_query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
@@ -78,7 +78,7 @@ Priority is given to the longer structure or, if the sequences are the same leng
 ![`poetry run .github/tmp/sat_codex.py struc_remove_redundant -h`](.github/img/struc_remove_redundant.png)  
 
 
-# SAT aln_clusters
+# SAT aln_add_clusters
 Adds cluster information from foldseek cluster into the foldseek alignment information.  
 Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster. Furthermore, all-by-all searchs  result in a redundant query-target and target-query alignment for each entry. These redundant alignments are removed.  
 This script adds the following fields to the input alignment file:  
@@ -86,7 +86,7 @@ This script adds the following fields to the input alignment file:
 2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek  
 3) cluster_count: The number of structures in the cluster.  
 <!-- RICH-CODEX hide_command: true -->
-![`poetry run .github/tmp/sat_codex.py aln_clusters -h`](.github/img/aln_clusters.png)  
+![`poetry run .github/tmp/sat_codex.py aln_add_clusters -h`](.github/img/aln_add_clusters.png)  
 
 # SAT aln_add_taxonomy
 Adds taxonomy information to a foldseek alignment  
@@ -116,7 +116,7 @@ Splits entries into a fasta into overlapping or non-overlapping chunks. This is 
 
 
 # SAT aln_taxa_counts
-This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
+This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_add_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, taxon, count.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_taxa_counts -h`](.github/img/aln_taxa_counts.png)  
 
