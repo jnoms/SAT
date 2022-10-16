@@ -2,9 +2,6 @@
 
 import argparse
 
-from scripts.utils.misc import arg_str2bool
-from scripts.aln_merge import aln_merge_main
-
 
 def main():
 
@@ -833,11 +830,25 @@ def main():
         alignment file has headers.
         """,
     )
-    parser_aln_merge.set_defaults(func=aln_merge_main)
+    parser_aln_merge.set_defaults(func=call_aln_merge_main)
 
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
     args.func(args)
+
+
+def arg_str2bool(v):
+    """
+    For use as an argparse argument type. Makes it easy to use boolean flags.
+    """
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
 def call_struc_get_domains(args):
@@ -908,5 +919,14 @@ def call_aln_filter_main(args):
     aln_filter_main(args)
 
 
+def call_aln_merge_main(args):
+    from scripts.aln_merge import aln_merge_main
+
+    aln_merge_main(args)
+
+
+#
+#
+#
 if __name__ == "__main__":
     main()

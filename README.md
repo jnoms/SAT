@@ -379,7 +379,8 @@ The above filters for alignments that have an alntmscore of at least 0.4, and ke
 ## This subcommand is used to merge two foldseek alignment files.
 
 ## Usage
-![`poetry run sat/sat.py aln_merge -h`](.github/img/aln_merge.png)
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_merge -h`](.github/img/aln_merge.png)
 
 
 # Planned improvements
