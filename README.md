@@ -375,6 +375,13 @@ The above filters for alignments that have an alntmscore of at least 0.4, and ke
 `-M --max_val_filter_field [1]`: An alignment must have this value or less in the filter_field for the alignment to be output.  
 
 
+# SAT aln_merge
+## This subcommand is used to merge two foldseek alignment files.
+
+## Usage
+![`poetry run sat.py aln_merge -h`](.github/img/aln_merge.png)
+
+
 # Planned improvements
 struc_get_domains
 - Add functionality to parse PAE json files from additional sources

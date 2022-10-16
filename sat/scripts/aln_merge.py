@@ -30,7 +30,7 @@ def get_merged_output_fields(aln1_fields, aln2_fields):
 # Main
 # ------------------------------------------------------------------------------------ #
 def aln_merge_main(args):
-    talk_to_me(f"Reading in datasets.")
+    talk_to_me("Reading in datasets.")
     data1 = Foldseek_Dataset()
     data1.parse_alignment(args.aln1, args.aln1_fields)
     talk_to_me(f"Dataset1 has {data1.count_alignments()} alignments.")
@@ -39,11 +39,11 @@ def aln_merge_main(args):
     data2.parse_alignment(args.aln2, args.aln2_fields)
     talk_to_me(f"Dataset2 has {data2.count_alignments()} alignments.")
 
-    talk_to_me(f"Merging.")
+    talk_to_me("Merging.")
     data1.merge(data2)
     talk_to_me(f"Merged dataset has {data1.count_alignments()} alignments.")
 
-    talk_to_me(f"Writing output.")
+    talk_to_me("Writing output.")
     output_fields = get_merged_output_fields(
         data1.input_alignment_fields, data2.input_alignment_fields
     )
