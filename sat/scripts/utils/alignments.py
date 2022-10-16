@@ -271,7 +271,7 @@ class Alignment_object:
         """
         out = []
         for field in fields:
-            val = self.__dict__[field]
+            val = self.__dict__.get(field, "")
 
             # If the slot is a list, collapse it by the delimiter.
             if isinstance(val, list):
@@ -302,8 +302,8 @@ class Alignment_object:
         """
         Adds the target taxonID. Here, if field_priority is set to true, it will first
         check if there is a taxid slot which was from the foldseek column... this column
-        would have the target taxonID. If field_priority is false, will ignore that
-        and take it from the string of the target_name
+        would have the target taxonID. If it doesn't find a taxonID there it will still
+        search against the position using the delimiter.
         """
         if field_priority and hasattr(self, "taxid"):
             self.target_taxonID = self.taxid

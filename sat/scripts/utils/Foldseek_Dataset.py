@@ -3,7 +3,6 @@ from .misc import talk_to_me
 from .clusters import Cluster
 from .ete3_taxonomy import Taxon, taxonID_list_to_lineage_counts
 
-
 # ------------------------------------------------------------------------------------ #
 # Classes
 # ------------------------------------------------------------------------------------ #
@@ -46,6 +45,10 @@ class Foldseek_Dataset:
         alignment fields and will store the alignment_fields list in the
         Foldseek_Dataset object's input_alignment_fields attribute.
         """
+        # Format alignment fields from comma-delimited string to list if neceesary
+        if alignment_fields != "" and not isinstance(alignment_fields, list):
+            alignment_fields = alignment_fields.split(",")
+
         alignments_dict = dict()
         with open(alignment_file_path) as infile:
 
@@ -55,7 +58,6 @@ class Foldseek_Dataset:
                 for line in infile:
                     if line.startswith("query"):
                         alignment_fields = line.rstrip("\n").split("\t")
-                        self.input_alignment_fields = alignment_fields
                         break
                     else:
                         msg = "alignment_fields has not been passed to parse_alignment,"
@@ -63,17 +65,20 @@ class Foldseek_Dataset:
                         msg += " (e.g. first line should start with 'query')"
                         raise ValueError(msg)
 
+            # Record alignment fields for later use
+            self.input_alignment_fields = alignment_fields
+
             for line in infile:
                 # It's okay if there is a header, but need to remove it
                 if line.startswith("query"):
                     continue
 
-                line = line.rstrip("\n").rstrip("\t").split("\t")
+                line = line.rstrip("\n").split("\t")
 
                 if len(line) != len(alignment_fields):
                     msg = "The line and alignment_fields don't have the same "
                     msg += "number of entries!"
-                    msg += f"Current line is: {line}"
+                    msg += f"Current line is: {line}.\n"
                     msg += f"Alignment fields are: {alignment_fields}"
                     raise ValueError(msg)
 
@@ -325,10 +330,57 @@ class Foldseek_Dataset:
 
         return out
 
+    def merge(self, other):
+        """
+        other should be another Foldseek_dataset.
+
+        This is a simple function that reads in all alignment_groups/alignments from
+        other and adds them to this foldseek dataset. If a query is already present
+        in this foldseek dataset it's alignments will be added to the existing alignment
+        group for that query.
+        """
+
+        for query, other_alignment_group in other.alignment_groups.items():
+
+            # If the query isn't already present, add it and continue
+            if query not in self.alignment_groups:
+                self.alignment_groups[query] = other_alignment_group
+                continue
+
+            # If the query is already present, add all of the alignments to the
+            # pertinent alingment_group of that query
+            if query in self.alignment_groups:
+                self.alignment_groups[query].alignments.extend(
+                    other_alignment_group.alignments
+                )
+
+    def count_alignments(self):
+        """
+        Returns an interger indicating the number of alignments in this dataset
+        """
+        aln_count = 0
+        for _, alignment_group in self.alignment_groups.items():
+            aln_count += len(alignment_group.alignments)
+        return aln_count
+
 
 # ------------------------------------------------------------------------------------ #
 # Functions
 # ------------------------------------------------------------------------------------ #
+def compare_foldseek_datasets(dataset1, dataset2):
+    """
+    For testing. This compares the contents and alignments for two datasets.
+    """
+    for query, alignment_group in dataset2.alignment_groups.items():
+        assert query in dataset1.alignment_groups
+        for alignment in alignment_group.alignments:
+            assert alignment in dataset1.alignment_groups[query].alignments
+
+            dataset1_alignment = [
+                a for a in dataset1.alignment_groups[query].alignments if a == alignment
+            ][0]
+            assert alignment.__eq__(dataset1_alignment)
+
 
 if __name__ == "__main__":
     msg = "This script has utilities and functions. Don't call it directly!"

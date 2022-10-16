@@ -3,6 +3,7 @@
 import argparse
 
 from scripts.utils.misc import arg_str2bool
+from scripts.aln_merge import aln_merge_main
 
 
 def main():
@@ -13,7 +14,7 @@ def main():
             "SAT - Structural Analysis Toolkit. A python package for manipulating "
             "predicted structures and structural alignments."
         ),
-        usage="""python SAT.py <subcommand> [options]""",
+        usage="""python SAT.py""",
     )
     subparsers = parser.add_subparsers(
         title="Subcommands",
@@ -770,6 +771,69 @@ def main():
         """,
     )
     parser_aln_filter.set_defaults(func=call_aln_filter_main)
+
+    # -------------------------------------------------------------------------------- #
+    # Parser for aln_merge subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_merge = subparsers.add_parser(
+        "aln_merge",
+        help=(
+            """
+            This subcommand merges to foldseek alignments. Columns that are present 
+            in one but not present in the other will be carried over.
+            """
+        ),
+    )
+    parser_aln_merge.add_argument(
+        "-1",
+        "--aln1",
+        type=str,
+        required=True,
+        help="""
+        Path the first alignment file.
+        """,
+    )
+    parser_aln_merge.add_argument(
+        "-2",
+        "--aln2",
+        type=str,
+        required=True,
+        help="""
+        Path the second alignment file.
+        """,
+    )
+    parser_aln_merge.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        required=True,
+        help="""
+        Path the output file.
+        """,
+    )
+    parser_aln_merge.add_argument(
+        "-f",
+        "--aln1_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Alignment fields present in the first alignment file. Can leave blank if the 
+        alignment file has headers.
+        """,
+    )
+    parser_aln_merge.add_argument(
+        "-F",
+        "--aln2_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Alignment fields present in the first alignment file. Can leave blank if the 
+        alignment file has headers.
+        """,
+    )
+    parser_aln_merge.set_defaults(func=aln_merge_main)
 
     # Parse the args and call the function associated with the subcommand
     args = parser.parse_args()
