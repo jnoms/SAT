@@ -40,3 +40,4 @@ jobs:
         uses: ewels/rich-codex@v1
         with:
           commit_changes: "true"
+          skip_git_checks: "true"
