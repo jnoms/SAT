@@ -35,18 +35,26 @@ def aln_add_clusters_main(args):
 
     # Generate outputs
     talk_to_me("Generating and writing outputs.")
-    out = data.write_out_cluster_alignments(output_fields)
+    out_header = (
+        "\t".join(
+            data.input_alignment_fields + ["cluster_ID", "cluster_count", "top_query"]
+        )
+        + "\n"
+    )
+    out_dict = data.write_out_cluster_alignments(output_fields)
 
     # Write outputs
     if args.top_query_per_cluster_out != "":
         make_output_dir(args.top_query_per_cluster_out)
         with open(args.top_query_per_cluster_out, "w") as outfile:
-            outfile.write(out["top"])
+            out = out_header + out_dict["top"]
+            outfile.write(out)
 
     if args.all_nonredundant_out != "":
         make_output_dir(args.all_nonredundant_out)
         with open(args.all_nonredundant_out, "w") as outfile:
-            outfile.write(out["nr"])
+            out = out_header + out_dict["nr"]
+            outfile.write(out)
 
 
 if __name__ == "__main__":
