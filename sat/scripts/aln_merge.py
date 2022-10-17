@@ -5,6 +5,17 @@ from .utils.misc import talk_to_me, make_output_dir
 # ------------------------------------------------------------------------------------ #
 # Functions
 # ------------------------------------------------------------------------------------ #
+def validate_args(args):
+    if args.aln1_source != "" and args.aln2_source == "":
+        msg = "If using aln1_source or aln2_source must fill in a value for both!"
+        raise ValueError(msg)
+    if args.aln1_source == "" and args.aln2_source != "":
+        msg = "If using aln1_source or aln2_source must fill in a value for both!"
+        raise ValueError(msg)
+
+    return args
+
+
 def get_merged_output_fields(aln1_fields, aln2_fields):
     """
     Takes in two lists of alignment fields. Keeps the basic order of aln1_fields, but
@@ -30,13 +41,20 @@ def get_merged_output_fields(aln1_fields, aln2_fields):
 # Main
 # ------------------------------------------------------------------------------------ #
 def aln_merge_main(args):
+
+    args = validate_args(args)
+
     talk_to_me("Reading in datasets.")
     data1 = Foldseek_Dataset()
     data1.parse_alignment(args.aln1, args.aln1_fields)
+    if args.aln1_source != "":
+        data1.add_field_to_alignments("source", args.aln1_source)
     talk_to_me(f"Dataset1 has {data1.count_alignments()} alignments.")
 
     data2 = Foldseek_Dataset()
     data2.parse_alignment(args.aln2, args.aln2_fields)
+    if args.aln2_source != "":
+        data2.add_field_to_alignments("source", args.aln2_source)
     talk_to_me(f"Dataset2 has {data2.count_alignments()} alignments.")
 
     talk_to_me("Merging.")
@@ -47,6 +65,9 @@ def aln_merge_main(args):
     output_fields = get_merged_output_fields(
         data1.input_alignment_fields, data2.input_alignment_fields
     )
+    if args.aln1_source != "":
+        output_fields.append("source")
+
     make_output_dir(args.output)
     out = "\t".join(output_fields) + "\n"
     out += data1.write_out_alignments(output_fields)

@@ -830,6 +830,31 @@ def main():
         alignment file has headers.
         """,
     )
+    parser_aln_merge.add_argument(
+        "-s",
+        "--aln1_source",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        String indicating the source of alignment 1. This value will be added to each 
+        alignment that originated from alignment 1. You must use either neither 
+        aln1_source or aln2_source or both. Leave both blank if not desired. 
+        """,
+    )
+    parser_aln_merge.add_argument(
+        "-S",
+        "--aln2_source",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        String indicating the source of alignment 2. This value will be added to each 
+        alignment that originated from alignment 2. You must use either neither 
+        aln1_source or aln2_source or both. Leave both blank if not desired. 
+        """,
+    )
+
     parser_aln_merge.set_defaults(func=call_aln_merge_main)
 
     # Parse the args and call the function associated with the subcommand

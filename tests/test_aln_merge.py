@@ -48,6 +48,9 @@ def test_aln_merge(tmp_path):
         "tend,evalue,bits,alntmscore"
     )
 
+    args.aln1_source = ""
+    args.aln2_source = ""
+
     args.output = f"{tmp_path}/merged.m8"
 
     # Run script
@@ -59,6 +62,43 @@ def test_aln_merge(tmp_path):
 
     expected = Foldseek_Dataset()
     expected.parse_alignment(f"{test_files_dir}/merged.m8")
+
+    # Do checks
+    compare_foldseek_datasets(expected, observed)
+
+
+def test_aln_merge_source(tmp_path):
+
+    # Args
+    class args:
+        pass
+
+    args.aln1 = f"{test_files_dir}/add_tax_virus_vs_af2db.m8"
+    args.aln1_fields = (
+        "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,"
+        "tend,evalue,bits,alntmscore,taxid"
+    )
+
+    args.aln2 = f"{test_files_dir}/add_tax_virus_vs_virus.m8"
+    args.aln2_fields = (
+        "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,"
+        "tend,evalue,bits,alntmscore"
+    )
+
+    args.aln1_source = "af2db"
+    args.aln2_source = "virus"
+
+    args.output = f"{tmp_path}/merged_source.m8"
+
+    # Run script
+    aln_merge_main(args)
+
+    # Read in expected and observed datasets
+    observed = Foldseek_Dataset()
+    observed.parse_alignment(args.output)
+
+    expected = Foldseek_Dataset()
+    expected.parse_alignment(f"{test_files_dir}/merged_source.m8")
 
     # Do checks
     compare_foldseek_datasets(expected, observed)

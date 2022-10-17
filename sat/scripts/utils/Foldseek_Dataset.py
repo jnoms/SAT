@@ -363,6 +363,16 @@ class Foldseek_Dataset:
             aln_count += len(alignment_group.alignments)
         return aln_count
 
+    def add_field_to_alignments(self, field: str, value: any):
+        """
+        Adds the field to each alignment object with the indicated value. Typical use-
+        case is labeling alignments that come from different sources when merging
+        multiple Foldseek_datasets.
+        """
+        for _, alignment_group in self.alignment_groups.items():
+            for alignment in alignment_group.alignments:
+                alignment.__dict__[field] = value
+
 
 # ------------------------------------------------------------------------------------ #
 # Functions
