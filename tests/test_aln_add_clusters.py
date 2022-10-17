@@ -223,7 +223,7 @@ def test_aln_add_clusters_top_query_some_queries_removed(tmp_path):
         "tests/test_data/foldseek_related/clusters_alignment_some_queries_removed.m8"
     )
     args.cluster_file = "tests/test_data/foldseek_related/clusters.tsv"
-    args.top_query_per_cluster_out = f"{tmp_path}/top_query_per_cluster.m8"
+    args.top_query_per_cluster_out = f"{tmp_path}/top_query_per_cluster_some_removed.m8"
     args.alignment_fields = (
         "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
         "evalue,bits,alntmscore"
@@ -232,29 +232,29 @@ def test_aln_add_clusters_top_query_some_queries_removed(tmp_path):
 
     # Run the script
     aln_add_clusters_main(args)
-    # fields = args.alignment_fields + [
-    #     "cluster_ID",
-    #     "cluster_count",
-    #     "top_query",
-    # ]
+    fields = args.alignment_fields + [
+        "cluster_ID",
+        "cluster_count",
+        "top_query",
+    ]
 
-    # # Validate the outputs
-    # expected = Foldseek_Dataset()
-    # expected.parse_alignment(
-    #     "tests/test_data/foldseek_related/top_query_per_cluster.m8",
-    #     fields,
-    # )
-    # expected = expected.alignment_groups
+    # Validate the outputs
+    expected = Foldseek_Dataset()
+    expected.parse_alignment(
+        "tests/test_data/foldseek_related/top_query_per_cluster_some_removed.m8",
+        fields,
+    )
+    expected = expected.alignment_groups
 
-    # observed = Foldseek_Dataset()
-    # observed.parse_alignment(f"{tmp_path}/top_query_per_cluster.m8", fields)
-    # observed = observed.alignment_groups
+    observed = Foldseek_Dataset()
+    observed.parse_alignment(args.top_query_per_cluster_out, fields)
+    observed = observed.alignment_groups
 
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during
     # Cluster.get_top_query() if two items have the same target count and same avg TM
     # score, the assignment of top_query is random between the two. Thus, I check if
     # the query is present first.
-    # for query, align_obj in expected.items():
-    #     if query in observed:
-    #         assert align_obj.__eq__(observed[query])
+    for query, align_obj in expected.items():
+        if query in observed:
+            assert align_obj.__eq__(observed[query])
