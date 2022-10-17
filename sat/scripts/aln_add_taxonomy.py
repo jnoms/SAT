@@ -4,7 +4,6 @@ from .utils.Foldseek_Dataset import Foldseek_Dataset
 
 def validate_and_format_args(args):
     # Format args
-    args.alignment_fields = args.alignment_fields.split(",")
     args.taxonomy_levels = args.taxonomy_levels.split(",")
 
     return args

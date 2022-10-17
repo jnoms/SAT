@@ -6,7 +6,6 @@ from .utils.Foldseek_Dataset import Foldseek_Dataset
 # Functions
 # ------------------------------------------------------------------------------------ #
 def format_args(args):
-    args.alignment_fields = args.alignment_fields.split(",")
     if args.all_nonredundant_out == "" and args.top_query_per_cluster_out == "":
         msg = "At least one of -1 --top_query_per_cluster_out or"
         msg += " -2 --all_nonredundant_out must be specified."
