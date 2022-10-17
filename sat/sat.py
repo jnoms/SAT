@@ -241,16 +241,12 @@ def main():
         "--alignment_fields",
         type=str,
         required=False,
-        default=(
-            "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
-            "evalue,bits,alntmscore"
-        ),
+        default="",
         help="""
         A comma-delimited string of the fields in the input foldseek alignment file.
         Make sure to wrap in quotes!
 
-        Default: 'query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,
-        evalue,bits,alntmscore'
+        Default: ''
         """,
     )
     parser_aln_add_clusters.set_defaults(func=call_aln_add_clusters)
@@ -296,14 +292,10 @@ def main():
         "--alignment_fields",
         type=str,
         required=False,
-        default=(
-            "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
-            "evalue,bits,alntmscore,cluster_ID,cluster_count,top_query"
-        ),
+        default="",
         help="""
         Fields present in the alignment file.
-        Default: query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,
-        evalue,bits,alntmscore,cluster_ID,cluster_count,top_query"
+        Default: ''
         """,
     )
     parser_aln_add_taxonomy.add_argument(
