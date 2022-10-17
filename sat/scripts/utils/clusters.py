@@ -194,7 +194,13 @@ def load_cluster_objects(cluster_file_path: str, alignment_groups: dict):
 
             # Look up the alignment_group for the cluster member - e.g.
             # all of the alignments with that member as the query
-            member_alignment_group = alignment_groups[member]
+            try:
+                member_alignment_group = alignment_groups[member]
+            except KeyError:
+                # Sometimes alignments have been filtered out before we get here - so,
+                # this can happen if all the alignments with a query of this cluster
+                # member were filtered out.
+                continue
 
             cluster.alignment_groups.append(member_alignment_group)
             cluster.cluster_members.add(member)
