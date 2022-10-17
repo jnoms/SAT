@@ -135,7 +135,13 @@ class Foldseek_Dataset:
 
                 # Look up the alignment_group for the cluster member - e.g.
                 # all of the alignments with that member as the query
-                member_alignment_group = self.alignment_groups[member]
+                try:
+                    member_alignment_group = self.alignment_groups[member]
+                except KeyError:
+                    # Sometimes alignments have been filtered out before we get here - so,
+                    # this can happen if all the alignments with a query of this cluster
+                    # member were filtered out.
+                    continue
 
                 # Remove any alignments whose targets are not in the same cluster
                 for i, alignment in enumerate(member_alignment_group.alignments):
