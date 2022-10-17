@@ -137,12 +137,16 @@ def test_aln_add_clusters_top_query(tmp_path):
     args.alignment_fields = (
         "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
         "evalue,bits,alntmscore"
-    )
+    ).split(",")
     args.all_nonredundant_out = ""
 
     # Run the script
     aln_add_clusters_main(args)
-    fields = args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"]
+    fields = args.alignment_fields + [
+        "cluster_ID",
+        "cluster_count",
+        "top_query",
+    ]
 
     # Validate the outputs
     expected = Foldseek_Dataset()
@@ -179,7 +183,7 @@ def test_aln_add_clusters_all_nonredundant(tmp_path):
     args.alignment_fields = (
         "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
         "evalue,bits,alntmscore"
-    )
+    ).split(",")
 
     # Run the script
     aln_add_clusters_main(args)
