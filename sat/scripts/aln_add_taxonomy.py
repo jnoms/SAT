@@ -33,7 +33,7 @@ def aln_add_taxonomy_main(args):
     # alignment object, which will then be parsed for the canonical lineage.
     # The query_taxonID and target_taxonID refer to the flat taxonIDs.
     out += data.write_out_alignments(
-        args.alignment_fields
+        data.input_alignment_fields
         + ["query_taxon", "target_taxon", "query_taxonID", "target_taxonID"]
     )
 
