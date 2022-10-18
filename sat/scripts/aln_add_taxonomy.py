@@ -22,7 +22,7 @@ def aln_add_taxonomy_main(args):
     taxonomy_cols += [f"query_{level}" for level in args.taxonomy_levels]
     taxonomy_cols += [f"target_{level}" for level in args.taxonomy_levels]
     taxonomy_cols += ["query_taxonID", "target_taxonID"]
-    out = "\t".join(args.alignment_fields + taxonomy_cols) + "\n"
+    out = "\t".join(data.input_alignment_fields + taxonomy_cols) + "\n"
 
     # Label with taxonomy and generate an output string
     data.add_taxon_to_alignments(
