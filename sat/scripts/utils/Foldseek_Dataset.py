@@ -143,18 +143,6 @@ class Foldseek_Dataset:
                     # member were filtered out.
                     continue
 
-                # Remove any alignments whose targets are not in the same cluster
-                for i, alignment in enumerate(member_alignment_group.alignments):
-                    if alignment.target not in cluster_members:
-                        msg = (
-                            f"Found a cluster with a query, {alignment.query}, who has"
-                            f" an alignment against a target, {alignment.target}, that "
-                            " is not in the same cluster. The foldseek_cluster_rep is "
-                            f"{foldseek_cluster_rep}"
-                        )
-                        print(msg)
-                        del member_alignment_group.alignments[i]
-
                 cluster.alignment_groups.append(member_alignment_group)
                 cluster.cluster_members.add(member)
 
