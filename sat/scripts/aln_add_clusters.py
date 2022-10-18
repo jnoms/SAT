@@ -31,17 +31,15 @@ def aln_add_clusters_main(args):
     # Load cluster_ID (ranked clusters by # of items/queries)
     data.add_cluster_ID()
 
-    output_fields = args.alignment_fields
+    output_fields = data.input_alignment_fields
+    cluster_fields = ["cluster_ID", "cluster_count", "top_query"]
 
     # Generate outputs
     talk_to_me("Generating and writing outputs.")
-    out_header = (
-        "\t".join(
-            data.input_alignment_fields + ["cluster_ID", "cluster_count", "top_query"]
-        )
-        + "\n"
+    out_header = "\t".join(data.input_alignment_fields + cluster_fields) + "\n"
+    out_dict = data.write_out_cluster_alignments(
+        output_fields, cluster_fields=cluster_fields, top_or_nonredundant="both"
     )
-    out_dict = data.write_out_cluster_alignments(output_fields)
 
     # Write outputs
     if args.top_query_per_cluster_out != "":
