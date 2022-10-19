@@ -1,4 +1,4 @@
-from sat.scripts.utils.ete3_taxonomy import taxonID_list_to_lineage_counts
+from sat.scripts.utils.ete3_taxonomy import taxon_list_to_lineage_counts, Taxon
 
 from collections import Counter
 
@@ -6,9 +6,13 @@ import pytest
 
 
 @pytest.mark.ete3
-def test_taxonID_list_to_lineage_counts_multi():
+def test_taxon_list_to_lineage_counts_multi():
     taxonIDs = {"2025360", "2200830", "1010"}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
+    taxons = []
+    for taxonID in taxonIDs:
+        taxon = Taxon(taxonID, taxonomy_levels)
+        taxons.append(taxon)
 
     expected = {
         "superkingdom": Counter({"Viruses": 2, "Bacteria": 1}),
@@ -24,7 +28,7 @@ def test_taxonID_list_to_lineage_counts_multi():
         ),
     }
 
-    observed, _ = taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels)
+    observed, _ = taxon_list_to_lineage_counts(taxons, taxonomy_levels)
     for level, c in observed.items():
         for taxon, count in c.items():
             assert expected[level][taxon] == count
@@ -34,10 +38,14 @@ def test_taxonID_list_to_lineage_counts_multi():
 def test_taxonID_list_to_lineage_counts_empty():
     taxonIDs = {}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
+    taxons = []
+    for taxonID in taxonIDs:
+        taxon = Taxon(taxonID, taxonomy_levels)
+        taxons.append(taxon)
 
     expected = {}
 
-    observed, _ = taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels)
+    observed, _ = taxon_list_to_lineage_counts(taxons, taxonomy_levels)
     for level, c in observed.items():
         for taxon, count in c.items():
             assert expected[level][taxon] == count
@@ -47,6 +55,10 @@ def test_taxonID_list_to_lineage_counts_empty():
 def test_taxonID_list_to_lineage_counts_unknown_taxa():
     taxonIDs = {"2025360", "2200830", "1010", "324123412421412421"}
     taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species".split(",")
+    taxons = []
+    for taxonID in taxonIDs:
+        taxon = Taxon(taxonID, taxonomy_levels)
+        taxons.append(taxon)
 
     expected = {
         "superkingdom": Counter({"Viruses": 2, "Bacteria": 1, "": 1}),
@@ -67,7 +79,7 @@ def test_taxonID_list_to_lineage_counts_unknown_taxa():
         ),
     }
 
-    observed, _ = taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels)
+    observed, _ = taxon_list_to_lineage_counts(taxons, taxonomy_levels)
     for level, c in observed.items():
         for taxon, count in c.items():
             assert expected[level][taxon] == count

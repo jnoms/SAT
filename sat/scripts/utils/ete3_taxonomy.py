@@ -30,6 +30,12 @@ class Taxon:
                 self.taxonID, taxonomy_levels
             )
 
+    def __str__(self):
+        return self.taxonID
+
+    def __repr__(self):
+        return self.taxonID
+
     def name_to_taxID(self, name: str):
         """
         Given name, returns taxonID. If the name taxonID can't be found,
@@ -161,33 +167,22 @@ class Taxon:
         return cannonical_lineage
 
 
-def taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels, observed_taxa=dict()):
+def taxon_list_to_lineage_counts(taxon_objects, taxonomy_levels):
     """
-    Takes in a list or set of taxonIDs and returns a nested dictionary of structure:
-    taxonomy_level --> taxon --> count.
-
+    Takes in a list or set of taxon objects and returns a nested dictionary of
+    structure: taxonomy_level --> taxon --> count.
     e.g.
-
     result['family']['polyomaviridae'] would yield 3 if there were 3 taxonIDs in the
     input that are from the family polyomaviridae.
 
-    observed_taxa lets you input a dictionary of structure taxonID:Taxon() object to
-    avoid searching the taxa database multiple times.
+    Also returns a superkingdom dict of structure taxa:superkningdom.
     """
-
-    # Load taxon objects
-    taxon_objects = []
-    for taxonID in taxonIDs:
-
-        if taxonID in observed_taxa:
-            taxon_objects.append(observed_taxa[taxonID])
-        else:
-            taxon_object = Taxon(taxonID, taxonomy_levels)
-            taxon_objects.append(taxon_object)
-            observed_taxa[taxonID] = taxon_object
-
     # Count each taxon object at each level
     taxa_counts = dict()
+
+    # Will also make a dictionary to connect every taxa to its superkingdom
+    superkingdom_dict = dict()
+
     for i, level in enumerate(taxonomy_levels):
 
         for taxon_object in taxon_objects:
@@ -203,7 +198,16 @@ def taxonID_list_to_lineage_counts(taxonIDs, taxonomy_levels, observed_taxa=dict
 
             taxa_counts[level][taxa] += 1
 
-    return taxa_counts, observed_taxa
+            try:
+                superkingdom_dict[taxa] = lineage[taxonomy_levels.index("superkingdom")]
+            except ValueError:
+                msg = (
+                    f"Trying to look up superkingdom for the taxa {taxa}, but it looks"
+                    " like superkingdom isn't in taxonomy_levels."
+                )
+                raise ValueError(msg)
+
+    return taxa_counts, superkingdom_dict
 
 
 if __name__ == "__main__":

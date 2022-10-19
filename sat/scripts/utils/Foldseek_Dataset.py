@@ -1,7 +1,7 @@
 from .alignments import Alignment_group, Alignment_object
 from .misc import talk_to_me
 from .clusters import Cluster
-from .ete3_taxonomy import Taxon, taxonID_list_to_lineage_counts
+from .ete3_taxonomy import Taxon, taxon_list_to_lineage_counts
 
 # ------------------------------------------------------------------------------------ #
 # Classes
@@ -276,53 +276,50 @@ class Foldseek_Dataset:
                 out += alignment.write_output(alignment_fields)
         return out
 
-    def write_out_cluster_taxa_count(self, taxonomy_levels):
+    def load_cluster_objects_from_alignments(self):
         """
-        This function iterates through each alignment and counts the taxons at every
-        level in each cluster. Result is a tab-delimited string of columns cluster_ID,
-        top_query, level, taxon, count.
+        This function iterates through all alignments and generates cluster objects that
+        contain all members of a cluster. This requires that alignments already have the
+        attributes (e.g. column in the alignment file) cluster_ID, cluster_count, and
+        top_query.
 
-        Notably, this function requires that each alignment has the slots
-        cluster_ID, top_query, query_taxonID, and target_taxonID. Typically this
-        will come by parsing an alignment file that has been processed through
-        aln_add_clusters and then aln_add_taxonomy.
+        Cluster objects will be added to the Foldseek_dataset object as a list of
+        cluster objects in the .clusters attribute.
         """
+        required_attributes = ["cluster_ID", "cluster_count", "top_query"]
+        cluster_lookup_dict = dict()
 
-        cluster_taxa_dict = dict()
         for query, alignment_group in self.alignment_groups.items():
             for alignment in alignment_group.alignments:
-                cluster = alignment.cluster_ID
-                top_query = alignment.top_query
-                key = tuple([cluster, top_query])
 
-                query_taxonID = alignment.query_taxonID
-                target_taxonID = alignment.target_taxonID
-
-                if key not in cluster_taxa_dict:
-                    cluster_taxa_dict[key] = set()
-
-                cluster_taxa_dict[key].add(query_taxonID)
-                cluster_taxa_dict[key].add(target_taxonID)
-
-        # Outputing observed_taxa each time to avoid repetitive taxonID lookups, which
-        # can be very slow.
-        observed_taxa = dict()
-        out = "\t".join(["cluster_ID", "top_query", "level", "taxon", "count"]) + "\n"
-        for (cluster_ID, top_query), taxonIDs in cluster_taxa_dict.items():
-            counts_dict, observed_taxa = taxonID_list_to_lineage_counts(
-                taxonIDs, taxonomy_levels, observed_taxa
-            )
-            for level, c in counts_dict.items():
-                for taxon, count in c.items():
-                    line = (
-                        "\t".join(
-                            [cluster_ID, top_query, level, str(taxon), str(count)]
+                for a in required_attributes:
+                    if not hasattr(alignment, a):
+                        msg = (
+                            f"Cannot find the attribute {a} in the alignments. "
+                            f"Required attributes are {required_attributes} and "
+                            "these must be present as columns in the input file."
                         )
-                        + "\n"
-                    )
-                    out += line
+                        raise ValueError(msg)
 
-        return out
+                cluster_ID = alignment.cluster_ID
+                cluster_count = alignment.cluster_count
+                top_query = alignment.top_query
+
+                # Initialize a cluster object
+                if cluster_ID not in cluster_lookup_dict:
+                    cluster_lookup_dict[cluster_ID] = Cluster(cluster_ID)
+                    cluster_lookup_dict[cluster_ID].cluster_count = cluster_count
+                    cluster_lookup_dict[cluster_ID].top_query = top_query
+                    cluster_lookup_dict[cluster_ID].taxon_set = set()
+                    cluster_lookup_dict[cluster_ID].alignments = []
+
+                # Store the alignment and have a set of taxons that are in the cluster
+                cluster_lookup_dict[cluster_ID].alignments.append(alignment)
+                cluster_lookup_dict[cluster_ID].taxon_set.add(alignment.query_taxon)
+                cluster_lookup_dict[cluster_ID].taxon_set.add(alignment.target_taxon)
+
+        clusters = [cluster_object for _, cluster_object in cluster_lookup_dict.items()]
+        self.clusters = clusters
 
     def merge(self, other):
         """

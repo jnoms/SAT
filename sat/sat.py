@@ -513,7 +513,7 @@ def main():
             add_taxonomy_to_alignment) and returns, for each cluster, the number of
             taxa at each taxonomic level and their names. The output file has the
             following columns:
-            cluster_ID, cluster_rep, level, taxon, count.
+            cluster_ID, cluster_rep, level, superkingdom, taxon, count.
             """
         ),
     )
@@ -528,11 +528,12 @@ def main():
     )
     parser_aln_taxa_counts.add_argument(
         "-o",
-        "--outfile",
+        "--output_file",
         type=str,
         required=True,
         help="""
-        Path to the output count file.
+        Path to the output count file. This file will have the following columns:
+        cluster_ID, cluster_rep, level, superkingdom, taxon, count.
         """,
     )
     parser_aln_taxa_counts.add_argument(

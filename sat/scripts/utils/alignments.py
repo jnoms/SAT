@@ -305,7 +305,7 @@ class Alignment_object:
         would have the target taxonID. If it doesn't find a taxonID there it will still
         search against the position using the delimiter.
         """
-        if field_priority and hasattr(self, "taxid"):
+        if field_priority and hasattr(self, "taxid") and self.taxid != "":
             self.target_taxonID = self.taxid
         else:
             target_taxonID = self.target.split(delimiter)[pos].rstrip(".pdb")

@@ -10,7 +10,7 @@ def test_aln_taxa_counts_main(tmp_path):
     args.alignment_file = (
         "tests/test_data/foldseek_related/top_query_per_cluster_tax.m8"
     )
-    args.outfile = f"{tmp_path}/top_query_per_cluster_tax_counts.tsv"
+    args.output_file = f"{tmp_path}/top_query_per_cluster_tax_counts.tsv"
     args.taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species"
 
     # Run script
@@ -23,7 +23,7 @@ def test_aln_taxa_counts_main(tmp_path):
     ) as infile:
         for line in infile:
             line = line.rstrip("\n").split("\t")
-            cluster_ID, cluster_rep, level, taxon, count = line
+            cluster_ID, cluster_rep, level, superkingdom, taxon, count = line
 
             if cluster_ID not in expected:
                 expected[cluster_ID] = dict()
@@ -35,10 +35,10 @@ def test_aln_taxa_counts_main(tmp_path):
                 expected[cluster_ID][level][taxon] = count
 
     observed = dict()
-    with open(args.outfile) as infile:
+    with open(args.output_file) as infile:
         for line in infile:
             line = line.rstrip("\n").split("\t")
-            cluster_ID, cluster_rep, level, taxon, count = line
+            cluster_ID, cluster_rep, level, superkingdom, taxon, count = line
 
             if cluster_ID not in observed:
                 observed[cluster_ID] = dict()

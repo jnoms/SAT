@@ -8,18 +8,31 @@ def format_args(args):
 
 
 def aln_taxa_counts_main(args):
+
     args = format_args(args)
 
     talk_to_me("Reading in alignments")
     data = Foldseek_Dataset()
     data.parse_alignment(args.alignment_file)
 
-    talk_to_me("Counting taxa")
-    out = data.write_out_cluster_taxa_count(args.taxonomy_levels)
+    talk_to_me("Adding taxon objects to every alignment")
+    data.add_taxon_to_alignments(args.taxonomy_levels)
 
-    talk_to_me("Writing output")
-    make_output_dir(args.outfile)
-    with open(args.outfile, "w") as outfile:
+    talk_to_me("Grouping alignments into clusters")
+    data.load_cluster_objects_from_alignments()
+
+    talk_to_me("Writing output.")
+    make_output_dir(args.output_file)
+    out = (
+        "\t".join(
+            ["cluster_ID", "top_query", "level", "superkingdom", "taxon", "count"]
+        )
+        + "\n"
+    )
+    for cluster in data.clusters:
+        cluster.add_taxa_counts(args.taxonomy_levels)
+        out += cluster.write_taxa_counts_output()
+    with open(args.output_file, "w") as outfile:
         outfile.write(out)
 
 

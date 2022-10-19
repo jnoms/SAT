@@ -1,5 +1,6 @@
 from collections import Counter
 
+from .ete3_taxonomy import taxon_list_to_lineage_counts
 
 # ------------------------------------------------------------------------------------ #
 # Classes
@@ -9,6 +10,12 @@ class Cluster:
         self.id = id
         self.alignment_groups = []
         self.cluster_members = set()
+
+    def __str__(self):
+        return self.id
+
+    def __repr__(self):
+        return self.id
 
     def add_top_query(self):
         """
@@ -150,6 +157,55 @@ class Cluster:
                     else:
                         alignment_out = alignment.write_output(alignment_fields)
                         out += alignment_out
+        return out
+
+    def add_taxa_counts(self, taxonomy_levels):
+        """
+        Looks for the cluster object's taxon_set attribute and yields counts and
+        superkingdoms. This function loads the .taxa_count_dict and
+        .taxa_superkingdom_dict attributes.
+
+        taxon_set is simply a set of taxon objects that are present in any alignment in
+        the cluster.
+        """
+        if not hasattr(self, "taxon_set"):
+            msg = (
+                "This cluster does not have the taxon_set attribute. This is required."
+            )
+            raise ValueError(msg)
+
+        taxon_count_dict, taxon_superkingdom_dict = taxon_list_to_lineage_counts(
+            self.taxon_set, taxonomy_levels
+        )
+        self.taxon_count_dict = taxon_count_dict
+        self.taxon_superkingdom_dict = taxon_superkingdom_dict
+
+    def write_taxa_counts_output(self):
+        """
+        This outputs a tab-delimited string with the entires cluster_ID, top_query,
+        level, superkingdom, taxon, and count.
+        """
+        out = ""
+        for level, c in self.taxon_count_dict.items():
+            for taxon, count in c.items():
+                cluster_ID = self.id
+                superkingdom = self.taxon_superkingdom_dict[taxon]
+                top_query = self.top_query
+                line = (
+                    "\t".join(
+                        [
+                            cluster_ID,
+                            top_query,
+                            level,
+                            superkingdom,
+                            str(taxon),
+                            str(count),
+                        ]
+                    )
+                    + "\n"
+                )
+                out += line
+
         return out
 
 
