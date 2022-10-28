@@ -11,7 +11,7 @@ def main():
             "SAT - Structural Analysis Toolkit. A python package for manipulating "
             "predicted structures and structural alignments."
         ),
-        usage="""sat.py <subcommand>""",
+        usage="""sat.py""",
     )
     subparsers = parser.add_subparsers(
         title="Subcommands",
