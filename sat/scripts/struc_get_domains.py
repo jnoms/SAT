@@ -8,13 +8,10 @@ import networkx as nx
 from networkx.algorithms import community
 from itertools import groupby
 import matplotlib.pyplot as plt
+import os
 
 from .utils.misc import make_output_dir, talk_to_me
-from .utils.structure import (
-    pdb_to_structure_object,
-    write_structure_subset,
-    write_structure_to_pdb,
-)
+from .utils.structure import pdb_to_structure_object, write_structure_subset
 
 # ------------------------------------------------------------------------------------ #
 # Functions
@@ -236,10 +233,47 @@ def plddt_trim_clusters(clusters, plddt_array, min_avg_plddt):
     return out_clusters
 
 
+def get_avg_plddt(cluster, plddt_array):
+    """
+    This function returns the average plddt for all of the residues in the cluster.
+    cluster is a frozenset of 1-indexed positions of the cluster. plddt_array is a numpy
+    index of the plddts at all positions in the input structure.
+    """
+
+    running_sum = 0
+    for i in cluster:
+
+        # i in 1-indexed, so need to adjust to 0 indexing
+        plddt = plddt_array[i - 1]
+        running_sum += plddt
+
+    return running_sum / len(cluster)
+
+
+def get_avg_pae(cluster, pae_matrix):
+    """
+    Returns the average pae between every pair of residues in the cluster.
+    cluster is a frozenset of 1-indexed positions of the cluster. plddt_array is a numpy
+    index of the plddts at all positions in the input structure.
+    """
+    running_sum = 0
+    n = 0
+    for r1 in cluster:
+        for r2 in cluster:
+            pae = pae_matrix[r1, r2]
+            running_sum += pae
+            n += 1
+
+    return running_sum / n
+
+
 def struc_get_domains_main(args):
 
     talk_to_me("Reading PAE json file.")
     pae_matrix, plddt_array = parse_json_file(args.pae_path)
+
+    talk_to_me("Parsing structure.")
+    structure = pdb_to_structure_object(args.structure_file_path)
 
     if args.smooth_n != 0:
         talk_to_me("Smoothing out PAE matrix.")
@@ -265,25 +299,55 @@ def struc_get_domains_main(args):
     talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
     clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
 
-    talk_to_me("Parsing structure.")
-    structure = pdb_to_structure_object(args.structure_file_path)
-    make_output_dir(args.output_prefix, is_dir=False)
-
-    if len(clusters) == 0:
+    if clusters == []:
         talk_to_me(
-            "No domains were found that passed filtration. Thus, outputting "
-            "the full structure."
+            "No domain made it past initial filtering, so using whole structure."
         )
-        write_structure_to_pdb(structure, f"{args.output_prefix}.pdb")
-        quit()
+        structure_length = len([i for i in structure.get_residues()])
+        clusters = [frozenset([i + 1 for i in range(structure_length)])]
+
+        talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
+        clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
+
+        talk_to_me("Filtering cluster coordinates by length and pLDDT.")
+        clusters = filter_clusters(
+            clusters,
+            plddt_array,
+            min_length=args.min_domain_length,
+            min_avg_plddt=args.min_domain_plddt,
+        )
+
+    if clusters == []:
+        talk_to_me(
+            "No domains were found, and the full structure didn't pass filtration."
+        )
+        exit(0)
 
     talk_to_me("Writing domains to output pdb files.")
+    make_output_dir(args.output_dir, is_dir=True)
+    if args.plddt_report != "":
+        make_output_dir(args.plddt_report, is_dir=False)
+    if args.pae_report != "":
+        make_output_dir(args.pae_report, is_dir=False)
+
+    basename = os.path.basename(args.structure_file_path).rstrip(".pdb")
     i = 0
     for cluster in clusters:
         i += 1
-        write_structure_subset(
-            structure, cluster, f"{args.output_prefix}_domain-{i}.pdb"
-        )
+        outfile_name = f"{basename}_domain-{i}.pdb"
+        write_structure_subset(structure, cluster, f"{args.output_dir}/{outfile_name}")
+
+        if args.plddt_report != "":
+            avg_plddt = get_avg_plddt(cluster, plddt_array)
+            with open(args.plddt_report, "a") as outfile:
+                out = f"{outfile_name}\t{avg_plddt}\n"
+                outfile.write(out)
+
+        if args.pae_report != "":
+            avg_pae = get_avg_pae(cluster, pae_matrix)
+            with open(args.pae_report, "a") as outfile:
+                out = f"{outfile_name}\t{avg_pae}\n"
+                outfile.write(out)
 
 
 if __name__ == "__main__":

@@ -114,6 +114,21 @@ def struc_rebase(structure):
         residue.id = tuple(res_id)
 
 
+def compare_structures(structure1, structure2):
+    """
+    This makes sure that all residues are the same in the two input structures. The
+    inputs should be biopython structure objects. This is used for testing.
+    """
+    s1_residues = [r for r in structure1.get_residues()]
+    s2_residues = [r for r in structure2.get_residues()]
+
+    assert len(s1_residues) == len(s2_residues)
+    for i in range(len(s1_residues)):
+        r1 = s1_residues[i]
+        r2 = s2_residues[i]
+        assert r1 == r2
+
+
 if __name__ == "__main__":
     msg = "This script has utilities and functions. Don't call it directly!"
     raise ValueError(msg)

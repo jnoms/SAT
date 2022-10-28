@@ -11,7 +11,7 @@ def main():
             "SAT - Structural Analysis Toolkit. A python package for manipulating "
             "predicted structures and structural alignments."
         ),
-        usage="""python SAT.py""",
+        usage="""sat.py <subcommand>""",
     )
     subparsers = parser.add_subparsers(
         title="Subcommands",
@@ -51,12 +51,13 @@ def main():
     )
     parser_struc_get_domains.add_argument(
         "-o",
-        "--output_prefix",
+        "--output_dir",
         type=str,
         required=True,
         default="",
         help="""
-        Prefix of resultant output files. Files will be labled {prefix}_domain-{i}.pdb.
+        Directory of the output domains. Files will be labled
+        {output_dir}/{basename of structure}_domain-{i}.pdb.
         Note that the domain number will be 1-indexed.
         """,
     )
@@ -131,6 +132,28 @@ def main():
         PAE (>5) is less than n residues long and is surrounded by a region of low PAE,
         it will be overridden with a low PAE. Furthermore, all of the low-PAE regions
         will be overridden with a uniformely low PAE of 1.
+        """,
+    )
+    parser_struc_get_domains.add_argument(
+        "-r",
+        "--plddt_report",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        If specified, for each domain will write the average plddt to this file. 
+        This file will be APPENDED to. The columns are domain_name, average_plddt.
+        """,
+    )
+    parser_struc_get_domains.add_argument(
+        "-R",
+        "--pae_report",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        If specified, for each domain will write the average PAE to this file. 
+        This file will be APPENDED to. The columns are domain_name, average_PAE.
         """,
     )
     parser_struc_get_domains.set_defaults(func=call_struc_get_domains)
