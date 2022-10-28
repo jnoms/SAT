@@ -141,7 +141,7 @@ def main():
         required=False,
         default="",
         help="""
-        If specified, for each domain will write the average plddt to this file. 
+        If specified, for each domain will write the average plddt to this file.
         This file will be APPENDED to. The columns are domain_name, average_plddt.
         """,
     )
@@ -152,7 +152,7 @@ def main():
         required=False,
         default="",
         help="""
-        If specified, for each domain will write the average PAE to this file. 
+        If specified, for each domain will write the average PAE to this file.
         This file will be APPENDED to. The columns are domain_name, average_PAE.
         """,
     )
@@ -865,9 +865,9 @@ def main():
         required=False,
         default="",
         help="""
-        String indicating the source of alignment 2. This value will be added to each 
-        alignment that originated from alignment 2. You must use either neither 
-        aln1_source or aln2_source or both. Leave both blank if not desired. 
+        String indicating the source of alignment 2. This value will be added to each
+        alignment that originated from alignment 2. You must use either neither
+        aln1_source or aln2_source or both. Leave both blank if not desired.
         """,
     )
 
