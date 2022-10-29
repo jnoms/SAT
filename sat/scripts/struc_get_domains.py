@@ -253,8 +253,8 @@ def get_avg_plddt(cluster, plddt_array):
 def get_avg_pae(cluster, pae_matrix):
     """
     Returns the average pae between every pair of residues in the cluster.
-    cluster is a frozenset of 1-indexed positions of the cluster. plddt_array is a numpy
-    index of the plddts at all positions in the input structure.
+    cluster is a frozenset of 1-indexed positions of the cluster. pae_matrix is a 2d
+    numpy array with the PAE for every pair of residues in the input structure.
     """
     running_sum = 0
     n = 0
@@ -288,6 +288,9 @@ def struc_get_domains_main(args):
         graph_resolution=args.graph_resolution,
     )
 
+    talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
+    clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
+
     talk_to_me("Filtering cluster coordinates by length and pLDDT.")
     clusters = filter_clusters(
         clusters,
@@ -295,9 +298,6 @@ def struc_get_domains_main(args):
         min_length=args.min_domain_length,
         min_avg_plddt=args.min_domain_plddt,
     )
-
-    talk_to_me("Trimming cluster coordinates to remove low-pLDDT-ends.")
-    clusters = plddt_trim_clusters(clusters, plddt_array, args.min_domain_plddt)
 
     if clusters == []:
         talk_to_me(
