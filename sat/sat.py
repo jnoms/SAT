@@ -566,7 +566,8 @@ def main():
         required=False,
         default="superkingdom,phylum,class,order,family,genus,species",
         help="""
-        Taxonomy levels to count and output
+        Taxonomy levels to count and output. Comma-delimited string of taxonomy levels.
+        Default: superkingdom,phylum,class,order,family,genus,species
         """,
     )
     parser_aln_taxa_counts.set_defaults(func=call_parser_aln_taxa_counts_main)
