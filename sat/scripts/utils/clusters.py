@@ -56,12 +56,14 @@ class Cluster:
         if query_counts == Counter():
             if len(self.alignment_groups) != 1:
                 msg = "There are no alignment_groups with alignments, yet "
-                msg += "there are multiple alignments. Weird!"
+                msg += "there are multiple alignments. Weird! "
+                msg += f"foldseek_cluster_rep is {self.id}"
                 raise ValueError(msg)
             if self.alignment_groups[0].query != self.id:
                 msg = "There are no alignment_groups with alignments, yet "
                 msg += "the only alignment_group has a query that is not the cluster ID"
-                msg += ". Weird!"
+                msg += ". Weird! "
+                msg += f"foldseek_cluster_rep is {self.id}"
                 raise ValueError(msg)
             self.top_query = self.id
             return
