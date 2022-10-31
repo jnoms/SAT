@@ -160,6 +160,8 @@ def test_aln_add_clusters_top_query(tmp_path):
     observed.parse_alignment(f"{tmp_path}/top_query_per_cluster.m8", fields)
     observed = observed.alignment_groups
 
+    assert len(expected) == len(observed)
+
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during
     # Cluster.get_top_query() if two items have the same target count and same avg TM
@@ -202,6 +204,9 @@ def test_aln_add_clusters_all_nonredundant(tmp_path):
         args.alignment_fields + ["cluster_ID", "cluster_count", "top_query"],
     )
     observed = observed.alignment_groups
+
+    # assert len(expected) == len(observed) #### Determine why this fails!
+    # Probably just need to update the expected file...
 
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during
@@ -249,6 +254,8 @@ def test_aln_add_clusters_top_query_some_queries_removed(tmp_path):
     observed = Foldseek_Dataset()
     observed.parse_alignment(args.top_query_per_cluster_out, fields)
     observed = observed.alignment_groups
+
+    assert len(expected) == len(observed)
 
     # Note!!! - there is some ambiguity... The problem is that .most_common()
     # is pretty random when two items have the same count. This means that during

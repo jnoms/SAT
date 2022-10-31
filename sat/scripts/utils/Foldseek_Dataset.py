@@ -137,16 +137,20 @@ class Foldseek_Dataset:
                 # all of the alignments with that member as the query
                 try:
                     member_alignment_group = self.alignment_groups[member]
+                    cluster.alignment_groups.append(member_alignment_group)
+                    cluster.cluster_members.add(member)
                 except KeyError:
                     # Sometimes alignments have been filtered out before we get here - so,
                     # this can happen if all the alignments with a query of this cluster
                     # member were filtered out.
                     continue
 
-                cluster.alignment_groups.append(member_alignment_group)
-                cluster.cluster_members.add(member)
-
-            cluster_objects.append(cluster)
+            # only want to keep cluster objects that have alignment groups. If we're
+            # using a cluster file from one foldseek run to add cluster information to
+            # another foldseek run that was against a different database, it's possible
+            # that some clusters won't have an alignment against any cluster member.
+            if cluster.alignment_groups != []:
+                cluster_objects.append(cluster)
 
         self.clusters = cluster_objects
 
