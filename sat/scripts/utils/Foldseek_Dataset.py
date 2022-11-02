@@ -1,7 +1,8 @@
 from .alignments import Alignment_group, Alignment_object
 from .misc import talk_to_me
 from .clusters import Cluster
-from .ete3_taxonomy import Taxon, taxon_list_to_lineage_counts
+from .ete3_taxonomy import Taxon
+
 
 # ------------------------------------------------------------------------------------ #
 # Classes
@@ -140,7 +141,7 @@ class Foldseek_Dataset:
                     cluster.alignment_groups.append(member_alignment_group)
                     cluster.cluster_members.add(member)
                 except KeyError:
-                    # Sometimes alignments have been filtered out before we get here - so,
+                    # Sometimes alignments have been filtered out before we get here -
                     # this can happen if all the alignments with a query of this cluster
                     # member were filtered out.
                     continue
