@@ -181,6 +181,7 @@ class Foldseek_Dataset:
         alignment_fields,
         top_or_nonredundant="both",
         cluster_fields=["cluster_ID", "cluster_count", "top_query"],
+        score_field="alntmscore",
     ):
         """
         alignment_fields are the input alignments fields present in each
@@ -209,7 +210,7 @@ class Foldseek_Dataset:
         for cluster in self.clusters:
 
             # Adding the top_query and the cluser count
-            cluster.add_top_query()
+            cluster.add_top_query(score_field)
             cluster.add_cluster_count()
 
             # Writing out the alignments of the top query for each cluster - e.g. the

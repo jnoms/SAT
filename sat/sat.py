@@ -246,7 +246,12 @@ def main():
         required=False,
         default="",
         help="""
-        Path to the output file.
+        Path to the output file. Here, for each cluster the query with the highest
+        number of alignments is selected as a representative (or, if multiple queries
+        have the same # of alignments, the average in the score_field (see below) is
+        used as a tiebreak). This output file has all alignments only for each of the
+        cluster representatives. This is nice because the output file size is much 
+        smaller than the non-redundant file.
         """,
     )
     parser_aln_add_clusters.add_argument(
@@ -256,7 +261,11 @@ def main():
         required=False,
         default="",
         help="""
-        Path to the output file.
+        Path to the output file. This file contains all non-redundant alignments -
+        In the situation where there was an all-by-all search, for two aligning queries
+        q1 and q2 there will be a query:q1 - target:q2 alignment and a redundant
+        query:q2 - target:q1 alignment. Only one of these alignments will make it to the
+        output file.
         """,
     )
     parser_aln_add_clusters.add_argument(
@@ -270,6 +279,21 @@ def main():
         Make sure to wrap in quotes!
 
         Default: ''
+        """,
+    )
+    parser_aln_add_clusters.add_argument(
+        "-s",
+        "--score_field",
+        type=str,
+        required=False,
+        default="alntmscore",
+        help="""
+        When identifying the top query in each cluster, each query is ranked by the 
+        number of alignments/targets it has. If multiple queries have the same number of
+        alignments, the top query is picked as the query who's alignments have the
+        highest average in this value.
+
+        Default: alntmscore
         """,
     )
     parser_aln_add_clusters.set_defaults(func=call_aln_add_clusters)

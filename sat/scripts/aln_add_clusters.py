@@ -38,7 +38,10 @@ def aln_add_clusters_main(args):
     talk_to_me("Generating and writing outputs.")
     out_header = "\t".join(data.input_alignment_fields + cluster_fields) + "\n"
     out_dict = data.write_out_cluster_alignments(
-        output_fields, cluster_fields=cluster_fields, top_or_nonredundant="both"
+        output_fields,
+        cluster_fields=cluster_fields,
+        top_or_nonredundant="both",
+        score_field=args.score_field,
     )
 
     # Write outputs

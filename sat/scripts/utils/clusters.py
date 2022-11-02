@@ -18,7 +18,7 @@ class Cluster:
     def __repr__(self):
         return self.id
 
-    def add_top_query(self):
+    def add_top_query(self, score_field="alntmscore"):
         """
         This function goes through each query's alignment group. It finds the query with
         the highest number of alignments. If there are multiple queries with the same
@@ -26,7 +26,7 @@ class Cluster:
         name of the query is added to the self.top_query slot of the cluster object.
         """
         query_counts = Counter()
-        query_avg_TMscore = dict()
+        query_avg_scores = dict()
         for alignment_group in self.alignment_groups:
             query = alignment_group.query
 
@@ -46,10 +46,10 @@ class Cluster:
             query_counts[query] = len(alignment_group.alignments)
 
             # Get the average TMscore of the query's alignments
-            query_avg_TMscore[query] = 0
+            query_avg_scores[query] = 0
             for alignment in alignment_group.alignments:
-                query_avg_TMscore[query] += float(alignment.alntmscore)
-            query_avg_TMscore[query] = query_avg_TMscore[query] / query_counts[query]
+                query_avg_scores[query] += float(alignment.__dict__[score_field])
+            query_avg_scores[query] = query_avg_scores[query] / query_counts[query]
 
         # If no alignment_groups had alignments, I assume there is only one
         # alignment_group and that the group doesn't have any alignments. Thus, the
@@ -73,7 +73,7 @@ class Cluster:
         # the same # alignments, pick the one with the highest average TMscore.
         max_count = query_counts.most_common(1)[0][1]
         representative = ""
-        representative_avg_TM = 0
+        representative_avg_score = 0
         for query, query_count in query_counts.most_common():
 
             # Can stop the loop if the count is not max_counts
@@ -82,10 +82,10 @@ class Cluster:
 
             # At this point we are a query that has the max_counts (there may be
             # multiple). Need to compare with average TMscore.
-            query_avg_TM = query_avg_TMscore[query]
-            if query_avg_TM > representative_avg_TM:
+            query_avg_score = query_avg_scores[query]
+            if query_avg_score > representative_avg_score:
                 representative = query
-                representative_avg_TM = query_avg_TM
+                representative_avg_score = query_avg_score
 
         self.top_query = representative
 

@@ -139,6 +139,7 @@ def test_aln_add_clusters_top_query(tmp_path):
         "evalue,bits,alntmscore"
     ).split(",")
     args.all_nonredundant_out = ""
+    args.score_field = "alntmscore"
 
     # Run the script
     aln_add_clusters_main(args)
@@ -186,6 +187,7 @@ def test_aln_add_clusters_all_nonredundant(tmp_path):
         "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
         "evalue,bits,alntmscore"
     ).split(",")
+    args.score_field = "alntmscore"
 
     # Run the script
     aln_add_clusters_main(args)
@@ -234,6 +236,7 @@ def test_aln_add_clusters_top_query_some_queries_removed(tmp_path):
         "evalue,bits,alntmscore"
     ).split(",")
     args.all_nonredundant_out = ""
+    args.score_field = "alntmscore"
 
     # Run the script
     aln_add_clusters_main(args)
