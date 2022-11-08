@@ -215,7 +215,7 @@ def main():
                 SAME CLUSTER are kept - cross-cluster alignments are removed.
 
             This script adds the fields "cluster_ID", "cluster_count", and
-            "top_query" to the output files.
+            "cluster_rep" to the output files.
             """
         ),
     )

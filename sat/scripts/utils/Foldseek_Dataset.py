@@ -180,7 +180,7 @@ class Foldseek_Dataset:
         self,
         alignment_fields,
         rep_or_all="both",
-        cluster_fields=["cluster_ID", "cluster_count", "top_query"],
+        cluster_fields=["cluster_ID", "cluster_count", "cluster_rep"],
     ):
         """
         alignment_fields are the input alignments fields present in each
@@ -208,7 +208,7 @@ class Foldseek_Dataset:
 
         for cluster in self.clusters:
 
-            # Adding the top_query and the cluser count
+            # Adding the cluser count
             cluster.add_cluster_count()
 
             # Writing out the alignments of the top query for each cluster - e.g. the
@@ -285,12 +285,12 @@ class Foldseek_Dataset:
         This function iterates through all alignments and generates cluster objects that
         contain all members of a cluster. This requires that alignments already have the
         attributes (e.g. column in the alignment file) cluster_ID, cluster_count, and
-        top_query.
+        cluster_rep.
 
         Cluster objects will be added to the Foldseek_dataset object as a list of
         cluster objects in the .clusters attribute.
         """
-        required_attributes = ["cluster_ID", "cluster_count", "top_query"]
+        required_attributes = ["cluster_ID", "cluster_count", "cluster_rep"]
         cluster_lookup_dict = dict()
 
         for query, alignment_group in self.alignment_groups.items():
@@ -307,13 +307,13 @@ class Foldseek_Dataset:
 
                 cluster_ID = alignment.cluster_ID
                 cluster_count = alignment.cluster_count
-                top_query = alignment.top_query
+                cluster_rep = alignment.cluster_rep
 
                 # Initialize a cluster object
                 if cluster_ID not in cluster_lookup_dict:
-                    cluster_lookup_dict[cluster_ID] = Cluster(cluster_ID)
+                    cluster_lookup_dict[cluster_ID] = Cluster(cluster_rep)
                     cluster_lookup_dict[cluster_ID].cluster_count = cluster_count
-                    cluster_lookup_dict[cluster_ID].top_query = top_query
+                    cluster_lookup_dict[cluster_ID].cluster_ID = cluster_ID
                     cluster_lookup_dict[cluster_ID].taxon_set = set()
                     cluster_lookup_dict[cluster_ID].alignments = []
 

@@ -25,7 +25,7 @@ def aln_taxa_counts_main(args):
     make_output_dir(args.output_file)
     out = (
         "\t".join(
-            ["cluster_ID", "top_query", "level", "superkingdom", "taxon", "count"]
+            ["cluster_ID", "cluster_rep", "level", "superkingdom", "taxon", "count"]
         )
         + "\n"
     )

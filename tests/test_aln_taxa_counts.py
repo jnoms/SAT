@@ -7,10 +7,8 @@ def test_aln_taxa_counts_main(tmp_path):
     class args:
         pass
 
-    args.alignment_file = (
-        "tests/test_data/foldseek_related/top_query_per_cluster_tax.m8"
-    )
-    args.output_file = f"{tmp_path}/top_query_per_cluster_tax_counts.tsv"
+    args.alignment_file = "tests/test_data/foldseek_related/rep_out.tax.m8"
+    args.output_file = f"{tmp_path}/rep_out.tax.counts.tsv"
     args.taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species"
 
     # Run script
@@ -18,9 +16,7 @@ def test_aln_taxa_counts_main(tmp_path):
 
     # Read observed and expected into a very nested dictionary
     expected = dict()
-    with open(
-        "tests/test_data/foldseek_related/top_query_per_cluster_tax_counts.tsv"
-    ) as infile:
+    with open("tests/test_data/foldseek_related/rep_out.tax.counts.tsv") as infile:
         for line in infile:
             line = line.rstrip("\n").split("\t")
             cluster_ID, cluster_rep, level, superkingdom, taxon, count = line

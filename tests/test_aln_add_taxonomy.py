@@ -13,10 +13,7 @@ def test_aln_add_taxonomy_main(tmp_path):
 
     args.alignment_file = "tests/test_data/foldseek_related/rep_out.m8"
     args.output_file = f"{tmp_path}/rep_out.tax.m8"
-    args.alignment_fields = (
-        "query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,"
-        "evalue,bits,alntmscore,cluster_ID,cluster_count,top_query"
-    ).split(",")
+    args.alignment_fields = ""
     args.taxonID_finder_delimiter = "__"
     args.taxonID_finder_pos = -1
     args.taxonomy_levels = "superkingdom,phylum,class,order,family,genus,species"

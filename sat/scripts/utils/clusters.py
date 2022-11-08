@@ -13,10 +13,10 @@ class Cluster:
         self.cluster_members = set()
 
     def __str__(self):
-        return self.id
+        return self.cluster_rep
 
     def __repr__(self):
-        return self.id
+        return self.cluster_rep
 
     def add_cluster_count(self):
         """
@@ -105,20 +105,20 @@ class Cluster:
 
     def write_taxa_counts_output(self):
         """
-        This outputs a tab-delimited string with the entires cluster_ID, top_query,
+        This outputs a tab-delimited string with the entires cluster_ID, cluster_rep,
         level, superkingdom, taxon, and count.
         """
         out = ""
         for level, c in self.taxon_count_dict.items():
             for taxon, count in c.items():
-                cluster_rep = self.cluster_rep
+                cluster_ID = self.cluster_ID
                 superkingdom = self.taxon_superkingdom_dict[taxon]
-                top_query = self.top_query
+                cluster_rep = self.cluster_rep
                 line = (
                     "\t".join(
                         [
+                            cluster_ID,
                             cluster_rep,
-                            top_query,
                             level,
                             superkingdom,
                             str(taxon),
