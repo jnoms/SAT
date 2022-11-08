@@ -7,8 +7,8 @@ from .ete3_taxonomy import taxon_list_to_lineage_counts
 # Classes
 # ------------------------------------------------------------------------------------ #
 class Cluster:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, cluster_rep):
+        self.cluster_rep = cluster_rep
         self.alignment_groups = []
         self.cluster_members = set()
 
@@ -17,77 +17,6 @@ class Cluster:
 
     def __repr__(self):
         return self.id
-
-    def add_top_query(self, score_field="alntmscore"):
-        """
-        This function goes through each query's alignment group. It finds the query with
-        the highest number of alignments. If there are multiple queries with the same
-        number of alignments, the one with the highest average TMscore is chosen. The
-        name of the query is added to the self.top_query slot of the cluster object.
-        """
-        query_counts = Counter()
-        query_avg_scores = dict()
-        for alignment_group in self.alignment_groups:
-            query = alignment_group.query
-
-            # If a query doesn't have any alignments, this means that is was actually a
-            # self alignment that was removed. But, in any case, want to continue
-            if alignment_group.alignments == []:
-                continue
-
-            # Count the # of alignmnets the query has
-            if query in query_counts:
-                msg = (
-                    "There seems to be multiple of the same query in the"
-                    "alignment_group!"
-                )
-                raise ValueError(msg)
-
-            query_counts[query] = len(alignment_group.alignments)
-
-            # Get the average TMscore of the query's alignments
-            query_avg_scores[query] = 0
-            for alignment in alignment_group.alignments:
-                query_avg_scores[query] += float(alignment.__dict__[score_field])
-            query_avg_scores[query] = query_avg_scores[query] / query_counts[query]
-
-        # If no alignment_groups had alignments, I assume there is only one
-        # alignment_group and that the group doesn't have any alignments. Thus, the
-        # representative is the query
-        if query_counts == Counter():
-            if len(self.alignment_groups) != 1:
-                msg = "There are no alignment_groups with alignments, yet "
-                msg += "there are multiple alignments. Weird! "
-                msg += f"foldseek_cluster_rep is {self.id}"
-                raise ValueError(msg)
-            if self.alignment_groups[0].query != self.id:
-                msg = "There are no alignment_groups with alignments, yet "
-                msg += "the only alignment_group has a query that is not the cluster ID"
-                msg += ". Weird! "
-                msg += f"foldseek_cluster_rep is {self.id}"
-                raise ValueError(msg)
-            self.top_query = self.id
-            return
-
-        # Now, want to pick the query with the most alignments. If multiple queries have
-        # the same # alignments, pick the one with the highest average TMscore.
-        max_count = query_counts.most_common(1)[0][1]
-        representative = ""
-        representative_avg_score = 0
-        for query, query_count in query_counts.most_common():
-
-            # Can stop the loop if the count is not max_counts
-            if query_count < max_count:
-                break
-
-            # At this point we are a query that has the max_counts (there may be
-            # multiple). Need to compare with average TMscore.
-            query_avg_score = query_avg_scores[query]
-            if query_avg_score > representative_avg_score:
-                representative = query
-                representative_avg_score = query_avg_score
-
-        self.top_query = representative
 
     def add_cluster_count(self):
         """
@@ -110,18 +39,18 @@ class Cluster:
             out.append(val)
         return sep.join(out) + "\n"
 
-    def write_top_query_alignments(self, alignment_fields, cluster_fields=[]):
+    def write_rep_alignments(self, alignment_fields, cluster_fields=[]):
         """
-        Writes the alignments of the top query as a string.
+        Writes the alignments of the foldseek cluster representative as a string.
 
         The alignment_fields come from the alignment objects present in the
         alignment groups in the cluster. The cluster_fields come directly from the
         cluster object.
         """
-        top_query = self.top_query
+        rep = self.cluster_rep
         out = ""
         for alignment_group in self.alignment_groups:
-            if alignment_group.query == top_query:
+            if alignment_group.query == rep:
                 for alignment in alignment_group.alignments:
                     if cluster_fields != []:
                         alignment_out = alignment.write_output(alignment_fields)
@@ -132,34 +61,25 @@ class Cluster:
                         out += alignment_out
         return out
 
-    def write_all_nonredundant_alignments(self, alignment_fields, cluster_fields=[]):
+    def write_all_alignments(self, alignment_fields, cluster_fields=[]):
         """
-        Writes all alignments as a string, but only one alignment per
-        query-target pair (in all-by-all- searches, each item will be listed as a
-        query and will match its partner as a target... so each alignment will be
-        present twice!). Also note that upon loading into alignment_objects self
-        alignments were removed.
+        Writes all alignments as a string. Note that upon loading into alignment_objects
+        self alignments were removed.
 
         The alignment_fields come from the alignment objects present in the
         alignment groups in the cluster. The cluster_fields come directly from the
         cluster object.
         """
         out = ""
-        seen = set()
         for alignment_group in self.alignment_groups:
             for alignment in alignment_group.alignments:
-                lookup = frozenset([alignment.query, alignment.target])
-                if lookup in seen:
-                    continue
+                if cluster_fields != []:
+                    alignment_out = alignment.write_output(alignment_fields)
+                    cluster_out = self.write_output(cluster_fields)
+                    out += alignment_out.rstrip("\n") + "\t" + cluster_out
                 else:
-                    seen.add(lookup)
-                    if cluster_fields != []:
-                        alignment_out = alignment.write_output(alignment_fields)
-                        cluster_out = self.write_output(cluster_fields)
-                        out += alignment_out.rstrip("\n") + "\t" + cluster_out
-                    else:
-                        alignment_out = alignment.write_output(alignment_fields)
-                        out += alignment_out
+                    alignment_out = alignment.write_output(alignment_fields)
+                    out += alignment_out
         return out
 
     def add_taxa_counts(self, taxonomy_levels):
@@ -191,13 +111,13 @@ class Cluster:
         out = ""
         for level, c in self.taxon_count_dict.items():
             for taxon, count in c.items():
-                cluster_ID = self.id
+                cluster_rep = self.cluster_rep
                 superkingdom = self.taxon_superkingdom_dict[taxon]
                 top_query = self.top_query
                 line = (
                     "\t".join(
                         [
-                            cluster_ID,
+                            cluster_rep,
                             top_query,
                             level,
                             superkingdom,

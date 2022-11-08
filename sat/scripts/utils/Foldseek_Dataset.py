@@ -126,9 +126,9 @@ class Foldseek_Dataset:
         cluster_objects = []
         for foldseek_cluster_rep, cluster_members in clusters.items():
 
-            # Skip clusters that only have one member (aka the cluster_rep).
-            if len(cluster_members) == 1:
-                continue
+            # # Skip clusters that only have one member (aka the cluster_rep).
+            # if len(cluster_members) == 1:
+            #     continue
 
             cluster = Cluster(foldseek_cluster_rep)
 
@@ -179,24 +179,23 @@ class Foldseek_Dataset:
     def write_out_cluster_alignments(
         self,
         alignment_fields,
-        top_or_nonredundant="both",
+        rep_or_all="both",
         cluster_fields=["cluster_ID", "cluster_count", "top_query"],
-        score_field="alntmscore",
     ):
         """
         alignment_fields are the input alignments fields present in each
         alignment_object. cluster_fields are the fields in the Cluster object
 
-        top_or_nonredundant: options are 'top', 'nr' (non-redundant), or 'both'.
+        rep_or_nonredundant: options are 'top', 'all', or 'both'.
         Dictates if will be writing out only the alignments for the top query in each
         cluster, all non-redundant alignments, or both.
 
         The output will be a dict with the keys top and/or nr depending on what is
         selected.
         """
-        if top_or_nonredundant not in ["top", "nr", "both"]:
-            msg = "top_or_nonredundant must be top, nr, or both. You "
-            msg += f"entered {top_or_nonredundant}."
+        if rep_or_all not in ["top", "all", "both"]:
+            msg = "top_or_nonredundant must be top, all, or both. You "
+            msg += f"entered {rep_or_all}."
             raise ValueError(msg)
 
         # Keeping track...
@@ -205,27 +204,26 @@ class Foldseek_Dataset:
 
         out = dict()
         out["top"] = ""
-        out["nr"] = ""
+        out["all"] = ""
 
         for cluster in self.clusters:
 
             # Adding the top_query and the cluser count
-            cluster.add_top_query(score_field)
             cluster.add_cluster_count()
 
             # Writing out the alignments of the top query for each cluster - e.g. the
             # query with the most alignments or, if a tie, the query with the highest
             # average TMscore.
-            if top_or_nonredundant in ["top", "both"]:
-                out["top"] += cluster.write_top_query_alignments(
+            if rep_or_all in ["top", "both"]:
+                out["top"] += cluster.write_rep_alignments(
                     alignment_fields, cluster_fields
                 )
 
             # Writing out all non-redundant alignments that make it into a cluster
             # object. Note that alignments with a query and target not in the same
             # cluster are excluded.
-            if top_or_nonredundant in ["nr", "both"]:
-                out["nr"] += cluster.write_all_nonredundant_alignments(
+            if rep_or_all in ["all", "both"]:
+                out["all"] += cluster.write_all_alignments(
                     alignment_fields, cluster_fields
                 )
 
@@ -378,10 +376,36 @@ def compare_foldseek_datasets(dataset1, dataset2):
     """
     For testing. This compares the contents and alignments for two datasets.
     """
+    try:
+        assert len(dataset1.alignment_groups) == len(dataset1.alignment_groups)
+    except AssertionError:
+        msg = (
+            "The two datasets have different numbers of alignment groups."
+            f"Dataset1: {len(dataset1.alignment_groups)} alignment groups, "
+            f"Dataset2: {len(dataset1.alignment_groups)} alignment groups"
+        )
+        raise AssertionError(msg)
+
     for query, alignment_group in dataset2.alignment_groups.items():
-        assert query in dataset1.alignment_groups
+        try:
+            assert query in dataset1.alignment_groups
+        except AssertionError:
+            msg = (
+                f"Cannot find the dataset2 query, {query}, as a query in dataset1 "
+                "alignment groups"
+            )
+            raise AssertionError(msg)
         for alignment in alignment_group.alignments:
-            assert alignment in dataset1.alignment_groups[query].alignments
+            try:
+                assert alignment in dataset1.alignment_groups[query].alignments
+            except AssertionError:
+                msg = (
+                    f"Dataset2 has an alignment, query - {alignment.query}, "
+                    f"target - {alignment.target} in the alignment group with query "
+                    f"{query}. However, this alignment cannot be found in dataset1's "
+                    f"alignment group with query {query}."
+                )
+                raise AssertionError(msg)
 
             dataset1_alignment = [
                 a for a in dataset1.alignment_groups[query].alignments if a == alignment

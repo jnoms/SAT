@@ -85,6 +85,8 @@ This script adds the following fields to the input alignment file:
 1) cluster_ID: ID of the cluster, starting at 1. A lower number indicates a larger cluster  
 2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek  
 3) cluster_count: The number of structures in the cluster.  
+
+**IMPORTANT**: If you use the same foldseek cluster tsv file on multiple separate foldseek alignment files, the cluster_ID's are **NOT** guarenteed to be consistent (although the cluster representatives will be). This is because there may be differing numbers of alignments in different alignment files. Highly recommend to use `aln_merge` to merge multiple alignment files prior to using this script.  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_add_clusters -h`](.github/img/aln_add_clusters.png)  
 
