@@ -80,7 +80,7 @@ Priority is given to the longer structure or, if the sequences are the same leng
 
 # SAT aln_add_clusters
 Adds cluster information from foldseek cluster into the foldseek alignment information.  
-Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster. Furthermore, all-by-all searchs  result in a redundant query-target and target-query alignment for each entry. These redundant alignments are removed.  
+Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster.  
 This script adds the following fields to the input alignment file:  
 1) cluster_ID: ID of the cluster, starting at 1. A lower number indicates a larger cluster  
 2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek  
