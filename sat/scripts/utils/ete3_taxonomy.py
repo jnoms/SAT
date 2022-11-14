@@ -44,12 +44,12 @@ class Taxon:
         """
         try:
             return ncbi.get_name_translator([name])[name][0]
-        except:
+        except KeyError:
             # Try to repair by stripping any numbers from the end of the name
             name = name.rstrip("0123456789").rstrip(" ")
             try:
                 return ncbi.get_name_translator([name])[name][0]
-            except:
+            except KeyError:
                 return "X"
 
     def get_level(self, taxonID):
@@ -175,7 +175,8 @@ def taxon_list_to_lineage_counts(taxon_objects, taxonomy_levels):
     result['family']['polyomaviridae'] would yield 3 if there were 3 taxonIDs in the
     input that are from the family polyomaviridae.
 
-    Also returns a superkingdom dict of structure taxa:superkningdom.
+    Also returns a superkingdom dict of structure taxa:superkingdom - so output is
+    a tuble of structure (counts_dict, superkingdom_dict)
     """
     # Count each taxon object at each level
     taxa_counts = dict()
