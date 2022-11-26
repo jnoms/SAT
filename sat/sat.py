@@ -877,7 +877,74 @@ def main():
 
     parser_aln_merge.set_defaults(func=call_aln_merge_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for struc_download subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_download = subparsers.add_parser(
+        "struc_download",
+        help=(
+            """
+            This subcommand takes in a file of uniprot IDs and downloads the
+            AF2 database pdb and pae files to the indicated directory. Furthermore,
+            if any additional information is present in the tabular infile it will be
+            appended to the output files - this is a good way to lable the files with
+            information like taxonomyID, etc.
+            """
+        ),
+    )
+    parser_struc_download.add_argument(
+        "-i",
+        "--infile",
+        type=str,
+        required=True,
+        help="""
+        Path to a file containing uniprotIDs. This file can just have the uniprotIDs
+        as a single column, OR it can be tab-delimited and have additional information
+        for each uniprotID on subsequent columns (e.g. taxonomy ID, etc). If
+        this file has multiple columns, you must set the infile_columns parameter
+        accordingly. If there are multiple columns, the information from those columns
+        will be appended to the end of the pdb and pae file outputs via a delimted
+        field specified by additional_field_delimiter.
+        """,
+    )
+    parser_struc_download.add_argument(
+        "-o",
+        "--output_dir",
+        type=str,
+        required=True,
+        help="""
+        Path to the output directory that will contain all output pdb and pae files. 
+        """,
+    )
+    parser_struc_download.add_argument(
+        "-c",
+        "--infile_columns",
+        type=str,
+        required=False,
+        default="uniprotID",
+        help="""
+        Default: uniprotID.\n
+        This is a comma-delimeted string that indicates the names of the columns present
+        in the input file. If there is only one column of uniprotIDs you can leave it as
+        default.
+        """,
+    )
+    parser_struc_download.add_argument(
+        "-d",
+        "--additional_field_delimiter",
+        type=str,
+        required=False,
+        default="__",
+        help="""
+        This is the delimiter that will be used when adding the additional fields if
+        present in the infile.
+        """,
+    )
+    parser_struc_download.set_defaults(func=call_struc_download_main)
+
+    # ----------------------------------------------------------------------------------#
     # Parse the args and call the function associated with the subcommand
+    # ----------------------------------------------------------------------------------#
     args = parser.parse_args()
     args.func(args)
 
@@ -970,7 +1037,13 @@ def call_aln_merge_main(args):
     aln_merge_main(args)
 
 
-#
+def call_struc_download_main(args):
+    from scripts.struc_download import struc_download_main
+
+    struc_download_main(args)
+
+
+# Keep these buffer lines here
 #
 #
 if __name__ == "__main__":

@@ -116,6 +116,11 @@ Splits entries into a fasta into overlapping or non-overlapping chunks. This is 
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py seq_chunk -h`](.github/img/seq_chunk.png)  
 
+# SAT struc_download
+This subcommand takes in a file of uniprot IDs and downloads the AF2 database pdb and pae files to the indicated directory. Furthermore, if any additional information is present in the tabular infile it will be appended to the output files - this is a good way to lable the files with information like taxonomyID, etc.
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_download -h`](.github/img/struc_download.png)  
+
 
 # SAT aln_taxa_counts
 This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_add_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, superkingdom, taxon, count.
