@@ -1,4 +1,4 @@
-from urllib.request import urlopen, urlretrieve
+from urllib.request import urlopen, urlretrieve, HTTPError
 import json
 import os
 
@@ -61,9 +61,17 @@ class AF2_downloader:
         PAE files.
         """
         base = "https://alphafold.ebi.ac.uk/api/prediction"
-        with urlopen(f"{base}/{self.uniprotID}") as url:
-            data = json.load(url)[0]
-        self.data = data
+        try:
+            with urlopen(f"{base}/{self.uniprotID}") as url:
+                data = json.load(url)[0]
+                self.data = data
+        except HTTPError:
+            msg = (
+                f"Can't find {self.uniprotID} in the AF2 database. Odds are that this "
+                "uniprotID is old."
+            )
+            print(msg)
+            self.data = ""
 
     def format_outfile_path(
         self, url, output_dir, additional_field_delimiter, infile_columns
@@ -88,18 +96,32 @@ class AF2_downloader:
         return f"{output_dir}/{basename}.{file_extension}"
 
     def download_pdb(self, output_dir, additional_field_delimiter, infile_columns):
+        if self.data == "":
+            return
         url = self.data["pdbUrl"]
         destination = self.format_outfile_path(
             url, output_dir, additional_field_delimiter, infile_columns
         )
-        urlretrieve(url, destination)
+        try:
+            urlretrieve(url, destination)
+        except HTTPError:
+            msg = f"Can't find {url}, which was provided for {self.uniprotID}"
+            print(msg)
+            return
 
     def download_pae(self, output_dir, additional_field_delimiter, infile_columns):
+        if self.data == "":
+            return
         url = self.data["paeDocUrl"]
         destination = self.format_outfile_path(
             url, output_dir, additional_field_delimiter, infile_columns
         )
-        urlretrieve(url, destination)
+        try:
+            urlretrieve(url, destination)
+        except HTTPError:
+            msg = f"Can't find {url}, which was provided for {self.uniprotID}"
+            print(msg)
+            return
 
 
 def struc_download_main(args):
