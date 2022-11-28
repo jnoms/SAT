@@ -857,9 +857,9 @@ def main():
         required=False,
         default="",
         help="""
-        String indicating the source of alignment 1. This value will be added to each 
-        alignment that originated from alignment 1. You must use either neither 
-        aln1_source or aln2_source or both. Leave both blank if not desired. 
+        String indicating the source of alignment 1. This value will be added to each
+        alignment that originated from alignment 1. Leave this blank if alignment 1
+        already has a source column or you don't care about making a source column.
         """,
     )
     parser_aln_merge.add_argument(
@@ -870,8 +870,8 @@ def main():
         default="",
         help="""
         String indicating the source of alignment 2. This value will be added to each
-        alignment that originated from alignment 2. You must use either neither
-        aln1_source or aln2_source or both. Leave both blank if not desired.
+        alignment that originated from alignment 2. Leave this blank if alignment 2
+        already has a source column or you don't care about making a source column.
         """,
     )
 

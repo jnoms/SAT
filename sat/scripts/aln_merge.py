@@ -5,17 +5,6 @@ from .utils.misc import talk_to_me, make_output_dir
 # ------------------------------------------------------------------------------------ #
 # Functions
 # ------------------------------------------------------------------------------------ #
-def validate_args(args):
-    if args.aln1_source != "" and args.aln2_source == "":
-        msg = "If using aln1_source or aln2_source must fill in a value for both!"
-        raise ValueError(msg)
-    if args.aln1_source == "" and args.aln2_source != "":
-        msg = "If using aln1_source or aln2_source must fill in a value for both!"
-        raise ValueError(msg)
-
-    return args
-
-
 def get_merged_output_fields(aln1_fields, aln2_fields):
     """
     Takes in two lists of alignment fields. Keeps the basic order of aln1_fields, but
@@ -41,8 +30,6 @@ def get_merged_output_fields(aln1_fields, aln2_fields):
 # Main
 # ------------------------------------------------------------------------------------ #
 def aln_merge_main(args):
-
-    args = validate_args(args)
 
     talk_to_me("Reading in datasets.")
     data1 = Foldseek_Dataset()
