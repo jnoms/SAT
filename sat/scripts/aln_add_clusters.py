@@ -198,6 +198,12 @@ def get_cluster_linkages(cluster_dict, alignment_dict, linkage_threshold):
             else:
                 compared_clusters.add(comparison)
 
+            # Initialize items in cluster_linkages if necessary
+            if rep1 not in cluster_linkages:
+                cluster_linkages[rep1] = set()
+            if rep2 not in cluster_linkages:
+                cluster_linkages[rep2] = set()
+
             # Here, are determining the percentage of members of cluster 1 that have at
             # least one alignment against members of cluster2. Am using set intersection
             # which should be faster. Then do the reverse.
@@ -211,11 +217,6 @@ def get_cluster_linkages(cluster_dict, alignment_dict, linkage_threshold):
             # If cluster 1 or cluster 2 has the sufficient fraction of members with
             # cross-cluster alignments, they're considered linked.
             if c1_p >= linkage_threshold or c2_p >= linkage_threshold:
-                if rep1 not in cluster_linkages:
-                    cluster_linkages[rep1] = set()
-                if rep2 not in cluster_linkages:
-                    cluster_linkages[rep2] = set()
-
                 cluster_linkages[rep1].add(rep2)
                 cluster_linkages[rep2].add(rep1)
 

@@ -770,9 +770,9 @@ def main():
         "--N",
         type=int,
         required=False,
-        default=10,
+        default=0,
         help="""
-        Default: 10
+        Default: 0
         This is the maximum number of alignments to output for each query. Set to 0 if
         you want to return all alignments.
         """,
