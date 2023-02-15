@@ -184,6 +184,7 @@ def get_cluster_linkages(cluster_dict, alignment_dict, linkage_threshold):
     # For a counter report
     total_comparisons = len(cluster_dict) * len(cluster_dict)
     current_count = 0
+    previous_progress_report = 0
 
     for rep1, cluster_members1 in cluster_dict.items():
         for rep2, cluster_members2 in cluster_dict.items():
@@ -218,11 +219,16 @@ def get_cluster_linkages(cluster_dict, alignment_dict, linkage_threshold):
                 cluster_linkages[rep1].add(rep2)
                 cluster_linkages[rep2].add(rep1)
 
-            if current_count % 1000 == 0:
-                comparison_progress = (current_count / total_comparisons) * 100
+            comparison_progress = (current_count / total_comparisons) * 100
+            comparison_progress = round(comparison_progress, 0)
+            if (
+                comparison_progress % 1 == 0
+                and comparison_progress > previous_progress_report
+            ):
                 msg = "get_cluster_linkages - have completed: "
-                msg += f"{round(comparison_progress, 0)}% of comparisons..."
+                msg += f"{comparison_progress}% of comparisons..."
                 print(msg)
+                previous_progress_report = comparison_progress
 
     return cluster_linkages
 
