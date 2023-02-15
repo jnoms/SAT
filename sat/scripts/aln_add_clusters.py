@@ -366,7 +366,7 @@ def aln_add_clusters_main(args):
         args.cluster_file
     )
     data = Foldseek_Dataset()
-    data.parse_alignment(args.alignment_file)
+    data.parse_alignment(args.alignment_file, args.alignment_fields)
     alignment_dict = get_alignment_dict(data)
 
     talk_to_me("Determining linked clusters and grouping to superclusters.")
