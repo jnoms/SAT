@@ -201,21 +201,24 @@ def main():
         "aln_add_clusters",
         help=(
             """
-            This subcommand incorporates clustering information from foldseek cluster
-            into the foldseek alignment tabular output file. Notably, there are two
-            possible outputs from this script:
-            1) An output alignment file where, for each cluster, only the 'top' query
-                (aka the one with the highest number of alignments or, if there is a
-                tie, the one with the highest average TMscore).
-            2) An output alignment file containing all non-redundant alingments. Here,
-                all self-self alignments are removed. Furthermore, because this file
-                arose from all-by-all alignments, there will be two alignments for each
-                pair of items. Only one will be present in the output file. Finally,
-                Plese NOTE!! that only alignments with both the query and target in the
-                SAME CLUSTER are kept - cross-cluster alignments are removed.
+            This subcommand incorporates clustering information from Foldseek cluster
+            into the foldseek alignment tabular output file. Notably, this script 
+            generates "super clusters" based on the foldseek cluster file. Here,
+            we determine what other clusters each cluster is linked to - two clusters 
+            are linked if at least linkage_threshold fraction of at least one of the
+            cluster's members have alignments to members of the other cluster. Then,
+            "super clusters" are generated from clusters whom are all linked to one 
+            another. Thus, the cluster outputs from this script reflect the super 
+            clusters. The cluster representative from the foldseek cluster with the most 
+            members is then used as the super cluster representative.
 
-            This script adds the fields "cluster_ID", "cluster_count", and
-            "cluster_rep" to the output files.
+            This script makes two output files:
+            1) An output alignment file with all non-redundant alignments.
+            2) An output alignment file with only the alignments with the cluster
+               representative as the query. 
+
+            Notably, the new columns "cluster_ID", "cluster_count", and
+            "cluster_rep" are added to the output files.
             """
         ),
     )
@@ -236,15 +239,15 @@ def main():
         required=True,
         default="",
         help="""
-        Path to the foldseek cluster tsv file.
+        Path to the foldseek cluster tsv file. Typically this will be generated using
+        cluster mode 0.
         """,
     )
     parser_aln_add_clusters.add_argument(
-        "-1",
+        "-r",
         "--rep_out",
         type=str,
-        required=False,
-        default="",
+        required=True,
         help="""
         Path to the output file. Here, for each cluster only alignments with the
         foldseek cluster representative as the query will be output. This is nice
@@ -252,13 +255,12 @@ def main():
         """,
     )
     parser_aln_add_clusters.add_argument(
-        "-2",
-        "--all_out",
+        "-n",
+        "--nr_out",
         type=str,
-        required=False,
-        default="",
+        required=True,
         help="""
-        Path to the output file. This file contains all alignments, although if there 
+        Path to the output file. This file contains all alignments, although if there
         were self alignments in the input those are removed.
         """,
     )
@@ -273,6 +275,18 @@ def main():
         Make sure to wrap in quotes!
 
         Default: ''
+        """,
+    )
+    parser_aln_add_clusters.add_argument(
+        "-l",
+        "--linkage_threshold",
+        type=float,
+        required=False,
+        default=0.5,
+        help="""
+        [Default: 0.5] The fraction of members of at least one cluster whom must have 
+        alignments to members of another cluster for those clusters to be considered 
+        linked.
         """,
     )
     parser_aln_add_clusters.set_defaults(func=call_aln_add_clusters)
