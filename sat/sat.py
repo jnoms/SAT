@@ -195,6 +195,106 @@ def main():
     parser_struc_remove_redundant.set_defaults(func=call_struc_remove_redundant)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_generate_superclusters subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_generate_superclusters = subparsers.add_parser(
+        "aln_generate_superclusters",
+        help=(
+            """
+            This subcommand takes in a foldseek cluster file and foldseek alignments
+            and generates 'superclusters' by grouping subclusters that have a certain
+            fraction of cross-cluster alignments. Specifically, if two clusters have
+            at linkage_threshold fraction of members of at least one cluster aligned
+            to the other cluster, they are considered 'linked'. Then, superclusters are
+            created for groups of clusters that are all linked to one another. So,
+            all subclusters in a supercluster are linked to every other subcluster
+            in that supercluster.
+
+            This file generates a file with a similar format to the foldseek cluster
+            file. It contains the columns cluster_rep, cluster_member, cluster_ID, and
+            subcluster_rep (aka the original foldseek rep).
+            """
+        ),
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to the foldseek alignment file.
+        """,
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-c",
+        "--cluster_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to cluster file. Typically, first two columns will be cluster_rep,
+        cluster_member. Subsequent columns can hold additional information, but that
+        is not used for this script. If a header is present in the file, column names
+        will be parsed (but first column must be cluster_rep). Otherwise, you can 
+        specify the column names with the cluster_file_fields parameter.
+        """,
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-o",
+        "--outfile",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to output cluster file. The columns will be:
+        cluster_rep, cluster_member, cluster_ID, subcluster_rep.
+        - cluster_rep: the supercluster rep derived from this script.
+        - cluster_member: the member
+        - cluster_ID: A number indicating the ranking of each cluster based on number
+          of members. 1 indicates the cluster is the largest.
+        - subcluster_rep: this is the original cluster_rep in the input file.
+        """,
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-l",
+        "--linkage_threshold",
+        type=float,
+        required=False,
+        default=0.3,
+        help="""
+        [Default: 0.3]
+        A decimal value used for determining linkage between two clusters. For any two
+        clusters, at least linkage_threshold fraction of members of at least one 
+        cluster must have alignments to members of the other cluster.
+        """,
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        [Default: '']
+        A comma-delimited string of the fields in the input foldseek alignment file.
+        Make sure to wrap in quotes!
+        """,
+    )
+    parser_aln_generate_superclusters.add_argument(
+        "-F",
+        "--cluster_file_fields",
+        type=str,
+        required=False,
+        default="cluster_rep,cluster_member",
+        help="""
+        [Default: cluster_rep,cluster_member]
+        Comma-delimited string indicating the columns present in the cluster_file.
+        """,
+    )
+    parser_aln_generate_superclusters.set_defaults(func=call_aln_generate_superclusters)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_add_clusters subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_add_clusters = subparsers.add_parser(
@@ -987,6 +1087,12 @@ def call_struc_remove_redundant(args):
     from scripts.struc_remove_redundant import struc_remove_redundant_main
 
     struc_remove_redundant_main(args)
+
+
+def call_aln_generate_superclusters(args):
+    from scripts.aln_generate_superclusters import aln_generate_superclusters_main
+
+    aln_generate_superclusters_main(args)
 
 
 def call_aln_add_clusters(args):
