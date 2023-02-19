@@ -273,17 +273,25 @@ def generate_output(ordered_scs, cluster_rep_to_members, all_members):
     all_members is a set of all members that should be observed - this is a sanity check
     """
 
-    out = ["cluster_rep", "cluster_member", "cluster_ID", "subcluster_rep"]
+    out = [
+        "cluster_rep",
+        "cluster_member",
+        "cluster_ID",
+        "cluster_count",
+        "subcluster_rep",
+    ]
     out = "\t".join(out) + "\n"
     total_members_observed = 0
     for sc in ordered_scs:
         cluster_rep = sc.largest_subcluster_rep_name
         cluster_id = sc.id
+        cluster_count = sc.total_supercluster_members
         for subcluster_rep in sc.members:
             subcluster_members = cluster_rep_to_members[subcluster_rep]
             total_members_observed += len(subcluster_members)
             for member in subcluster_members:
-                out += f"{cluster_rep}\t{member}\t{cluster_id}\t{subcluster_rep}\n"
+                out += f"{cluster_rep}\t{member}\t{cluster_id}\t"
+                out += f"{cluster_count}\t{subcluster_rep}\n"
 
     if len(all_members) != total_members_observed:
         msg = "Total number of cluster members/original alignment items in the cluster "
