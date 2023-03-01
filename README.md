@@ -105,6 +105,13 @@ Can append the sequence to an outfile if provided, or will print to screen.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_to_seq -h`](.github/img/struc_to_seq.png)  
 
+
+# SAT struc_to_plddt
+Simple subcommand that returns the average plddt of the input structure file. If --out_file is not specified, the average plddt is simply printed to the screen. If --out_file is specified, the output file will be APPENDED to with the following: [basename input structure_file]\\t[plddt]\\n
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_to_plddt -h`](.github/img/struc_to_plddt.png)  
+
+
 # SAT struc_rebase
 Simple subcommand that renumbers all residues in a structure such that the first residue is #1 and all residues are sequential (e.g. it takes out numeric gaps in residue numbers).
 <!-- RICH-CODEX hide_command: true -->

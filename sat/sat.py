@@ -520,6 +520,43 @@ def main():
     parser_struc_to_seq.set_defaults(func=call_struc_to_seq)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for struc_to_plddt subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_to_plddt = subparsers.add_parser(
+        "struc_to_plddt",
+        help=(
+            """
+            Simple subcommand that returns the average plddt of the input structure 
+            file. If --out_file is not specified, the average plddt is simply printed 
+            to the screen. If --out_file is specified, the output file will be 
+            APPENDED to with the following:
+            [basename input structure_file]\\t[plddt]\\n
+            """
+        ),
+    )
+    parser_struc_to_plddt.add_argument(
+        "-s",
+        "--structure_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file in pdb format.
+        """,
+    )
+    parser_struc_to_plddt.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to a file the sequence will be appended to. If left blank, sequence will be
+        printed to the screen.
+        """,
+    )
+    parser_struc_to_plddt.set_defaults(func=call_struc_to_plddt)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for struc_rebase subcommand
     # -------------------------------------------------------------------------------- #
     parser_struc_rebase = subparsers.add_parser(
@@ -1111,6 +1148,12 @@ def call_struc_to_seq(args):
     from scripts.struc_to_seq import struc_to_seq_main
 
     struc_to_seq_main(args)
+
+
+def call_struc_to_plddt(args):
+    from scripts.struc_to_plddt import struc_to_plddt_main
+
+    struc_to_plddt_main(args)
 
 
 def call_struc_rebase_main(args):
