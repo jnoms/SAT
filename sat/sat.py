@@ -941,6 +941,129 @@ def main():
     parser_aln_filter.set_defaults(func=call_aln_filter_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_parse_dali subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_parse_dali = subparsers.add_parser(
+        "aln_parse_dali",
+        help=(
+            """
+            This subcommand reads in a DALI alignment output file and formats it as
+            a tab-delimited file. This script will written to the specified output file.
+            There is also functionality to filter the alignments by zscore, alnlen,
+            coverage, or rmsd. 
+
+            There are two main inputs:
+            1) alignment_file: This is the DALI alignment file. Notably, the first
+                out put field MUST BE the 'summary'
+            2) structure_key: DALI only processes files that have a 4-digit identifier.
+                The structure key must be of format structure[delimiter]identifier, and
+                lets you convert the identifiers back to the actual structure name.
+                Note that the structure_key identifiers should not have the DALI
+                segment (e.g. A, B, C...) at the end - this will be taken care of.
+
+            The qlen field is dependent on their being a self alignment in the alignment 
+            file, as then the qlen=tlen. If not present, qlen will be listed as 0. 
+            
+            Note also the coverage is determined by alnlen/max(qlen, tlen)
+
+            The output file is a .m8 file (e.g. tab delimited) and has the following
+            columns:
+            - query
+            - target
+            - query_id
+            - target_id
+            - alnlen
+            - qlen
+            - tlen
+            - cov
+            - pident
+            - rmsd
+            - z
+            """
+        ),
+    )
+    parser_aln_parse_dali.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the DALI output file. The Summary output must be listed first!
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-s",
+        "--structure_key",
+        type=str,
+        required=True,
+        help="""
+        Path to a tab-delimited file of format structure_name[delimiter]ID, where
+        the ID is a 4-digit identifier used during the DALI alignment. This lets you
+        convert the identifiers back.
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output, now tab-delimited outfile. Will be written to (not appended)
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-z",
+        "--min_z",
+        type=float,
+        required=False,
+        default=0,
+        help="""
+        Alignments with a z-score below this number will be excluded. [Default: 0]
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-c",
+        "--min_cov",
+        type=float,
+        required=False,
+        default=0,
+        help="""
+        Alignments with a coverage below this number will be excluded. [Default: 0]
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-l",
+        "--min_alnlen",
+        type=float,
+        required=False,
+        default=0,
+        help="""
+        Alignments with an alnlen below this number will be excluded. [Default: 0]
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-r",
+        "--min_rsmd",
+        type=float,
+        required=False,
+        default=0,
+        help="""
+        Alignments with a rmsd below this number will be excluded. [Default: 0]
+        """,
+    )
+    parser_aln_parse_dali.add_argument(
+        "-d",
+        "--structure_key_delim",
+        type=str,
+        required=False,
+        default=",,",
+        help="""
+        The tab delimiter of the structure_key. [Default: double comma]
+        """,
+    )
+    parser_aln_parse_dali.set_defaults(func=call_aln_parse_dali_main)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_merge subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_merge = subparsers.add_parser(
@@ -1192,6 +1315,12 @@ def call_aln_filter_main(args):
     from scripts.aln_filter import aln_filter_main
 
     aln_filter_main(args)
+
+
+def call_aln_parse_dali_main(args):
+    from scripts.aln_parse_dali import aln_parse_dali_main
+
+    aln_parse_dali_main(args)
 
 
 def call_aln_merge_main(args):
