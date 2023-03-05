@@ -151,6 +151,20 @@ This subcommand filters a foldseek alignment file to keep only those alignments 
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_filter -h`](.github/img/aln_filter.png)  
 
+# SAT aln_parse_dali
+This subcommand reads in a DALI alignment output file and formats it as a tab-delimited file. This script will written to the specified output file. There is also functionality to filter the alignments by zscore, alnlen, coverage, or rmsd.  
+There are two main inputs:  
+1) alignment_file: This is the DALI alignment file. Notably, the first out put field MUST BE the 'summary'  
+2) structure_key: DALI only processes files that have a 4-digit identifier. The structure key must be of format structure[delimiter]identifier, and lets you convert the identifiers back to the actual structure name. Note that the structure_key identifiers should not have the DALI segment (e.g. A, B, C...) at the end - this will be taken care of.  
+
+The qlen field of the output is dependent on their being a self alignment in the alignment file, as then the qlen=tlen. If not present, qlen will be listed as 0.  
+            
+Note also the coverage is determined by alnlen/max(qlen, tlen)  
+
+The output file is a .m8 file (e.g. tab delimited) and has the following columns: query, target, query_id, target_id, alnlen, qlen, tlen, cov, pident, rmsd, z
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_parse_dali -h`](.github/img/aln_parse_dali.png)  
+
 
 # SAT aln_merge
 This subcommand is used to merge two foldseek alignment files.
