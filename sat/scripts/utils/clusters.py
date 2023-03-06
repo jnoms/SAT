@@ -2,6 +2,8 @@
 
 # from .ete3_taxonomy import taxon_list_to_lineage_counts
 
+from .misc import talk_to_me
+
 
 # ------------------------------------------------------------------------------------ #
 # Classes
@@ -83,8 +85,8 @@ class Cluster_information:
             all_reps = set()
             all_members = set()
 
-            # Also make a cluster_rep_to_members dict - this is a simple conversion of the
-            # cluster rep to the string representation of the cluster members. Also
+            # Also make a cluster_rep_to_members dict - this is a simple conversion of
+            # the cluster rep to the string representation of the cluster members. Also
             # make the reverse
             cluster_rep_to_members = dict()
             cluster_member_to_rep = dict()
@@ -116,6 +118,14 @@ class Cluster_information:
                 cluster_rep = line_dict["cluster_rep"]
                 if cluster_rep not in cluster_dict:
                     cluster = Cluster(cluster_rep)
+
+                    # Also store cluster_ID in the Cluster() object if the cluster_ID is
+                    # present in the infiles.
+                    if "cluster_ID" in self.input_cluster_file_fields:
+                        if "cluster_ID" not in line_dict:
+                            msg = "Something is wrong"
+                            raise ValueError(msg)
+                        cluster.cluster_ID = line_dict["cluster_ID"]
                     cluster_dict[cluster_rep] = cluster
 
                 # Add information to the cluster object
@@ -135,6 +145,7 @@ class Cluster_information:
                 if cluster_rep not in cluster_rep_to_members:
                     cluster_rep_to_members[cluster_rep] = set()
                 cluster_rep_to_members[cluster_rep].add(cluster_member.cluster_member)
+
                 if cluster_member.cluster_member not in cluster_member_to_rep:
                     cluster_member_to_rep[cluster_member.cluster_member] = cluster_rep
                 else:
@@ -152,6 +163,69 @@ class Cluster_information:
         self.all_members = all_members
         self.cluster_rep_to_members = cluster_rep_to_members
         self.cluster_member_to_rep = cluster_member_to_rep
+
+    def add_cluster_ID(self):
+        """
+        This function iterates through all clusters in the .clusters slot, orders them
+        based on the number of cluster members they have, and adds a cluster_ID
+        correlating to their ranking.
+
+        The cluster_ID is deposited in the .cluster_ID of the Cluster() object, and the
+        .cluster_ID slot of each Cluster_member() object.
+
+        If the cluster_ID field is present in the input fields, the cluster_IDs are
+        already in the cluster objects. So don't do anything.
+        """
+
+        if "cluster_ID" in self.input_cluster_file_fields:
+            talk_to_me("cluster_IDs exist in the input file, so using those.")
+            return
+
+        new_clusters_dict = dict()
+
+        all_clusters = []
+
+        for _, cluster in self.clusters.items():
+            all_clusters.append(cluster)
+        ordered_clusters = sorted(all_clusters, key=lambda x: len(x.cluster_members))[
+            ::-1
+        ]
+
+        i = 0
+        for cluster in ordered_clusters:
+            i += 1
+            for member in cluster.cluster_members:
+                member.cluster_ID = str(i)
+            cluster.cluster_ID = str(i)
+            new_clusters_dict[cluster.cluster_rep] = cluster
+
+        self.cluster_members = new_clusters_dict
+
+    def generate_member_and_rep_to_cluster_ID(self):
+        """
+        Generates the .cluster_member_to_ID slot, which stores a dictionary to convert
+        cluster_member to cluster_ID
+
+        Also generates the .cluster_rep_to_ID slot, which stores a dictionary to convert
+        cluster_rep to cluster_ID
+        """
+        cluster_member_to_ID = dict()
+        cluster_rep_to_ID = dict()
+        for _, cluster in self.clusters.items():
+            for member in cluster.cluster_members:
+
+                if member.cluster_member in cluster_member_to_ID:
+                    msg = "Somehow there is a cluster member that seems to have been "
+                    msg += "listed in the cluster information twice! "
+                    msg += f"Cluster_member: {member.cluster_member}."
+                    raise ValueError(msg)
+                cluster_member_to_ID[member.cluster_member] = member.cluster_ID
+
+                if member.cluster_rep not in cluster_rep_to_ID:
+                    cluster_rep_to_ID[member.cluster_rep] = member.cluster_ID
+
+        self.cluster_member_to_ID = cluster_member_to_ID
+        self.cluster_rep_to_ID = cluster_rep_to_ID
 
 
 class Cluster:
