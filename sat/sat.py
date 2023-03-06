@@ -954,7 +954,8 @@ def main():
 
             There are two main inputs:
             1) alignment_file: This is the DALI alignment file. Notably, the first
-                out put field MUST BE the 'summary'
+                out put field MUST BE the 'summary' and the second output MUST BE 
+                'equivalences'.
             2) structure_key: DALI only processes files that have a 4-digit identifier.
                 The structure key must be of format structure[delimiter]identifier, and
                 lets you convert the identifiers back to the actual structure name.

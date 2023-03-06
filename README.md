@@ -154,7 +154,7 @@ This subcommand filters a foldseek alignment file to keep only those alignments 
 # SAT aln_parse_dali
 This subcommand reads in a DALI alignment output file and formats it as a tab-delimited file. This script will written to the specified output file. There is also functionality to filter the alignments by zscore, alnlen, coverage, or rmsd.  
 There are two main inputs:  
-1) alignment_file: This is the DALI alignment file. Notably, the first out put field MUST BE the 'summary'  
+1) alignment_file: This is the DALI alignment file. Notably, the first output field MUST BE the 'summary' and the second output field MUST BE 'equivalences'
 2) structure_key: DALI only processes files that have a 4-digit identifier. The structure key must be of format structure[delimiter]identifier, and lets you convert the identifiers back to the actual structure name. Note that the structure_key identifiers should not have the DALI segment (e.g. A, B, C...) at the end - this will be taken care of.  
 
 The qlen field of the output is dependent on their being a self alignment in the alignment file, as then the qlen=tlen. If not present, qlen will be listed as 0.  
