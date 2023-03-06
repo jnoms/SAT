@@ -171,6 +171,11 @@ This subcommand is used to merge two foldseek alignment files.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_merge -h`](.github/img/aln_merge.png)  
 
+# SAT aln_merge_clusters
+This subcommand takes in a cluster file and alignments between the REPRESENTATIVES of the clusters, and merges clusters whose representatives align together.
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_merge_clusters -h`](.github/img/aln_merge_clusters.png)  
+
 
 # Planned improvements
 struc_get_domains

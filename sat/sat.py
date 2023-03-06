@@ -1153,6 +1153,70 @@ def main():
     parser_aln_merge.set_defaults(func=call_aln_merge_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_merge_clusters subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_merge_clusters = subparsers.add_parser(
+        "aln_merge_clusters",
+        help=(
+            """
+            This subcommand takes in a cluster file and alignments between the
+            REPRESENTATIVES of the clusters, and merges clusters whose representatives
+            align together.
+            """
+        ),
+    )
+    parser_aln_merge_clusters.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        help="""
+        Path the alignment file.
+        """,
+    )
+    parser_aln_merge_clusters.add_argument(
+        "-c",
+        "--cluster_file",
+        type=str,
+        required=True,
+        help="""
+        Path the cluster file.
+        """,
+    )
+    parser_aln_merge_clusters.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        help="""
+        Path the output cluster file, with clusters whose representatives align merged.
+        """,
+    )
+    parser_aln_merge_clusters.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of alignment fields if none are present as headers in the
+        alignment file.
+        """,
+    )
+    parser_aln_merge_clusters.add_argument(
+        "-F",
+        "--cluster_file_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of cluster file fields if none are present as headers in 
+        the cluster file.
+        """,
+    )
+    parser_aln_merge_clusters.set_defaults(func=call_aln_merge_clusters_main)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for struc_download subcommand
     # -------------------------------------------------------------------------------- #
     parser_struc_download = subparsers.add_parser(
@@ -1328,6 +1392,12 @@ def call_aln_merge_main(args):
     from scripts.aln_merge import aln_merge_main
 
     aln_merge_main(args)
+
+
+def call_aln_merge_clusters_main(args):
+    from scripts.aln_merge_clusters import aln_merge_clusters_main
+
+    aln_merge_clusters_main(args)
 
 
 def call_struc_download_main(args):
