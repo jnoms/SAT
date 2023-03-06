@@ -48,21 +48,26 @@ When you run the tests or the first time you run any taxonomy-related script, et
 # List of subcommands
 
 ## Structure-focused
-`sat struc_get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
-`sat struc_remove_redundant` - Removes domains that have strongly overlapping primary amino-acid sequences.   
-`sat struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
-`sat struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
+`sat.py struc_get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
+`sat.py struc_remove_redundant` - Removes domains that have strongly overlapping primary amino-acid sequences.   
+`sat.py struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
+`sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
+`sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 
-## Foldseek-focused
-`sat aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
-`sat aln_add_taxonomy` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
-`sat aln_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
-`sat aln_query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
-`sat aln_add_uniprot` - After retreiving the uniprot unformation using aln_query_uniprot, adds the information as columns to the alignment file.  
-`sat aln_filter` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
+## Alignment-focused
+`sat.py aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
+`sat.py aln_add_taxonomy` - Adds specified taxonomic levels for the query and/or target of foldseek alignments.  
+`sat.py aln_taxa_counts` - Returns counts at desired taxonomic levels within each foldseek cluster.  
+`sat.py aln_query_uniprot` - Lets you look up alphafold or uniprot IDs using the Uniprot REST API, and get the geneName and fullName (an informative protein name) for each.  
+`sat.py aln_add_uniprot` - After retreiving the uniprot unformation using aln_query_uniprot, adds the information as columns to the alignment file.  
+`sat.py aln_filter` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
+`sat.py aln_merge` - This merges two alignment files.  
+`sat.py aln_merge_clusters` - This takes in a cluster file and an alignment file of alignments between cluster representatives, and merges clusters whose representatives align.  
+`sat.py aln_parse_dali` - This parses a Dalilite alignment output into a tab-delimited format. It can also filter based on various alignment statistics.  
+`sat.py aln_generate_superclusters` - This takes in an all-by-all foldseek alignment and foldseek-reported clusters and identifies clusters that are linked (e.g. - some specified number of members of each cluster align to members of the other cluster). These clusters are then merged into a supercluster.  
 
 ## Sequence-focused  
-`sat seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
+`sat.py seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
 
 # SAT struc_get_domains
 Extract separate domain structures from a predicted structure.  
