@@ -65,6 +65,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py aln_merge_clusters` - This takes in a cluster file and an alignment file of alignments between cluster representatives, and merges clusters whose representatives align.  
 `sat.py aln_parse_dali` - This parses a Dalilite alignment output into a tab-delimited format. It can also filter based on various alignment statistics.  
 `sat.py aln_generate_superclusters` - This takes in an all-by-all foldseek alignment and foldseek-reported clusters and identifies clusters that are linked (e.g. - some specified number of members of each cluster align to members of the other cluster). These clusters are then merged into a supercluster.  
+`sat.py aln_ecod_purity` - This takes in a cluster file and the alignments between the cluster members and the ECOD HMM database and counts, for each ECOD level, the number of members per cluster.
 
 ## Sequence-focused  
 `sat.py seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
@@ -81,19 +82,6 @@ Given a glob specifying multiple structure (often domains), will remove structur
 Priority is given to the longer structure or, if the sequences are the same length, the structure with the highest pLDDT
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_remove_redundant -h`](.github/img/struc_remove_redundant.png)  
-
-
-# SAT aln_add_clusters
-Adds cluster information from foldseek cluster into the foldseek alignment information.  
-Currently, foldseek cluster can generate clusters, and the alignment can output alignments, but it will be helpful to annotate each alginment with their cluster.  
-This script adds the following fields to the input alignment file:  
-1) cluster_ID: ID of the cluster, starting at 1. A lower number indicates a larger cluster  
-2) cluster_rep: The name of the structure that is the cluster representative chosen by foldseek  
-3) cluster_count: The number of structures in the cluster.  
-
-**IMPORTANT**: If you use the same foldseek cluster tsv file on multiple separate foldseek alignment files, the cluster_ID's are **NOT** guarenteed to be consistent (although the cluster representatives will be). This is because there may be differing numbers of alignments in different alignment files. Highly recommend to use `aln_merge` to merge multiple alignment files prior to using this script.  
-<!-- RICH-CODEX hide_command: true -->
-![`poetry run .github/tmp/sat_codex.py aln_add_clusters -h`](.github/img/aln_add_clusters.png)  
 
 # SAT aln_add_taxonomy
 Adds taxonomy information to a foldseek alignment  
@@ -135,7 +123,11 @@ This subcommand takes in a file of uniprot IDs and downloads the AF2 database pd
 
 
 # SAT aln_taxa_counts
-This takes in a processed alignment file (typically generated from a foldseek alignment that was then processed through aln_add_clusters and  add_taxonomy_to_alignment) and returns, for each cluster, the number of  taxa at each taxonomic level and their names. The output file has the  following columns: cluster_ID, cluster_rep, level, superkingdom, taxon, count.
+This takes in a cluster file (required columns are cluster_ID, cluster_rep, cluster_member, and cluster_count) and tallies up the taxons for each cluster. It makes a tidy file for each cluster where, for every taxon at every level, it specifies the count. The cluster file is assumed to be generated from an all-by-all alignment, perhaps with some additional merging steps. If you are also interested in adding taxonomy count information for the targets of a search of the cluster members against a separate database, you can enter an alignment file to this script. In the event an alignment file is provided, taxonIDs from the TARGET will be added to the cluster_ID of the QUERY.  
+            
+The output file has the following columns:  
+cluster_ID, cluster_rep, cluster_count, superkingdom, level, taxon, count.  
+
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_taxa_counts -h`](.github/img/aln_taxa_counts.png)  
 
@@ -180,6 +172,19 @@ This subcommand is used to merge two foldseek alignment files.
 This subcommand takes in a cluster file and alignments between the REPRESENTATIVES of the clusters, and merges clusters whose representatives align together.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_merge_clusters -h`](.github/img/aln_merge_clusters.png)  
+
+# SAT aln_ecod_purity
+This subcommand takes in a cluster file and an alignment file of those same members aligned (using an HMM approach) to the ECOD HMM database.  It takes in an ECOD information file that connects each ECOD accession to it's classification at various annotation levels. This script returns a tidy-format output file with, for each cluster, the counts of members with alignments against each ECOD entry.  
+The output columns are as follows:  
+- cluster_ID  
+- cluster_rep  
+- level  
+- value  
+- count  
+
+Note that this assumes that each member only has ONE alignment - e.g. the best ECOD alignment.  
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_ecod_purity -h`](.github/img/aln_ecod_purity.png)  
 
 
 # Planned improvements

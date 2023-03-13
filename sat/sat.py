@@ -685,22 +685,31 @@ def main():
         "aln_taxa_counts",
         help=(
             """
-            This takes in a processed alignment file (typically generated from a
-            foldseek alignment that was then processed through aln_add_clusters and
-            add_taxonomy_to_alignment) and returns, for each cluster, the number of
-            taxa at each taxonomic level and their names. The output file has the
+            This takes in a cluster file (required columns are cluster_ID, cluster_rep, 
+            cluster_member, and cluster_count) and tallies up the taxons for each 
+            cluster. It makes a tidy file for each cluster where, for every taxon at 
+            every level, it specifies the count. 
+
+            The cluster file is assumed to be generated from an all-by-all alignment,
+            perhaps with some additional merging steps. If you are also interested in 
+            adding taxonomy count information for the targets of a search of the
+            cluster members against a separate database, you can enter an alignment 
+            file to this script. In the event an alignment file is provided, taxonIDs 
+            from the TARGET will be added to the cluster_ID of the QUERY.
+            
+            The output file has the
             following columns:
-            cluster_ID, cluster_rep, level, superkingdom, taxon, count.
+            cluster_ID, cluster_rep, cluster_count, superkingdom, level, taxon, count.
             """
         ),
     )
     parser_aln_taxa_counts.add_argument(
-        "-a",
-        "--alignment_file",
+        "-c",
+        "--cluster_file",
         type=str,
         required=True,
         help="""
-        Path to the alignment file.
+        Path the cluster file.
         """,
     )
     parser_aln_taxa_counts.add_argument(
@@ -709,8 +718,39 @@ def main():
         type=str,
         required=True,
         help="""
-        Path to the output count file. This file will have the following columns:
-        cluster_ID, cluster_rep, level, superkingdom, taxon, count.
+        Path the output taxon counts file.
+        """,
+    )
+    parser_aln_taxa_counts.add_argument(
+        "-F",
+        "--cluster_file_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of cluster file fields if none are present as headers in
+        the cluster file. Only required if the cluster file doesn't come with headers.
+        """,
+    )
+    parser_aln_taxa_counts.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path the alignment file.
+        """,
+    )
+    parser_aln_taxa_counts.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of alignment fields if none are present as headers in the
+        alignment file.
         """,
     )
     parser_aln_taxa_counts.add_argument(
@@ -722,6 +762,29 @@ def main():
         help="""
         Taxonomy levels to count and output. Comma-delimited string of taxonomy levels.
         Default: superkingdom,phylum,class,order,family,genus,species
+        """,
+    )
+    parser_aln_taxa_counts.add_argument(
+        "-d",
+        "--taxonID_finder_delimiter",
+        type=str,
+        required=False,
+        default="__",
+        help="""
+        This script will try to find the taxonID in the query or target strings of each
+        alignment (although if there is a taxid column in the alignment_object, it will
+        use that taxonID for the target taxonID). To parse for the taxonID, this is
+        the delimiter. [Default: __]
+        """,
+    )
+    parser_aln_taxa_counts.add_argument(
+        "-p",
+        "--taxonID_finder_pos",
+        type=int,
+        required=False,
+        default=-1,
+        help="""
+        This is where in the delimited string the taxonID is located. [Default: -1]
         """,
     )
     parser_aln_taxa_counts.set_defaults(func=call_parser_aln_taxa_counts_main)
@@ -1000,7 +1063,9 @@ def main():
         help="""
         Path to a tab-delimited file of format structure_name[delimiter]ID, where
         the ID is a 4-digit identifier used during the DALI alignment. This lets you
-        convert the identifiers back.
+        convert the identifiers back. You can also import multiple separate structure
+        key files! This entry should then be a comma-delimited list of paths to
+        each structure key.
         """,
     )
     parser_aln_parse_dali.add_argument(
@@ -1281,6 +1346,92 @@ def main():
     )
     parser_struc_download.set_defaults(func=call_struc_download_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for aln_ecod_purity subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_ecod_purity = subparsers.add_parser(
+        "aln_ecod_purity",
+        help=(
+            """
+            This subcommand takes in a cluster file and an alignment file of those
+            same members aligned (using an HMM approach) to the ECOD HMM database. 
+            It takes in an ECOD information file that connects each ECOD accession to
+            it's classification at various annotation levels. This script returns a 
+            tidy-format output file with, for each cluster, the counts of members with 
+            alignments against each ECOD entry.
+
+            The output columns are as follows:
+            - cluster_ID
+            - cluster_rep
+            - level
+            - value
+            - count
+
+            Note that this assumes that each member only has ONE alignment - e.g. the 
+            best ECOD alignment.
+            """
+        ),
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the alignment file of the cluster members to the ECOD HMM database.
+        """,
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-c",
+        "--cluster_file",
+        type=str,
+        required=True,
+        help="""
+        Path the cluster file.
+        """,
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-k",
+        "--ECOD_key",
+        type=str,
+        required=True,
+        help="""
+        Path the ECOD-provided ECOD key.
+        """,
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        help="""
+        Path the output ECOD counts file.
+        """,
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of alignment fields if none are present as headers in the
+        alignment file.
+        """,
+    )
+    parser_aln_ecod_purity.add_argument(
+        "-F",
+        "--cluster_file_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Comma-delimited list of cluster file fields if none are present as headers in
+        the cluster file. Only required if the cluster file doesn't come with headers.
+        """,
+    )
+    parser_aln_ecod_purity.set_defaults(func=call_aln_ecod_purity_main)
+
     # ----------------------------------------------------------------------------------#
     # Parse the args and call the function associated with the subcommand
     # ----------------------------------------------------------------------------------#
@@ -1404,6 +1555,12 @@ def call_struc_download_main(args):
     from scripts.struc_download import struc_download_main
 
     struc_download_main(args)
+
+
+def call_aln_ecod_purity_main(args):
+    from scripts.aln_ecod_purity import aln_ecod_purity_main
+
+    aln_ecod_purity_main(args)
 
 
 # Keep these buffer lines here
