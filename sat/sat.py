@@ -195,6 +195,74 @@ def main():
     parser_struc_remove_redundant.set_defaults(func=call_struc_remove_redundant)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for struc_find_motif subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_find_motif = subparsers.add_parser(
+        "struc_find_motif",
+        help=(
+            """
+            Given a motif of structure [OPTIONS]xxx[OPTIONS]xx, where x indicates
+            any amino acid and [] indicate any of the amino acids present within the
+            brackets, this returns the match and position start/end of the motif
+            present in the input sequence.
+
+            The input can be a structure file, a fasta, or just a sequence. The output
+            is tab-delimited and printed to the screen, with the columns
+            - match
+            - start
+            - end
+
+            Where start and end are 1-indexed.
+            """
+        ),
+    )
+    parser_struc_find_motif.add_argument(
+        "-m",
+        "--motif",
+        type=str,
+        required=True,
+        help="""
+        String indicating the motif you're searching for. If an AA at a position doesn't
+        matter, use a lowercase x. If it does matter, put an upercase AA single letter
+        digit. If a position can have one of multiple possible AAs, use brackets... e.g.
+        [RK] indicates a position can either be R or K.
+
+        Make sure to wrap this in quotes when inputting.
+        """,
+    )
+    parser_struc_find_motif.add_argument(
+        "-s",
+        "--structure",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the structure file.
+        """,
+    )
+    parser_struc_find_motif.add_argument(
+        "-f",
+        "--fasta",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the fasta file.
+        """,
+    )
+    parser_struc_find_motif.add_argument(
+        "-q",
+        "--seq",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        A string with the AA sequence.
+        """,
+    )
+    parser_struc_find_motif.set_defaults(func=call_struc_find_motif)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_generate_superclusters subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_generate_superclusters = subparsers.add_parser(
@@ -1463,6 +1531,12 @@ def call_struc_remove_redundant(args):
     from scripts.struc_remove_redundant import struc_remove_redundant_main
 
     struc_remove_redundant_main(args)
+
+
+def call_struc_find_motif(args):
+    from scripts.struc_find_motif import struc_find_motif_main
+
+    struc_find_motif_main(args)
 
 
 def call_aln_generate_superclusters(args):

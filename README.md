@@ -50,6 +50,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 ## Structure-focused
 `sat.py struc_get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
 `sat.py struc_remove_redundant` - Removes domains that have strongly overlapping primary amino-acid sequences.   
+`sat.py struc_find_motif` - Checks if there is a motif in a structure or sequence input.  
 `sat.py struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
 `sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
@@ -82,6 +83,16 @@ Given a glob specifying multiple structure (often domains), will remove structur
 Priority is given to the longer structure or, if the sequences are the same length, the structure with the highest pLDDT
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_remove_redundant -h`](.github/img/struc_remove_redundant.png)  
+
+# SAT struc_find_motif
+Given a motif of structure [OPTIONS]xxx[OPTIONS]xx, where x indicates any amino acid and [] indicate any of the amino acids present within the brackets, this returns the match and position start/end of the motif present in the input sequence.  
+
+The input can be a structure file, a fasta, or just a sequence. The output is tab-delimited and printed to the screen, with the columns  
+- match  
+- start   
+- end   
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_find_motif -h`](.github/img/struc_find_motif.png) 
 
 # SAT aln_add_taxonomy
 Adds taxonomy information to a foldseek alignment  
