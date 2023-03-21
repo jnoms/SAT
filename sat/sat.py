@@ -294,7 +294,7 @@ def main():
         type=int,
         required=True,
         help="""
-        The minimum pLDDT for a residue to be considered passing. This is an interger 
+        The minimum pLDDT for a residue to be considered passing. This is an integer
         value between 0 and 100.
         """,
     )
