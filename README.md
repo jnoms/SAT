@@ -54,6 +54,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
 `sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
+`sat.py struc_qc` - Get information on the fraction of residues that are at least a specified pLDDT - this can be good for filtration.  
 
 ## Alignment-focused
 `sat.py aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
@@ -93,6 +94,15 @@ The input can be a structure file, a fasta, or just a sequence. The output is ta
 - end   
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_find_motif -h`](.github/img/struc_find_motif.png) 
+
+# SAT struc_qc
+Given a structure, determines the percentage of residues that have at least the specified pLDDT. The output is returned to STDOUT!! It is tab-delimited and has the following columns:   
+- structure_file (the basename of the file, including suffix)  
+- number of residues  
+- number of residues that pass the pLDDT threshold  
+- proportion of residues that pass the pLDDT threshold (this will be a decimal between 0 and 1)
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_qc -h`](.github/img/struc_qc.png) 
 
 # SAT aln_add_taxonomy
 Adds taxonomy information to a foldseek alignment  

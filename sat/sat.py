@@ -261,6 +261,44 @@ def main():
         """,
     )
     parser_struc_find_motif.set_defaults(func=call_struc_find_motif)
+    # -------------------------------------------------------------------------------- #
+    # Parser for struc_qc subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_qc = subparsers.add_parser(
+        "struc_qc",
+        help=(
+            """
+            Given a structure, determines the percentage of residues that have at least
+            the specified pLDDT. The output is returned to STDOUT!! It is tab-delimited
+            and has the following columns:
+            - structure_file (the basename of the file, including suffix)
+            - number of residues
+            - number of residues that pass the pLDDT threshold
+            - proportion of residues that pass the pLDDT threshold (this will be a
+                decimal between 0 and 1)
+            """
+        ),
+    )
+    parser_struc_qc.add_argument(
+        "-s",
+        "--structure_file_path",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file
+        """,
+    )
+    parser_struc_qc.add_argument(
+        "-p",
+        "--plddt_cutoff",
+        type=int,
+        required=True,
+        help="""
+        The minimum pLDDT for a residue to be considered passing. This is an interger 
+        value between 0 and 100.
+        """,
+    )
+    parser_struc_qc.set_defaults(func=call_parser_struc_qc)
 
     # -------------------------------------------------------------------------------- #
     # Parser for aln_generate_superclusters subcommand
@@ -304,7 +342,7 @@ def main():
         Path to cluster file. Typically, first two columns will be cluster_rep,
         cluster_member. Subsequent columns can hold additional information, but that
         is not used for this script. If a header is present in the file, column names
-        will be parsed (but first column must be cluster_rep). Otherwise, you can 
+        will be parsed (but first column must be cluster_rep). Otherwise, you can
         specify the column names with the cluster_file_fields parameter.
         """,
     )
@@ -333,7 +371,7 @@ def main():
         help="""
         [Default: 0.3]
         A decimal value used for determining linkage between two clusters. For any two
-        clusters, at least linkage_threshold fraction of members of at least one 
+        clusters, at least linkage_threshold fraction of members of at least one
         cluster must have alignments to members of the other cluster.
         """,
     )
@@ -370,20 +408,20 @@ def main():
         help=(
             """
             This subcommand incorporates clustering information from Foldseek cluster
-            into the foldseek alignment tabular output file. Notably, this script 
+            into the foldseek alignment tabular output file. Notably, this script
             generates "super clusters" based on the foldseek cluster file. Here,
-            we determine what other clusters each cluster is linked to - two clusters 
+            we determine what other clusters each cluster is linked to - two clusters
             are linked if at least linkage_threshold fraction of at least one of the
             cluster's members have alignments to members of the other cluster. Then,
-            "super clusters" are generated from clusters whom are all linked to one 
-            another. Thus, the cluster outputs from this script reflect the super 
-            clusters. The cluster representative from the foldseek cluster with the most 
+            "super clusters" are generated from clusters whom are all linked to one
+            another. Thus, the cluster outputs from this script reflect the super
+            clusters. The cluster representative from the foldseek cluster with the most
             members is then used as the super cluster representative.
 
             This script makes two output files:
             1) An output alignment file with all non-redundant alignments.
             2) An output alignment file with only the alignments with the cluster
-               representative as the query. 
+               representative as the query.
 
             Notably, the new columns "cluster_ID", "cluster_count", and
             "cluster_rep" are added to the output files.
@@ -452,8 +490,8 @@ def main():
         required=False,
         default=0.5,
         help="""
-        [Default: 0.5] The fraction of members of at least one cluster whom must have 
-        alignments to members of another cluster for those clusters to be considered 
+        [Default: 0.5] The fraction of members of at least one cluster whom must have
+        alignments to members of another cluster for those clusters to be considered
         linked.
         """,
     )
@@ -594,9 +632,9 @@ def main():
         "struc_to_plddt",
         help=(
             """
-            Simple subcommand that returns the average plddt of the input structure 
-            file. If --out_file is not specified, the average plddt is simply printed 
-            to the screen. If --out_file is specified, the output file will be 
+            Simple subcommand that returns the average plddt of the input structure
+            file. If --out_file is not specified, the average plddt is simply printed
+            to the screen. If --out_file is specified, the output file will be
             APPENDED to with the following:
             [basename input structure_file]\\t[plddt]\\n
             """
@@ -753,18 +791,18 @@ def main():
         "aln_taxa_counts",
         help=(
             """
-            This takes in a cluster file (required columns are cluster_ID, cluster_rep, 
-            cluster_member, and cluster_count) and tallies up the taxons for each 
-            cluster. It makes a tidy file for each cluster where, for every taxon at 
-            every level, it specifies the count. 
+            This takes in a cluster file (required columns are cluster_ID, cluster_rep,
+            cluster_member, and cluster_count) and tallies up the taxons for each
+            cluster. It makes a tidy file for each cluster where, for every taxon at
+            every level, it specifies the count.
 
             The cluster file is assumed to be generated from an all-by-all alignment,
-            perhaps with some additional merging steps. If you are also interested in 
+            perhaps with some additional merging steps. If you are also interested in
             adding taxonomy count information for the targets of a search of the
-            cluster members against a separate database, you can enter an alignment 
-            file to this script. In the event an alignment file is provided, taxonIDs 
+            cluster members against a separate database, you can enter an alignment
+            file to this script. In the event an alignment file is provided, taxonIDs
             from the TARGET will be added to the cluster_ID of the QUERY.
-            
+
             The output file has the
             following columns:
             cluster_ID, cluster_rep, cluster_count, superkingdom, level, taxon, count.
@@ -1081,11 +1119,11 @@ def main():
             This subcommand reads in a DALI alignment output file and formats it as
             a tab-delimited file. This script will written to the specified output file.
             There is also functionality to filter the alignments by zscore, alnlen,
-            coverage, or rmsd. 
+            coverage, or rmsd.
 
             There are two main inputs:
             1) alignment_file: This is the DALI alignment file. Notably, the first
-                out put field MUST BE the 'summary' and the second output MUST BE 
+                out put field MUST BE the 'summary' and the second output MUST BE
                 'equivalences'.
             2) structure_key: DALI only processes files that have a 4-digit identifier.
                 The structure key must be of format structure[delimiter]identifier, and
@@ -1093,9 +1131,9 @@ def main():
                 Note that the structure_key identifiers should not have the DALI
                 segment (e.g. A, B, C...) at the end - this will be taken care of.
 
-            The qlen field is dependent on their being a self alignment in the alignment 
-            file, as then the qlen=tlen. If not present, qlen will be listed as 0. 
-            
+            The qlen field is dependent on their being a self alignment in the alignment
+            file, as then the qlen=tlen. If not present, qlen will be listed as 0.
+
             Note also the coverage is determined by alnlen/max(qlen, tlen)
 
             The output file is a .m8 file (e.g. tab delimited) and has the following
@@ -1343,7 +1381,7 @@ def main():
         required=False,
         default="",
         help="""
-        Comma-delimited list of cluster file fields if none are present as headers in 
+        Comma-delimited list of cluster file fields if none are present as headers in
         the cluster file.
         """,
     )
@@ -1385,7 +1423,7 @@ def main():
         type=str,
         required=True,
         help="""
-        Path to the output directory that will contain all output pdb and pae files. 
+        Path to the output directory that will contain all output pdb and pae files.
         """,
     )
     parser_struc_download.add_argument(
@@ -1422,10 +1460,10 @@ def main():
         help=(
             """
             This subcommand takes in a cluster file and an alignment file of those
-            same members aligned (using an HMM approach) to the ECOD HMM database. 
+            same members aligned (using an HMM approach) to the ECOD HMM database.
             It takes in an ECOD information file that connects each ECOD accession to
-            it's classification at various annotation levels. This script returns a 
-            tidy-format output file with, for each cluster, the counts of members with 
+            it's classification at various annotation levels. This script returns a
+            tidy-format output file with, for each cluster, the counts of members with
             alignments against each ECOD entry.
 
             The output columns are as follows:
@@ -1435,7 +1473,7 @@ def main():
             - value
             - count
 
-            Note that this assumes that each member only has ONE alignment - e.g. the 
+            Note that this assumes that each member only has ONE alignment - e.g. the
             best ECOD alignment.
             """
         ),
@@ -1537,6 +1575,12 @@ def call_struc_find_motif(args):
     from scripts.struc_find_motif import struc_find_motif_main
 
     struc_find_motif_main(args)
+
+
+def call_parser_struc_qc(args):
+    from scripts.struc_qc import struc_qc_main
+
+    struc_qc_main(args)
 
 
 def call_aln_generate_superclusters(args):
