@@ -88,7 +88,7 @@ def aln_parse_dali_main(args):
                     query = structure_key[query_id]
                 except KeyError:
                     msg = f"Cannot find the query_id, {query_id}, in structure_key!"
-                    msg = " Continuing anyway."
+                    msg += " Continuing anyway."
                     talk_to_me(msg)
                 continue
 
@@ -104,7 +104,7 @@ def aln_parse_dali_main(args):
                 target = structure_key[target_id]
             except KeyError:
                 msg = f"Cannot find the target_id, {target_id}, in structure_key!"
-                msg = " Continuing anyway."
+                msg += " Continuing anyway."
                 talk_to_me(msg)
 
             z = float(z)
