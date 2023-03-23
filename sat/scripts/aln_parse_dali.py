@@ -83,7 +83,7 @@ def aln_parse_dali_main(args):
 
             # Find query
             if line.startswith("# Query: "):
-                query_id = line.strip("# Query: ").rstrip("A")
+                query_id = line.replace("# Query: ", "")[:-1]
                 try:
                     query = structure_key[query_id]
                 except KeyError:
