@@ -409,7 +409,7 @@ def main():
             """
             This subcommand generates clusters from an input alignment file, where
             every query-target pair will be put into the same cluster.
-            
+
             This subcommand basically does what mmseqs/foldseek cluster mode 1 does
             (e.g. connected-compontent clustering). Here, any two members that are
             aligned will end up in the same cluster. Because of this string clustering,

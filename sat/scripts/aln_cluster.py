@@ -34,8 +34,8 @@ def aln_cluster_main(args):
             # Need to merge their clusters
             merged_cluster = query_cluster.union(target_cluster)
 
-            # If the query cluster or the target cluster is in the clusters, need to remove
-            # it
+            # If the query cluster or the target cluster is in the clusters, need to
+            # remove it
             if query_cluster in clusters:
                 clusters.remove(query_cluster)
             if target_cluster in clusters:
