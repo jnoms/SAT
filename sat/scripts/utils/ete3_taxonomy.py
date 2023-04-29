@@ -34,7 +34,7 @@ class Taxon:
         return self.taxonID
 
     def __repr__(self):
-        return self.taxonID
+        return str(self.taxonID)
 
     def name_to_taxID(self, name: str):
         """
