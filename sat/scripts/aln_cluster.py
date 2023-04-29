@@ -61,7 +61,7 @@ def aln_cluster_main(args):
         not_seen = all_inputs - seen_members
 
         for member in not_seen:
-            clusters.append(set(member))
+            clusters.append(set([member]))
 
     talk_to_me("Generating output")
     out = ["cluster_rep", "cluster_member"]
