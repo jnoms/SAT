@@ -64,6 +64,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py aln_add_uniprot` - After retreiving the uniprot unformation using aln_query_uniprot, adds the information as columns to the alignment file.  
 `sat.py aln_filter` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
 `sat.py aln_merge` - This merges two alignment files.  
+`sat.py aln_cluster` - This lets you do connected-component clustering, similar to foldseek/mmseqs cluster mode 1, but lets you have more control on filtering the alignments prior.  
 `sat.py aln_merge_clusters` - This takes in a cluster file and an alignment file of alignments between cluster representatives, and merges clusters whose representatives align.  
 `sat.py aln_parse_dali` - This parses a Dalilite alignment output into a tab-delimited format. It can also filter based on various alignment statistics.  
 `sat.py aln_generate_superclusters` - This takes in an all-by-all foldseek alignment and foldseek-reported clusters and identifies clusters that are linked (e.g. - some specified number of members of each cluster align to members of the other cluster). These clusters are then merged into a supercluster.  
