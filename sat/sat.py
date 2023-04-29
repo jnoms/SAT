@@ -401,6 +401,99 @@ def main():
     parser_aln_generate_superclusters.set_defaults(func=call_aln_generate_superclusters)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_cluster subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_cluster = subparsers.add_parser(
+        "aln_cluster",
+        help=(
+            """
+            This subcommand generates clusters from an input alignment file, where
+            every query-target pair will be put into the same cluster.
+            
+            This subcommand basically does what mmseqs/foldseek cluster mode 1 does
+            (e.g. connected-compontent clustering). Here, any two members that are
+            aligned will end up in the same cluster. Because of this string clustering,
+            the alignment file should be strinctly filtered to only keep those
+            alignments with high coverage and high confidence (e.g. high TMscore from
+            foldseek or high z score from DALI).
+
+            The output file is essentially a foldseek/mmseqs cluster file with two
+            columns: cluster_rep, cluster_member.
+
+            The optional --all_inputs switch can be used to provide information for
+            all members that initially were input to the alignment. If provided, the
+            output cluster file will include those members that aren't present in the
+            alignment file as a cluster with only one member (themselves). This is
+            very useful because the alignment file should be strictly filtered prior
+            to using this script, so many of the items inputted to foldseek or mmseqs
+            won't be present in the alignment file.
+            """
+        ),
+    )
+    parser_aln_cluster.add_argument(
+        "-a",
+        "--alignment_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to the foldseek alignment file.
+        """,
+    )
+    parser_aln_cluster.add_argument(
+        "-o",
+        "--outfile",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to output cluster file. The columns will be:
+        cluster_rep, cluster_member, cluster_ID, subcluster_rep.
+        - cluster_rep: the supercluster rep derived from this script.
+        - cluster_member: the member
+        - cluster_ID: A number indicating the ranking of each cluster based on number
+          of members. 1 indicates the cluster is the largest.
+        - subcluster_rep: this is the original cluster_rep in the input file.
+        """,
+    )
+    parser_aln_cluster.add_argument(
+        "-f",
+        "--alignment_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        [Default: '']
+        A comma-delimited string of the fields in the input foldseek alignment file.
+        Make sure to wrap in quotes!
+        """,
+    )
+    parser_aln_cluster.add_argument(
+        "-A",
+        "--all_inputs",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        [Default: '']
+        Path to a file that lists, one per line, all files that were intially input
+        into the alignment algorithm. Those members who did not make an alignment
+        prior to filtering and then putting the alignment file into this script are not
+        in the alignment_file, and thus wouldn't end up in the cluster_file output...
+        By specifying the members here, the un-aligned members will be output into the
+        cluster file as clusters of one member.
+
+        The input file should indicate the basename of each structure (if using
+        foldseek) or sequence (if using mmseqs) that was initially input into the
+        alignment, with one member per line. If the alignment was from foldseek, odds
+        are that the alignment file queries/targets all end in .pdb - so the entries
+        in this file must also end in .pdb. For mmseqs, odds are the query/targets don't
+        have a file suffix, so they shouldn't here.
+        """,
+    )
+    parser_aln_cluster.set_defaults(func=call_aln_cluster)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_add_clusters subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_add_clusters = subparsers.add_parser(
@@ -1587,6 +1680,12 @@ def call_aln_generate_superclusters(args):
     from scripts.aln_generate_superclusters import aln_generate_superclusters_main
 
     aln_generate_superclusters_main(args)
+
+
+def call_aln_cluster(args):
+    from scripts.aln_cluster import aln_cluster_main
+
+    aln_cluster_main(args)
 
 
 def call_aln_add_clusters(args):

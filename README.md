@@ -189,6 +189,17 @@ This subcommand is used to merge two foldseek alignment files.
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_merge -h`](.github/img/aln_merge.png)  
 
+# SAT aln_cluster
+This subcommand generates clusters from an input alignment file, where every query-target pair will be put into the same cluster.  
+
+This subcommand basically does what mmseqs/foldseek cluster mode 1 does (e.g. connected-compontent clustering). Here, any two members that are aligned will end up in the same cluster. Because of this string clustering, the alignment file should be strinctly filtered to only keep those alignments with high coverage and high confidence (e.g. high TMscore from foldseek or high z score from DALI).  
+
+The output file is essentially a foldseek/mmseqs cluster file with two columns: cluster_rep, cluster_member.  
+
+The optional --all_inputs switch can be used to provide information for all members that initially were input to the alignment. If provided, the output cluster file will include those members that aren't present in the alignment file as a cluster with only one member (themselves). This is very useful because the alignment file should be strictly filtered prior to using this script, so many of the items inputted to foldseek or mmseqs won't be present in the alignment file.  
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_cluster -h`](.github/img/aln_cluster.png)  
+
 # SAT aln_merge_clusters
 This subcommand takes in a cluster file and alignments between the REPRESENTATIVES of the clusters, and merges clusters whose representatives align together.
 <!-- RICH-CODEX hide_command: true -->
