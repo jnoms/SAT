@@ -412,7 +412,7 @@ def main():
 
             This subcommand basically does what mmseqs/foldseek cluster mode 1 does
             (e.g. connected-compontent clustering). Here, any two members that are
-            aligned will end up in the same cluster. Because of this string clustering,
+            aligned will end up in the same cluster. Because of this strong clustering,
             the alignment file should be strinctly filtered to only keep those
             alignments with high coverage and high confidence (e.g. high TMscore from
             foldseek or high z score from DALI).

@@ -193,7 +193,7 @@ This subcommand is used to merge two foldseek alignment files.
 # SAT aln_cluster
 This subcommand generates clusters from an input alignment file, where every query-target pair will be put into the same cluster.  
 
-This subcommand basically does what mmseqs/foldseek cluster mode 1 does (e.g. connected-compontent clustering). Here, any two members that are aligned will end up in the same cluster. Because of this string clustering, the alignment file should be strinctly filtered to only keep those alignments with high coverage and high confidence (e.g. high TMscore from foldseek or high z score from DALI).  
+This subcommand basically does what mmseqs/foldseek cluster mode 1 does (e.g. connected-compontent clustering). Here, any two members that are aligned will end up in the same cluster. Because of this strong clustering, the alignment file should be strinctly filtered to only keep those alignments with high coverage and high confidence (e.g. high TMscore from foldseek or high z score from DALI).  
 
 The output file is essentially a foldseek/mmseqs cluster file with two columns: cluster_rep, cluster_member.  
 
