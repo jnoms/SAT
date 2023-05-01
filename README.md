@@ -65,6 +65,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py aln_filter` - This filters for alignments below/above a specified value in a specified column, and can also filter to keep a maximum number of queries per alignment.  
 `sat.py aln_merge` - This merges two alignment files.  
 `sat.py aln_cluster` - This lets you do connected-component clustering, similar to foldseek/mmseqs cluster mode 1, but lets you have more control on filtering the alignments prior.  
+`sat.py aln_expand_clusters` - When you use the cluster representatives from one clustering (often sequence-based) to cluster using another clustering (often structure based), will merge them.  
 `sat.py aln_merge_clusters` - This takes in a cluster file and an alignment file of alignments between cluster representatives, and merges clusters whose representatives align.  
 `sat.py aln_parse_dali` - This parses a Dalilite alignment output into a tab-delimited format. It can also filter based on various alignment statistics.  
 `sat.py aln_generate_superclusters` - This takes in an all-by-all foldseek alignment and foldseek-reported clusters and identifies clusters that are linked (e.g. - some specified number of members of each cluster align to members of the other cluster). These clusters are then merged into a supercluster.  
@@ -200,6 +201,23 @@ The output file is essentially a foldseek/mmseqs cluster file with two columns: 
 The optional --all_inputs switch can be used to provide information for all members that initially were input to the alignment. If provided, the output cluster file will include those members that aren't present in the alignment file as a cluster with only one member (themselves). This is very useful because the alignment file should be strictly filtered prior to using this script, so many of the items inputted to foldseek or mmseqs won't be present in the alignment file.  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_cluster -h`](.github/img/aln_cluster.png)  
+
+# SAT aln_expand_clusters
+This subcommand is used to merge cluster files from a teired pair of clustering, often first a sequence clustering and then a structure
+clustering. It it assumed that the 'subcluster file' representatives were the members subsequently clustered in the 'cluster file'. This script simply adds the members of each subcluster to the parent cluster in the cluster
+file.  
+
+Ideally, there will not be a cluster_ID column in the input cluster files. If there is, those cluster_IDs will be used. Otherwise, cluster_IDs will be generated which rank clusters by total members.  
+
+The output file has the following columns:  
+- cluster_ID  
+- cluster_rep  
+- subcluster_rep  
+- cluster_member  
+- cluster_count  
+
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_expand_clusters -h`](.github/img/aln_expand_clusters.png)  
 
 # SAT aln_merge_clusters
 This subcommand takes in a cluster file and alignments between the REPRESENTATIVES of the clusters, and merges clusters whose representatives align together.
