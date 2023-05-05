@@ -55,6 +55,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
 `sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 `sat.py struc_qc` - Get information on the fraction of residues that are at least a specified pLDDT - this can be good for filtration.  
+`sat.py struc_disorder` - Get information on the number of residues in an input structure that are considered disordered and ordered.  
 
 ## Alignment-focused
 `sat.py aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
@@ -105,6 +106,18 @@ Given a structure, determines the percentage of residues that have at least the 
 - proportion of residues that pass the pLDDT threshold (this will be a decimal between 0 and 1)
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_qc -h`](.github/img/struc_qc.png) 
+
+# SAT struc_disorder
+This takes an input structure and calculates the number of residues that are considered ordered, disordered, or intermediate. A residue is considered ordered if it is in a stretch of at least n_sequential residues that have a pLDDT of >= order_cutoff. A residue is considered disordered if it is in a stretech of at least n_sequential residues <= disorder_cutoff.  
+
+This returns an output file with the following columns:  
+- basename of the input structure  
+- number of ordered residues  
+- number of disordered residues   
+- number of intermediate residues (neither ordered or disordered)  
+- total number of residues  
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_disorder -h`](.github/img/struc_disorder.png) 
 
 # SAT aln_add_taxonomy
 Adds taxonomy information to a foldseek alignment  

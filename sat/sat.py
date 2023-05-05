@@ -261,6 +261,82 @@ def main():
         """,
     )
     parser_struc_find_motif.set_defaults(func=call_struc_find_motif)
+
+    # -------------------------------------------------------------------------------- #
+    # Parser for struc_disorder subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_disorder = subparsers.add_parser(
+        "struc_disorder",
+        help=(
+            """
+            This takes an input structure and calculates the number of residues that
+            are considered ordered, disordered, or intermediate. A residue is considered
+            ordered if it is in a stretch of at least n_sequential residues that have a
+            pLDDT of >= order_cutoff. A residue is considered disordered if it is in a
+            stretech of at least n_sequential residues <= disorder_cutoff.
+
+            This returns an output file with the following columns:
+            - basename of the input structure
+            - number of ordered residues
+            - number of disordered residues
+            - number of intermediate residues (neither ordered or disordered)
+            - total number of residues
+            """
+        ),
+    )
+    parser_struc_disorder.add_argument(
+        "-s",
+        "--structure_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file
+        """,
+    )
+    parser_struc_disorder.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output file.
+        """,
+    )
+    parser_struc_disorder.add_argument(
+        "-c",
+        "--disorder_cutoff",
+        type=int,
+        required=False,
+        default=50,
+        help="""
+        Integer value. Residues that have a pLDDT <= this value and are in a stretch of
+        n_sequential residues are considered disordered. [Default: 50]
+        """,
+    )
+    parser_struc_disorder.add_argument(
+        "-C",
+        "--order_cutoff",
+        type=int,
+        required=False,
+        default=60,
+        help="""
+        Integer value. Residues that have a pLDDT >= this value and are in a stretch of
+        n_sequential residues are considered ordered. [Default: 60]
+        """,
+    )
+    parser_struc_disorder.add_argument(
+        "-n",
+        "--n_sequential",
+        type=int,
+        required=False,
+        default=6,
+        help="""
+        Integer value. There must be n_sequential residues for a residue to be called
+        ordered or disordered. [Default: 6]
+        """,
+    )
+    parser_struc_disorder.set_defaults(func=call_struc_disorder)
+
     # -------------------------------------------------------------------------------- #
     # Parser for struc_qc subcommand
     # -------------------------------------------------------------------------------- #
@@ -1765,6 +1841,12 @@ def call_parser_struc_qc(args):
     from scripts.struc_qc import struc_qc_main
 
     struc_qc_main(args)
+
+
+def call_struc_disorder(args):
+    from scripts.struc_disorder import struc_disorder_main
+
+    struc_disorder_main(args)
 
 
 def call_aln_generate_superclusters(args):
