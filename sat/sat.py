@@ -281,6 +281,9 @@ def main():
             - number of disordered residues
             - number of intermediate residues (neither ordered or disordered)
             - total number of residues
+            - there_is_a_domain: yes or no. This checks that there is at least one
+            stretech of continuous residues that have ordered pLDDTs. The required
+            stretch size is args.check_for_domain_len
             """
         ),
     )
@@ -333,6 +336,17 @@ def main():
         help="""
         Integer value. There must be n_sequential residues for a residue to be called
         ordered or disordered. [Default: 6]
+        """,
+    )
+    parser_struc_disorder.add_argument(
+        "-d",
+        "--check_for_domain_len",
+        type=int,
+        required=False,
+        default=50,
+        help="""
+        Integer value. This checks that there is at least one well-folded stretch of
+        residues with at least this pLDDT. [Default: 50]
         """,
     )
     parser_struc_disorder.set_defaults(func=call_struc_disorder)

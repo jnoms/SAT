@@ -27,7 +27,9 @@ def test_count_disorder():
     cutoff = 50
     n_sequential = 4
 
-    result = len(find_disorder(plddts, cutoff, n_sequential))
+    stretches = find_disorder(plddts, cutoff, n_sequential)
+    residues = [item for sublist in stretches for item in sublist]
+    result = len(residues)
     assert result == 16, f"Expected 16, but got {result}"
 
 
@@ -57,7 +59,9 @@ def test_count_disorder_punctuated():
     cutoff = 50
     n_sequential = 6
 
-    result = len(find_disorder(plddts, cutoff, n_sequential))
+    stretches = find_disorder(plddts, cutoff, n_sequential)
+    residues = [item for sublist in stretches for item in sublist]
+    result = len(residues)
     assert result == 6, f"Expected 6, but got {result}"
 
 
@@ -66,7 +70,9 @@ def test_count_order():
     cutoff = 80
     n_sequential = 4
 
-    result = len(find_order(plddts, cutoff, n_sequential))
+    stretches = find_order(plddts, cutoff, n_sequential)
+    residues = [item for sublist in stretches for item in sublist]
+    result = len(residues)
     assert result == 8, f"Expected 8, but got {result}"
 
 
@@ -75,5 +81,7 @@ def test_count_order_punctuated():
     cutoff = 80
     n_sequential = 6
 
-    result = len(find_order(plddts, cutoff, n_sequential))
+    stretches = find_order(plddts, cutoff, n_sequential)
+    residues = [item for sublist in stretches for item in sublist]
+    result = len(residues)
     assert result == 6, f"Expected 6, but got {result}"

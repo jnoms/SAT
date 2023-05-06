@@ -116,6 +116,7 @@ This returns an output file with the following columns:
 - number of disordered residues   
 - number of intermediate residues (neither ordered or disordered)  
 - total number of residues  
+- there_is_a_domain: yes or no. This checks that there is at least one stretech of continuous residues that have ordered pLDDTs. The required stretch size is args.check_for_domain_len  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_disorder -h`](.github/img/struc_disorder.png) 
 
