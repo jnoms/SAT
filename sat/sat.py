@@ -1812,6 +1812,40 @@ def main():
     )
     parser_aln_ecod_purity.set_defaults(func=call_aln_ecod_purity_main)
 
+    # -------------------------------------------------------------------------------- #
+    # Parser for plot_pae subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_plot_pae = subparsers.add_parser(
+        "plot_pae",
+        help=(
+            """
+            This subcommand produces a PAE matrix plot when given a colabfold scores
+            json file. The output file type is specified by the suffix of the out_image
+            argument.
+            """
+        ),
+    )
+    parser_plot_pae.add_argument(
+        "-s",
+        "--scores",
+        type=str,
+        required=True,
+        help="""
+        Path to the colabfold PAE scores file, in json format.
+        """,
+    )
+    parser_plot_pae.add_argument(
+        "-o",
+        "--out_image",
+        type=str,
+        required=True,
+        help="""
+        Path to the resultant PAE matrix image. The filetype of the output is determined
+        by the suffix of this argument.
+        """,
+    )
+    parser_plot_pae.set_defaults(func=call_plot_pae_main)
+
     # ----------------------------------------------------------------------------------#
     # Parse the args and call the function associated with the subcommand
     # ----------------------------------------------------------------------------------#
@@ -1971,6 +2005,12 @@ def call_aln_ecod_purity_main(args):
     from scripts.aln_ecod_purity import aln_ecod_purity_main
 
     aln_ecod_purity_main(args)
+
+
+def call_plot_pae_main(args):
+    from scripts.plot_pae import plot_pae_main
+
+    plot_pae_main(args)
 
 
 # Keep these buffer lines here

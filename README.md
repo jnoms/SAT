@@ -73,7 +73,10 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py aln_ecod_purity` - This takes in a cluster file and the alignments between the cluster members and the ECOD HMM database and counts, for each ECOD level, the number of members per cluster.
 
 ## Sequence-focused  
-`sat.py seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.
+`sat.py seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.  
+
+## Plotting-focused  
+`sat.py plot_pae` - Plots the colabfold PAE scores json file.    
 
 # SAT struc_get_domains
 Extract separate domain structures from a predicted structure.  
@@ -250,6 +253,11 @@ The output columns are as follows:
 Note that this assumes that each member only has ONE alignment - e.g. the best ECOD alignment.  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_ecod_purity -h`](.github/img/aln_ecod_purity.png)  
+
+# SAT plot_pae
+This subcommand produces a PAE matrix plot when given a colabfold scores json file. The output file type is specified by the suffix of the out_image arguemnt.    
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py plot_pae -h`](.github/img/plot_pae.png)  
 
 
 # Planned improvements
