@@ -136,9 +136,15 @@ def visualize_PAE(pae_matrix):
     """
     Given a PAE matrix, returns a matplotlib heatmap of the residues.
     """
-    plt.imshow(np.asarray(pae_matrix))
+    im = plt.imshow(np.asarray(pae_matrix))
+
+    # Create colorbar
+    cbar = plt.colorbar(im)
+    cbar.set_label("PAE")
+
     plt.xlabel("Residue 1")
     plt.ylabel("Residue 2")
+
     return plt
 
 
