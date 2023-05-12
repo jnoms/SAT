@@ -1059,6 +1059,71 @@ def main():
     parser_seq_chunk.set_defaults(func=call_seq_chunk_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for seq_multimerize subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_seq_multimerize = subparsers.add_parser(
+        "seq_multimerize",
+        help=(
+            """
+            This subcommand combines input fastas to generate a multimierzed fasta
+            containing :'s separating sequence. The cardinality of the input files can
+            be specified to generate different kinds of homo- or hetero-complexes.
+            Inputting the path to one file and specifing a cardinality of 2, for
+            example, will generate an output file like the following:
+            >args.header
+            seq:seq
+            """
+        ),
+    )
+    parser_seq_multimerize.add_argument(
+        "-i",
+        "--infiles",
+        type=str,
+        required=True,
+        help="""
+        Path to one or more input fasta files. Each fasta file should have only one
+        sequence. If there are multiple input files, this input is a *DOUBLE COMMA
+        DELIMITED STRING*. E.g. an appropriate input for two files would be 
+        '/path/to/file/file1.fasta,,/path/to/file/file2.fasta'
+        """,
+    )
+    parser_seq_multimerize.add_argument(
+        "-H",
+        "--header",
+        type=str,
+        required=True,
+        help="""
+        This is the desired header of the output file.
+        """,
+    )
+    parser_seq_multimerize.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output file.
+        """,
+    )
+    parser_seq_multimerize.add_argument(
+        "-c",
+        "--cardinality",
+        type=str,
+        required=False,
+        default="2",
+        help="""
+        This is a *DOUBLE COMMA DELIMITED STRING* of integers. There should be an equal
+        number of intergers as there are paths in the infiles argument. Each integer
+        value indicates the number of times the corresponding infile's sequence should
+        be present in the output sequence.
+        Example: '1,,2' will end up with the first sequence once and the second sequence
+        twice.
+        [Default: '2' (which makes a dimer given one input sequence)]
+        """,
+    )
+    parser_seq_multimerize.set_defaults(func=call_seq_multimerize_main)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_taxa_counts subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_taxa_counts = subparsers.add_parser(
@@ -1949,6 +2014,12 @@ def call_seq_chunk_main(args):
     from scripts.seq_chunk import seq_chunk_main
 
     seq_chunk_main(args)
+
+
+def call_seq_multimerize_main(args):
+    from scripts.seq_multimerize import seq_multimerize_main
+
+    seq_multimerize_main(args)
 
 
 def call_parser_aln_taxa_counts_main(args):
