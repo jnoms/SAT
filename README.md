@@ -74,6 +74,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 
 ## Sequence-focused  
 `sat.py seq_chunk` - Splits a fasta file into overlapping or non-overlapping chunks.  
+`sat.py seq_multimerize` - Combines one or more fasta sequences, separated by :'s, to be used for multimer prediction. Cardinality can be specified, so this is good to make any number of homo- and hetero-complexes.  
 
 ## Plotting-focused  
 `sat.py plot_pae` - Plots the colabfold PAE scores json file.    
@@ -155,6 +156,11 @@ Simple subcommand that renumbers all residues in a structure such that the first
 Splits entries into a fasta into overlapping or non-overlapping chunks. This is helpful when you want to split up sequences that are too long to effectively use for structure prediction. This subcommand is able to generate overlapping sequences. 
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py seq_chunk -h`](.github/img/seq_chunk.png)  
+
+# SAT seq_multimerize  
+ This subcommand combines input fastas to generate a multimierzed fasta containing :'s separating sequence. The cardinality of the input files can be specified to generate different kinds of homo- or hetero-complexes.
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py seq_multimerize -h`](.github/img/seq_multimerize.png)  
 
 # SAT struc_download
 This subcommand takes in a file of uniprot IDs and downloads the AF2 database pdb and pae files to the indicated directory. Furthermore, if any additional information is present in the tabular infile it will be appended to the output files - this is a good way to lable the files with information like taxonomyID, etc.
