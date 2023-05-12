@@ -76,7 +76,7 @@ def seq_multimerize_main(args):
     talk_to_me("Generating output sequences and file")
     out_seq = multimerize_seqs(sequences, cardinality)
 
-    out = f">{args.header}\n{out_seq}"
+    out = f">{args.header}\n{out_seq}\n"
     make_output_dir(args.out_file)
     with open(args.out_file, "w") as outfile:
         outfile.write(out)
