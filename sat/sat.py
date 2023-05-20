@@ -391,6 +391,99 @@ def main():
     parser_struc_qc.set_defaults(func=call_parser_struc_qc)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for struc_detect_interaction subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_detect_interaction = subparsers.add_parser(
+        "struc_detect_interaction",
+        help=(
+            """
+            This subcommand takes in a structure predction (PDB file) and its associated
+            PAE file (from colabfold) that was generated with AF Multimer between
+            two molecules. Thus, the structure prediction should have two chains, A and
+            B. This script clusters the PAE matrix and determins if a cluster contains
+            residues from both chains - if so, the molecules are considered to have an
+            interaction. This script also counts the number of residues of each chain
+            that have a C-alpha  within a specified agstrom distance from a C-alpha
+            from the other chain.
+
+            It is assumed the input structure has a delimiter which indicates the 
+            two members that were folded together - this delimiter can be provided.
+
+            The output file is tab-delimited with the following columns:
+            - member1
+            - member2
+            - interaction (True or False)
+            - # of residues in chain1 that have a C-alpha within distance_cutoff
+                angstroms of a C-alpha from chain2.
+            - # of residues in chain2 that have a C-alpha within distance_cutoff
+                angstroms of a C-alpha from chain1.
+            """
+        ),
+    )
+    parser_struc_detect_interaction.add_argument(
+        "-s",
+        "--structure",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file
+        """,
+    )
+    parser_struc_detect_interaction.add_argument(
+        "-p",
+        "--pae",
+        type=str,
+        required=True,
+        help="""
+        Path to the structure file
+        """,
+    )
+    parser_struc_detect_interaction.add_argument(
+        "-o",
+        "--out_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output file, which is tab delimited and has the following columns:
+        - member1
+        - member2
+        - interaction (True or False)
+        - # of residues in chain1 that have a C-alpha within distance_cutoff
+            angstroms of a C-alpha from chain2.
+        - # of residues in chain2 that have a C-alpha within distance_cutoff
+            angstroms of a C-alpha from chain1.
+        """,
+    )
+    parser_struc_detect_interaction.add_argument(
+        "-d",
+        "--distance_cutoff",
+        type=int,
+        required=False,
+        default=5,
+        help="""
+        Number of angstroms to report cross-chain residue interactions
+        [Default: 5]
+        """,
+    )
+    parser_struc_detect_interaction.add_argument(
+        "-D",
+        "--delimiter",
+        type=str,
+        required=False,
+        default="__",
+        help="""
+        Delimiter present in the structure file basename that separates the molecules
+        that were folded together. For example, a structure file of
+        /path/to/file/mol1__mol2.pdb with a delimiter of __ will identify mol1 and mol2
+        as the member names.
+        [Default: '__']
+        """,
+    )
+    parser_struc_detect_interaction.set_defaults(
+        func=call_struc_detect_interaction_main
+    )
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_generate_superclusters subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_generate_superclusters = subparsers.add_parser(
@@ -1954,6 +2047,12 @@ def call_parser_struc_qc(args):
     from scripts.struc_qc import struc_qc_main
 
     struc_qc_main(args)
+
+
+def call_struc_detect_interaction_main(args):
+    from scripts.struc_detect_interaction import struc_detect_interaction_main
+
+    struc_detect_interaction_main(args)
 
 
 def call_struc_disorder(args):

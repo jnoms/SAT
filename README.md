@@ -55,7 +55,9 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
 `sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 `sat.py struc_qc` - Get information on the fraction of residues that are at least a specified pLDDT - this can be good for filtration.  
-`sat.py struc_disorder` - Get information on the number of residues in an input structure that are considered disordered and ordered.  
+`sat.py struc_disorder` - Get information on the number of residues in an input structure that are considered disordered and ordered. 
+`sat.py struc_detect_interaction` - For a co-folded prediction of two molecules, determine if the PAE matrix clusters across the molecules and suggests a potential interaction.  
+
 
 ## Alignment-focused
 `sat.py aln_add_clusters` - Adds foldseek clustering information to the foldseek tabular alignment file.  
@@ -110,6 +112,20 @@ Given a structure, determines the percentage of residues that have at least the 
 - proportion of residues that pass the pLDDT threshold (this will be a decimal between 0 and 1)
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_qc -h`](.github/img/struc_qc.png) 
+
+# SAT struc_detect_interaction
+This subcommand takes in a structure predction (PDB file) and its associated PAE file (from colabfold) that was generated with AF Multimer between two molecules. Thus, the structure prediction should have two chains, A and B. This script clusters the PAE matrix and determins if a cluster contains residues from both chains - if so, the molecules are considered to have an interaction. This script also counts the number of residues of each chain that have a C-alpha  within a specified agstrom distance from a C-alpha from the other chain.  
+
+It is assumed the input structure has a delimiter which indicates the two members that were folded together - this delimiter can be provided.  
+
+The output file is tab-delimited with the following columns:  
+- member1  
+- member2  
+- interaction (True or False)  
+- The number of residues in chain1 that have a C-alpha within distance_cutoff angstroms of a C-alpha from chain2.  
+- The number of residues in chain2 that have a C-alpha within distance_cutoff angstroms of a C-alpha from chain1.  
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_detect_interaction -h`](.github/img/struc_detect_interaction.png) 
 
 # SAT struc_disorder
 This takes an input structure and calculates the number of residues that are considered ordered, disordered, or intermediate. A residue is considered ordered if it is in a stretch of at least n_sequential residues that have a pLDDT of >= order_cutoff. A residue is considered disordered if it is in a stretech of at least n_sequential residues <= disorder_cutoff.  

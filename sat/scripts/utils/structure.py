@@ -1,4 +1,4 @@
-from Bio.PDB import PDBParser, PDBIO, Select
+from Bio.PDB import PDBParser, PDBIO, Select, Selection, NeighborSearch
 from Bio.SeqUtils import seq1
 
 
@@ -127,6 +127,49 @@ def compare_structures(structure1, structure2):
         r1 = s1_residues[i]
         r2 = s2_residues[i]
         assert r1 == r2
+
+
+def find_near_residues(structure, chain_id_1, chain_id_2, distance_cutoff):
+    """
+    Given a biopython structure object with at least two chains, determins the
+    number of residues in chain_id_1 that have a C-alpha  within distance_cutoff
+    angstroms of a C-alpha of a residue in chain_id_2.
+
+    Inputs:
+    - structure: a biopython structure object
+    - chain_id_1: A string, usually 'A' or 'B'. This is the one whose residues will be
+        counted.
+    - chain_id_2: A string, usually 'A' or 'B'
+    - distance cutoff: Integer value in angstroms.
+
+    Output:
+    - a list of biopython residue objects
+
+    Also note that biopython residue IDs are 1-indexed.
+    """
+    # Extract the chains
+    chain_1 = structure[0][chain_id_1]
+    chain_2 = structure[0][chain_id_2]
+
+    # Extract c-alphas from chain 2
+    atoms_chain_2 = Selection.unfold_entities(chain_2, "A")
+    atoms_chain_2 = [atom for atom in atoms_chain_2 if atom.name == "CA"]
+
+    # Create a NeighborSearch object with chain 2 c-alphas
+    ns = NeighborSearch(atoms_chain_2)
+
+    # Search for chain 1 c-alphas within a given distance of any chain 2 c-alpha
+    close_residues = []
+    for residue in chain_1:
+        try:
+            ca = residue["CA"]
+        except KeyError:
+            continue  # Skip residues without a c-alpha atom
+        close_atoms = ns.search(ca.get_coord(), distance_cutoff)
+        if close_atoms:  # If any atoms are within the distance cutoff
+            close_residues.append(residue)
+
+    return close_residues
 
 
 if __name__ == "__main__":
