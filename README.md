@@ -55,7 +55,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
 `sat.py struc_rebase` - Rebases an input structure such that the first residue is residue #1, and all subsequent residues are sequential (e.g. removes numeric gaps present in discontinuous domains).  
 `sat.py struc_qc` - Get information on the fraction of residues that are at least a specified pLDDT - this can be good for filtration.  
-`sat.py struc_disorder` - Get information on the number of residues in an input structure that are considered disordered and ordered. 
+`sat.py struc_disorder` - Get information on the number of residues in an input structure that are considered disordered and ordered.  
 `sat.py struc_detect_interaction` - For a co-folded prediction of two molecules, determine if the PAE matrix clusters across the molecules and suggests a potential interaction.  
 
 
