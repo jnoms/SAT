@@ -23,7 +23,7 @@ poetry run sat.py <subcommand>
 1. Clone this repository
 2. Create a conda environment that contains the poetry package manager
 ```
-conda create --name SAT -c conda-forge poetry
+conda create --name SAT -c conda-forge poetry python=3.10.5
 ```
 3. Activate environment. Enter the SAT directory and download the dependencies using poetry. Dependencies will be downloaded specifically into that conda environment.
 ```
