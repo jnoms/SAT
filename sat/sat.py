@@ -1885,6 +1885,49 @@ def main():
     parser_struc_download.set_defaults(func=call_struc_download_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for struc_extract_chains subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_struc_extract_chains = subparsers.add_parser(
+        "struc_extract_chains",
+        help=(
+            """
+            This subcommand extracts one or more chains from an input structure,
+            and writes them to a new pdb file. The desired chains should be input as a
+            comma-delimited list.
+            """
+        ),
+    )
+    parser_struc_extract_chains.add_argument(
+        "-s",
+        "--structure_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the input structure file.
+        """,
+    )
+    parser_struc_extract_chains.add_argument(
+        "-c",
+        "--chains",
+        type=str,
+        required=True,
+        help="""
+        Comma-delimited list containing the chainID(s) of the chains you want to write
+        to the output file
+        """,
+    )
+    parser_struc_extract_chains.add_argument(
+        "-o",
+        "--output_file",
+        type=str,
+        required=True,
+        help="""
+        Path to the output structure file containing only the specified chain(s).
+        """,
+    )
+    parser_struc_extract_chains.set_defaults(func=call_struc_struc_extract_chains_main)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_ecod_purity subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_ecod_purity = subparsers.add_parser(
@@ -2169,6 +2212,12 @@ def call_struc_download_main(args):
     from scripts.struc_download import struc_download_main
 
     struc_download_main(args)
+
+
+def call_struc_struc_extract_chains_main(args):
+    from scripts.struc_extract_chains import struc_extract_chains_main
+
+    struc_extract_chains_main(args)
 
 
 def call_aln_ecod_purity_main(args):
