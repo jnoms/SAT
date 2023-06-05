@@ -106,7 +106,7 @@ The input can be a structure file, a fasta, or just a sequence. The output is ta
 ![`poetry run .github/tmp/sat_codex.py struc_find_motif -h`](.github/img/struc_find_motif.png) 
 
 # SAT struc_extract_chains
-This subcommand extracts one or more chains from an input structure, and writes them to a new pdb file. The desired chains should be input as a comma-delimited list.  
+This subcommand extracts one or more chains from an input structure, and writes them to a new pdb file. The desired chains should be input as a comma-delimited string.  
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_extract_chains -h`](.github/img/struc_extract_chains.png) 
 

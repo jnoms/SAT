@@ -1893,7 +1893,7 @@ def main():
             """
             This subcommand extracts one or more chains from an input structure,
             and writes them to a new pdb file. The desired chains should be input as a
-            comma-delimited list.
+            comma-delimited string.
             """
         ),
     )
