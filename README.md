@@ -50,6 +50,7 @@ When you run the tests or the first time you run any taxonomy-related script, et
 ## Structure-focused
 `sat.py struc_get_domains` - Uses PAE information to extract well-folded domains from an input structure.  
 `sat.py struc_remove_redundant` - Removes domains that have strongly overlapping primary amino-acid sequences.   
+`sat.py struc_extract_chains` - Given an input structure file with multiple chains, write a new file with only the specified chain(s).  
 `sat.py struc_find_motif` - Checks if there is a motif in a structure or sequence input.  
 `sat.py struc_to_seq` - Prints the primary amino acid sequence of a structure to the screen or appends to a specified file in fasta format.  
 `sat.py struc_to_plddt` - Prints the average pLDDT of a structure to the screen or appends to a specified file.  
@@ -103,6 +104,11 @@ The input can be a structure file, a fasta, or just a sequence. The output is ta
 - end   
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py struc_find_motif -h`](.github/img/struc_find_motif.png) 
+
+# SAT struc_extract_chains
+This subcommand extracts one or more chains from an input structure, and writes them to a new pdb file. The desired chains should be input as a comma-delimited list.  
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py struc_extract_chains -h`](.github/img/struc_extract_chains.png) 
 
 # SAT struc_qc
 Given a structure, determines the percentage of residues that have at least the specified pLDDT. The output is returned to STDOUT!! It is tab-delimited and has the following columns:   
