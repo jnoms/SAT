@@ -128,6 +128,8 @@ The output file is tab-delimited with the following columns:
 - member1  
 - member2  
 - interaction (True or False)  
+- number of residues in chain1 that are present in cross-chain clusters  
+- number of residues in chain2 that are present in corss-chain clusters  
 - The number of residues in chain1 that have a C-alpha within distance_cutoff angstroms of a C-alpha from chain2.  
 - The number of residues in chain2 that have a C-alpha within distance_cutoff angstroms of a C-alpha from chain1.  
 <!-- RICH-CODEX hide_command: true -->
