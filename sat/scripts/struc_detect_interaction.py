@@ -53,6 +53,22 @@ def is_cross_boundary(classification, chains):
         return False
 
 
+def domain_chian_counts(domain, chain_1_residue_count):
+    """
+    Returns a tuple with the number of residues in chain1 and chain2.
+
+    Notes on indexing:
+    - domain is a frozen set with intergers, where the integers are 0-indexed positions.
+    - SO, to do this calculation relative to the residue count need to either add
+      one to each member of domain or subtract 1 from the chain_1_residue_count.
+
+    Because the values in domain are 0-indexed, subtract 1 from chain_1_residue_count
+    """
+    chain1_count = len([num for num in domain if num <= chain_1_residue_count - 1])
+    chain2_count = len([num for num in domain if num > chain_1_residue_count - 1])
+    return chain1_count, chain2_count
+
+
 def get_components_from_structure_path(structure_path, delimiter):
     """
     Gets the name of the individual molecules being compared - it's assumed that these
@@ -84,6 +100,12 @@ def struc_detect_interaction_main(args):
     talk_to_me("Detecting interaction...")
     interaction = False
     cross_chain_domains = []
+
+    # Keep track of total number of residues in each chain that are present in domains
+    # that are cross-chain.
+    chain1_count = 0
+    chain2_count = 0
+
     for domain in domains:
 
         # Classification gives a dictionary with keys "A"/"B", with values being
@@ -92,18 +114,33 @@ def struc_detect_interaction_main(args):
         if is_cross_boundary(classification, chains):
             interaction = True
             cross_chain_domains.append(domain)
+            domain_chain1_count, domain_chain2_count = domain_chian_counts(
+                domain, chain_1_residue_count
+            )
+            print(domain)
+            print(chain_1_residue_count, domain_chain1_count, domain_chain2_count)
+            chain1_count += domain_chain1_count
+            chain2_count += domain_chain2_count
     talk_to_me(f"Interaction status: {interaction}")
+    talk_to_me(f"Chain 1: {chain1_count} residues in cross-chain clusters.")
+    talk_to_me(f"Chain 2: {chain2_count} residues in cross-chain clusters.")
 
     # Calculate the number of residues within distance cutoff
     talk_to_me(f"Calculating residues within {args.distance_cutoff} angstroms")
-    near_resdiues_1 = find_near_residues(
+    near_residues_1 = find_near_residues(
         struc, chains[0], chains[1], args.distance_cutoff
     )
-    near_resdiues_2 = find_near_residues(
+    near_residues_2 = find_near_residues(
         struc, chains[1], chains[0], args.distance_cutoff
     )
-    talk_to_me(f"Chain 1: {len(near_resdiues_1)} residues")
-    talk_to_me(f"Chain 2: {len(near_resdiues_2)} residues")
+    talk_to_me(
+        f"Chain 1: {len(near_residues_1)} residues within {args.distance_cutoff} "
+        "angstroms of chain 2"
+    )
+    talk_to_me(
+        f"Chain 2: {len(near_residues_2)} residues within {args.distance_cutoff} "
+        "angstroms of chain 1"
+    )
 
     # Write output
     talk_to_me("Writing output")
@@ -123,10 +160,17 @@ def struc_detect_interaction_main(args):
             )
             member1 = os.path.basename(args.structure).rstrip(".pdb")
             member2 = member1
-        out = (
-            f"{member1}\t{member2}\t{interaction}\t{len(near_resdiues_1)}"
-            f"\t{len(near_resdiues_1)}\n"
-        )
+        out = [
+            member1,
+            member2,
+            interaction,
+            chain1_count,
+            chain2_count,
+            len(near_residues_1),
+            len(near_residues_2),
+        ]
+        out = [str(x) for x in out]
+        out = "\t".join(out) + "\n"
         outfile.write(out)
 
 
