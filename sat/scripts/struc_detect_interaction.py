@@ -105,8 +105,8 @@ def struc_detect_interaction_main(args):
 
     # Keep track of total number of residues in each chain that are present in domains
     # that are cross-chain.
-    chain1_count = 0
-    chain2_count = 0
+    chain1_cross_chain_count = 0
+    chain2_cross_chain_count = 0
 
     for domain in domains:
 
@@ -119,11 +119,11 @@ def struc_detect_interaction_main(args):
             domain_chain1_count, domain_chain2_count = domain_chian_counts(
                 domain, chain_1_residue_count
             )
-            chain1_count += domain_chain1_count
-            chain2_count += domain_chain2_count
+            chain1_cross_chain_count += domain_chain1_count
+            chain2_cross_chain_count += domain_chain2_count
     talk_to_me(f"Interaction status: {interaction}")
-    talk_to_me(f"Chain 1: {chain1_count} residues in cross-chain clusters.")
-    talk_to_me(f"Chain 2: {chain2_count} residues in cross-chain clusters.")
+    talk_to_me(f"Chain 1: {chain1_cross_chain_count} residues in cross-chain clusters.")
+    talk_to_me(f"Chain 2: {chain2_cross_chain_count} residues in cross-chain clusters.")
 
     # Calculate the number of residues within distance cutoff
     talk_to_me(f"Calculating residues within {args.distance_cutoff} angstroms")
@@ -166,8 +166,10 @@ def struc_detect_interaction_main(args):
             interaction,
             chain_1_residue_count,
             chain_2_residue_count,
-            chain1_count,
-            chain2_count,
+            chain1_cross_chain_count,
+            chain2_cross_chain_count,
+            chain1_cross_chain_count / chain_1_residue_count,
+            chain2_cross_chain_count / chain_2_residue_count,
             len(near_residues_1),
             len(near_residues_2),
         ]

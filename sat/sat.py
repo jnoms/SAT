@@ -417,6 +417,8 @@ def main():
             - # of residues in chain2
             - # of residues in chain1 that are present in cross-chain clusters
             - # of residues in chain2 that are present in corss-chain clusters
+            - fraction of residues in chain 1 that are present in cross-chain clusters
+            - fraction of residues in chain 2 that are present in cross-chain clusters
             - # of residues in chain1 that have a C-alpha within distance_cutoff
                 angstroms of a C-alpha from chain2.
             - # of residues in chain2 that have a C-alpha within distance_cutoff
