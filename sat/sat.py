@@ -413,6 +413,8 @@ def main():
             - member1
             - member2
             - interaction (True or False)
+            - # of residues in chain1
+            - # of residues in chain2
             - # of residues in chain1 that are present in cross-chain clusters
             - # of residues in chain2 that are present in corss-chain clusters
             - # of residues in chain1 that have a C-alpha within distance_cutoff

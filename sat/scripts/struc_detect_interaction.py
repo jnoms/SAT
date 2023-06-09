@@ -91,6 +91,8 @@ def struc_detect_interaction_main(args):
         raise ValueError(msg)
     chain_1 = struc[0][chains[0]]
     chain_1_residue_count = len(list(chain_1.get_residues()))
+    chain_2 = struc[0][chains[1]]
+    chain_2_residue_count = len(list(chain_2.get_residues()))
     pae = parse_json_file(args.pae)[0]
 
     talk_to_me("Clustering PAE matrix")
@@ -117,8 +119,6 @@ def struc_detect_interaction_main(args):
             domain_chain1_count, domain_chain2_count = domain_chian_counts(
                 domain, chain_1_residue_count
             )
-            print(domain)
-            print(chain_1_residue_count, domain_chain1_count, domain_chain2_count)
             chain1_count += domain_chain1_count
             chain2_count += domain_chain2_count
     talk_to_me(f"Interaction status: {interaction}")
@@ -164,6 +164,8 @@ def struc_detect_interaction_main(args):
             member1,
             member2,
             interaction,
+            chain_1_residue_count,
+            chain_2_residue_count,
             chain1_count,
             chain2_count,
             len(near_residues_1),

@@ -1,7 +1,7 @@
 {
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "none",
     "editor.formatOnSave": true,
     "python.formatting.blackPath": "/usr/local/Caskroom/miniconda/base/envs/SAT/bin/black",
     "python.linting.flake8Args": [
@@ -11,5 +11,8 @@
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
