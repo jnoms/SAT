@@ -399,30 +399,26 @@ def main():
             """
             This subcommand takes in a structure predction (PDB file) and its associated
             PAE file (from colabfold) that was generated with AF Multimer between
-            two molecules. Thus, the structure prediction should have two chains, A and
-            B. This script clusters the PAE matrix and determins if a cluster contains
-            residues from both chains - if so, the molecules are considered to have an
-            interaction. This script also counts the number of residues of each chain
-            that have a C-alpha  within a specified agstrom distance from a C-alpha
-            from the other chain.
+            two molecules. Thus, the structure prediction should have two chains.
 
-            It is assumed the input structure has a delimiter which indicates the 
-            two members that were folded together - this delimiter can be provided.
+            This script does two main things:
+            1) Determins which residues of chain 1 are in contact with residues from
+            chain 2. Residues are considered in contact if the distance between an atom
+            in a chain 1 residue and an atom in a chain 2 residue is less than the sum
+            of their van der Waals radii plus 0.5 Å. This script counts both the total
+            number of pairwise interactions as well as the total number of residues
+            (from either chain) that are at the interface of the two chains.
+            2) Using the PAE matrix, clusters the residues and determins if there is a
+            cluster that contains residues from both chains.
 
             The output file is tab-delimited with the following columns:
             - member1
             - member2
-            - interaction (True or False)
-            - # of residues in chain1
-            - # of residues in chain2
-            - # of residues in chain1 that are present in cross-chain clusters
-            - # of residues in chain2 that are present in corss-chain clusters
-            - fraction of residues in chain 1 that are present in cross-chain clusters
-            - fraction of residues in chain 2 that are present in cross-chain clusters
-            - # of residues in chain1 that have a C-alpha within distance_cutoff
-                angstroms of a C-alpha from chain2.
-            - # of residues in chain2 that have a C-alpha within distance_cutoff
-                angstroms of a C-alpha from chain1.
+            - average PAE of residues that are interacting across chains
+            - number of interactions between residues in each chain
+            - total number of residues at the interface of the two chains
+            - number of residues in chain1
+            - number of residues in chain2
             """
         ),
     )
@@ -458,17 +454,6 @@ def main():
             angstroms of a C-alpha from chain2.
         - # of residues in chain2 that have a C-alpha within distance_cutoff
             angstroms of a C-alpha from chain1.
-        """,
-    )
-    parser_struc_detect_interaction.add_argument(
-        "-d",
-        "--distance_cutoff",
-        type=int,
-        required=False,
-        default=5,
-        help="""
-        Number of angstroms to report cross-chain residue interactions
-        [Default: 5]
         """,
     )
     parser_struc_detect_interaction.add_argument(

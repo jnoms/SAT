@@ -1,7 +1,8 @@
 import os
+import numpy as np
 
 from .struc_get_domains import parse_json_file, domains_from_pae_matrix_networkx
-from .utils.structure import pdb_to_structure_object, find_near_residues
+from .utils.structure import pdb_to_structure_object
 from .utils.misc import talk_to_me, make_output_dir
 
 
@@ -69,6 +70,58 @@ def domain_chian_counts(domain, chain_1_residue_count):
     return chain1_count, chain2_count
 
 
+def atoms_interact(
+    atom1, atom2, vdw_radii={"H": 1.2, "C": 1.7, "N": 1.55, "O": 1.52, "S": 1.8}
+):
+    """
+    Determines if two atoms interact, where an interaction is defined as them being
+    closer than the sum of their van der Waals radii plus 0.5 angstroms
+    """
+    d = atom1 - atom2
+    atom1_vdw = vdw_radii.get(atom1.element, 0)
+    atom2_vdw = vdw_radii.get(atom2.element, 0)
+    if d < atom1_vdw + atom2_vdw + 0.5:
+        return True
+    return False
+
+
+def find_interacting_residues(chain_1, chain_2):
+    """
+    chain_1 and chain_2 are biopython chain objects. This function runs the
+    atoms_interact() function on every pair of atoms in each residue of each chain. If
+    one residue of one chain has an atom that interacts with one atom of one residue in
+    the other chain, those two residues are considered interacting.
+
+    The output is a set of tuples, where each tuple is two biopython residue objects.
+    The first is the reisdue from chain 1 and the second is the residue from chain 2
+    that is interacting with that residue.
+
+    Because this iterates over every pair of atoms, this can take some time (10s of
+    seconds for a small protein pair, probably 1min + for larger proteins).
+    """
+    # a set to hold the interacting residue pairs
+    interacting_residues = set()
+
+    # for each pair of atoms, one from chain A and the other from chain B
+    for atom_a in chain_1.get_atoms():
+        for atom_b in chain_2.get_atoms():
+            if atoms_interact(atom_a, atom_b):
+                interacting_residues.add((atom_a.get_parent(), atom_b.get_parent()))
+
+    return interacting_residues
+
+
+def interacting_residues_cross_chain_pae(r1, r2, chain_1_residue_count, pae):
+    """
+    r1 and r2 are biopython residue objects, where r.id[1] corresponds to the
+    1-indexed residue position of a residue. r1 is a residue from chain 1, and r2
+    is a residue from chain 2.
+
+    This finds the pae between those two residues.
+    """
+    return pae[r1.id[1] - 1, r2.id[1] - 1 + chain_1_residue_count]
+
+
 def get_components_from_structure_path(structure_path, delimiter):
     """
     Gets the name of the individual molecules being compared - it's assumed that these
@@ -95,51 +148,29 @@ def struc_detect_interaction_main(args):
     chain_2_residue_count = len(list(chain_2.get_residues()))
     pae = parse_json_file(args.pae)[0]
 
-    talk_to_me("Clustering PAE matrix")
+    # Determine if there is a cross-chain cluster
+    talk_to_me("Detecting cross-chain clusters...")
     domains = domains_from_pae_matrix_networkx(pae, pae_cutoff=5)
-
-    # Looking for an interaction. But also, store the cross-chian domains incase needed
-    talk_to_me("Detecting interaction...")
-    interaction = False
-    cross_chain_domains = []
-
-    # Keep track of total number of residues in each chain that are present in domains
-    # that are cross-chain.
-    chain1_cross_chain_count = 0
-    chain2_cross_chain_count = 0
-
+    cross_chain_cluster = False
     for domain in domains:
-
         # Classification gives a dictionary with keys "A"/"B", with values being
         # the number of residues within Chain A or Chain B within the PAE cluster
         classification = classify_members(domain, chain_1_residue_count, chains)
         if is_cross_boundary(classification, chains):
-            interaction = True
-            cross_chain_domains.append(domain)
-            domain_chain1_count, domain_chain2_count = domain_chian_counts(
-                domain, chain_1_residue_count
-            )
-            chain1_cross_chain_count += domain_chain1_count
-            chain2_cross_chain_count += domain_chain2_count
-    talk_to_me(f"Interaction status: {interaction}")
-    talk_to_me(f"Chain 1: {chain1_cross_chain_count} residues in cross-chain clusters.")
-    talk_to_me(f"Chain 2: {chain2_cross_chain_count} residues in cross-chain clusters.")
+            cross_chain_cluster = False
+    talk_to_me(f"Cross-chain clusters status: {cross_chain_cluster}")
 
-    # Calculate the number of residues within distance cutoff
-    talk_to_me(f"Calculating residues within {args.distance_cutoff} angstroms")
-    near_residues_1 = find_near_residues(
-        struc, chains[0], chains[1], args.distance_cutoff
-    )
-    near_residues_2 = find_near_residues(
-        struc, chains[1], chains[0], args.distance_cutoff
-    )
-    talk_to_me(
-        f"Chain 1: {len(near_residues_1)} residues within {args.distance_cutoff} "
-        "angstroms of chain 2"
-    )
-    talk_to_me(
-        f"Chain 2: {len(near_residues_2)} residues within {args.distance_cutoff} "
-        "angstroms of chain 1"
+    talk_to_me(f"Identifying interacting residues")
+    interacting_residues = find_interacting_residues(chain_1, chain_2)
+    paes = []
+    for r1, r2 in interacting_residues:
+        paes.append(
+            interacting_residues_cross_chain_pae(r1, r2, chain_1_residue_count, pae)
+        )
+    avg_interaction_pae = np.average(paes)
+    number_of_interactions = len(interacting_residues)
+    interface_residue_count = len(
+        {item for sublist in interacting_residues for item in sublist}
     )
 
     # Write output
@@ -163,15 +194,12 @@ def struc_detect_interaction_main(args):
         out = [
             member1,
             member2,
-            interaction,
+            avg_interaction_pae,
+            number_of_interactions,
+            interface_residue_count,
+            cross_chain_cluster,
             chain_1_residue_count,
             chain_2_residue_count,
-            chain1_cross_chain_count,
-            chain2_cross_chain_count,
-            chain1_cross_chain_count / chain_1_residue_count,
-            chain2_cross_chain_count / chain_2_residue_count,
-            len(near_residues_1),
-            len(near_residues_2),
         ]
         out = [str(x) for x in out]
         out = "\t".join(out) + "\n"
