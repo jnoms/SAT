@@ -157,7 +157,7 @@ def struc_detect_interaction_main(args):
         # the number of residues within Chain A or Chain B within the PAE cluster
         classification = classify_members(domain, chain_1_residue_count, chains)
         if is_cross_boundary(classification, chains):
-            cross_chain_cluster = False
+            cross_chain_cluster = True
     talk_to_me(f"Cross-chain clusters status: {cross_chain_cluster}")
 
     talk_to_me(f"Identifying interacting residues")
