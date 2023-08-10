@@ -405,7 +405,7 @@ def main():
             1) Determins which residues of chain 1 are in contact with residues from
             chain 2. Residues are considered in contact if the distance between an atom
             in a chain 1 residue and an atom in a chain 2 residue is less than the sum
-            of their van der Waals radii plus 0.5 Å. This script counts both the total
+            of their van der Waals radii plus 0.5 angstroms. This script counts both the total
             number of pairwise interactions as well as the total number of residues
             (from either chain) that are at the interface of the two chains.
             2) Using the PAE matrix, clusters the residues and determins if there is a
