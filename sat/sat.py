@@ -1656,6 +1656,19 @@ def main():
         The tab delimiter of the structure_key. [Default: double comma]
         """,
     )
+    parser_aln_parse_dali.add_argument(
+        "-n",
+        "--query_name",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        A string indicating the name of the query, will go in the 'query' column of the
+        output file. If this flag isn't used, the query will be searched for in the
+        structure_key. If the query isn't in the structure_key either, the query column
+        will be left blank.
+        """,
+    )
     parser_aln_parse_dali.set_defaults(func=call_aln_parse_dali_main)
 
     # -------------------------------------------------------------------------------- #

@@ -84,12 +84,19 @@ def aln_parse_dali_main(args):
             # Find query
             if line.startswith("# Query: "):
                 query_id = line.replace("# Query: ", "")[:-1]
-                try:
-                    query = structure_key[query_id]
-                except KeyError:
-                    msg = f"Cannot find the query_id, {query_id}, in structure_key!"
-                    msg += " Continuing anyway."
-                    talk_to_me(msg)
+
+                # If the query name was a commandline paramater, go with that.
+                # Otherwise, look in structure key
+                if args.query_name != "":
+                    talk_to_me(f"query_name has been specified as {args.query_name}")
+                    query = args.query_name
+                else:
+                    try:
+                        query = structure_key[query_id]
+                    except KeyError:
+                        msg = f"Cannot find the query_id, {query_id}, in structure_key!"
+                        msg += " Continuing anyway."
+                        talk_to_me(msg)
                 continue
 
             # Find the colnames and the other header row
