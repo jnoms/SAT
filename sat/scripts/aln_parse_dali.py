@@ -112,6 +112,7 @@ def aln_parse_dali_main(args):
             except KeyError:
                 msg = f"Cannot find the target_id, {target_id}, in structure_key!"
                 msg += " Continuing anyway."
+                target = ""
                 talk_to_me(msg)
 
             z = float(z)
