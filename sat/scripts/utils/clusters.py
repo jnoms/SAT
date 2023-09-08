@@ -61,14 +61,14 @@ class Cluster_information:
             # an empty string, use those as the alignment_fields
             if cluster_file_fields == "":
                 for line in infile:
-                    if line.startswith("cluster_rep"):
+                    if line.startswith("cluster_rep") or line.startswith("cluster_ID"):
                         cluster_file_fields = line.rstrip("\n").split("\t")
                         break
                     else:
                         msg = "cluster_file_fields has not been passed to"
                         msg += " parse_cluster_file which is only allowed when the"
                         msg += " first line has headers! (e.g. first line should start"
-                        msg += " with 'cluster_rep')"
+                        msg += " with 'cluster_rep' or 'cluster_ID')"
                         raise ValueError(msg)
 
             # Record alignment fields for later use

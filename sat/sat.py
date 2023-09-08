@@ -575,6 +575,61 @@ def main():
     parser_aln_generate_superclusters.set_defaults(func=call_aln_generate_superclusters)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_connection_map subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_connection_map = subparsers.add_parser(
+        "aln_connection_map",
+        help=(
+            """
+            This subcommand takes in a cluster file that has taxonomy information
+            (critically - species and family) and determins, for each pair of families,
+            how many clusters exist in which both families have a member.
+            """
+        ),
+    )
+    parser_aln_connection_map.add_argument(
+        "-c",
+        "--cluster_file",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to cluster file. Taxonomy information is required! There should be a
+        species and a family column, at least.s
+        """,
+    )
+    parser_aln_connection_map.add_argument(
+        "-o",
+        "--outfile",
+        type=str,
+        required=True,
+        default="",
+        help="""
+        Path to output connection map. There are the following columns:
+         ["f1", "f2", "count", "f1_total", "f2_total", "jaccard"]
+        1. Family 1
+        2. Family 2 
+        3. Count - Number of clusters in which a member of family 1 and family 2 are
+            both present.
+        4. f1_total: Total number of clusters with a member from family 1
+        5. f2_total: Total number of clusters with a member from family 2
+        6. Jaccard index: Count/(f1_total + f2_total - Count)
+        """,
+    )
+    parser_aln_connection_map.add_argument(
+        "-F",
+        "--cluster_file_fields",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        [Default: '']
+        Comma-delimited string indicating the columns present in the cluster_file.
+        """,
+    )
+    parser_aln_connection_map.set_defaults(func=call_aln_connection_map)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_cluster subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_cluster = subparsers.add_parser(
@@ -2112,6 +2167,12 @@ def call_aln_generate_superclusters(args):
     from scripts.aln_generate_superclusters import aln_generate_superclusters_main
 
     aln_generate_superclusters_main(args)
+
+
+def call_aln_connection_map(args):
+    from scripts.aln_connection_map import aln_connection_map_main
+
+    aln_connection_map_main(args)
 
 
 def call_aln_cluster(args):

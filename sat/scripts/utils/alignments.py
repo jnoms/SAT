@@ -23,13 +23,7 @@ class Alignment_group:
         self.alignments = []
 
     def add_alignment(self, alignment):
-        """
-        Makes sure the query and target aren't the same.
-        """
-        if alignment.target == alignment.query:
-            pass
-        else:
-            self.alignments.append(alignment)
+        self.alignments.append(alignment)
 
     def add_structure(self, structure_path):
         """

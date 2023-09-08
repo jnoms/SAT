@@ -17,6 +17,20 @@ def talk_to_me(msg):
     print(f"{base}: {msg}")
 
 
+def print_args(args):
+    """
+    This function prints the values of the argparse parsed args object to the screen.
+    This helps for debugging and such.
+    """
+
+    print("Input arguments are as follows:")
+    for arg in vars(args):
+        if arg.startswith("_"):
+            continue
+        print(f"{arg}: {args.__dict__[arg]}")
+    print("")
+
+
 def arg_str2bool(v):
     """
     For use as an argparse argument type. Makes it easy to use boolean flags.
