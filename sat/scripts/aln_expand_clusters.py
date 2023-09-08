@@ -22,7 +22,6 @@ def merge_clusters_and_subclusters_to_string(clusters, subclusters):
     intermediate_out = ["cluster_rep", "subcluster_rep", "cluster_member"]
     intermediate_out = "\t".join(intermediate_out) + "\n"
 
-    clusters.cluster_rep_to_members
     for cluster_rep, cluster_members in clusters.cluster_rep_to_members.items():
         cluster_rep = cluster_rep.rstrip(".pdb")
         for cluster_member in cluster_members:
