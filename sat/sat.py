@@ -582,7 +582,7 @@ def main():
         help=(
             """
             This subcommand takes in a cluster file that has taxonomy information
-            (critically - species and family) and determins, for each pair of families,
+            (critically - family) and determines, for each pair of families,
             how many clusters exist in which both families have a member.
             """
         ),
@@ -608,7 +608,7 @@ def main():
         Path to output connection map. There are the following columns:
          ["f1", "f2", "count", "f1_total", "f2_total", "jaccard"]
         1. Family 1
-        2. Family 2 
+        2. Family 2
         3. Count - Number of clusters in which a member of family 1 and family 2 are
             both present.
         4. f1_total: Total number of clusters with a member from family 1
