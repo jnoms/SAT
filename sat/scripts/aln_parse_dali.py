@@ -106,7 +106,9 @@ def aln_parse_dali_main(args):
             # Otherwise, we're at alignments
             line = line.split()
             _, chain, z, rmsd, alnlen, tlen, pident, *_ = line
-            target_id = chain.rstrip("-A")
+
+            # Removing the chain identifier (-A for chain A, etc)
+            target_id = chain[:-2]
             try:
                 target = structure_key[target_id]
             except KeyError:
