@@ -1727,6 +1727,71 @@ def main():
     parser_aln_parse_dali.set_defaults(func=call_aln_parse_dali_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for aln_parse_dali subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_aln_parse_dali_matrix = subparsers.add_parser(
+        "aln_parse_dali_matrix",
+        help=(
+            """
+            This subcommand takes in a DALI matrix file and/or a DALI dendogram files,
+            and uses the specified key to convert each ID to its proper name.
+            """
+        ),
+    )
+    parser_aln_parse_dali_matrix.add_argument(
+        "-k",
+        "--key",
+        type=str,
+        required=True,
+        help="""
+        Path to a tab-delimited file of format structure_name,,ID, where
+        the ID is a 4-digit identifier used during the DALI alignment. This lets you
+        convert the identifiers back.
+        """,
+    )
+    parser_aln_parse_dali_matrix.add_argument(
+        "-t",
+        "--tree",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the DALI tree file (ends in newick or newick_unrooted).
+        """,
+    )
+    parser_aln_parse_dali_matrix.add_argument(
+        "-T",
+        "--tree_out",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the output tree file.
+        """,
+    )
+    parser_aln_parse_dali_matrix.add_argument(
+        "-m",
+        "--matrix",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the DALI  similarity file.
+        """,
+    )
+    parser_aln_parse_dali_matrix.add_argument(
+        "-M",
+        "--matrix_out",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to the output, formatted matrix file.
+        """,
+    )
+    parser_aln_parse_dali_matrix.set_defaults(func=call_aln_parse_dali_matrix_main)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_merge subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_merge = subparsers.add_parser(
@@ -2259,6 +2324,12 @@ def call_aln_parse_dali_main(args):
     from scripts.aln_parse_dali import aln_parse_dali_main
 
     aln_parse_dali_main(args)
+
+
+def call_aln_parse_dali_matrix_main(args):
+    from scripts.aln_parse_dali_matrix import aln_parse_dali_matrix_main
+
+    aln_parse_dali_matrix_main(args)
 
 
 def call_aln_merge_main(args):

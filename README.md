@@ -237,6 +237,13 @@ The output file is a .m8 file (e.g. tab delimited) and has the following columns
 <!-- RICH-CODEX hide_command: true -->
 ![`poetry run .github/tmp/sat_codex.py aln_parse_dali -h`](.github/img/aln_parse_dali.png)  
 
+# SAT aln_parse_dali_matrix
+This subcommand takes in a DALI matrix file and/or a DALI dendogram files, and uses the
+specified key to convert each ID to its proper name.
+<!-- RICH-CODEX hide_command: true -->
+![`poetry run .github/tmp/sat_codex.py aln_parse_dali_matrix -h`](.github/img/aln_parse_dali_matrix.png)  
+
+
 
 # SAT aln_merge
 This subcommand is used to merge two foldseek alignment files.
