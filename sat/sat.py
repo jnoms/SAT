@@ -1263,6 +1263,84 @@ def main():
     parser_seq_multimerize.set_defaults(func=call_seq_multimerize_main)
 
     # -------------------------------------------------------------------------------- #
+    # Parser for seq_parse_genbank subcommand
+    # -------------------------------------------------------------------------------- #
+    parser_seq_parse_genbank = subparsers.add_parser(
+        "seq_parse_genbank",
+        help=(
+            """
+            This subcommand parses a genbank file (based on a nuclear accesion!) into
+            an output fasta and an output table.
+
+            The output fasta will have headers with the following information:
+            {genome_acc}{args.delimiter}{protein_id}{args.delimiter}{locus_tag}{args.delimiter}{protein_order}
+            This is equivelant to the "output_name"
+
+            The output table is CSV FORMATTED, with the following columns:
+            {output_name},{genome_acc},{locus_tag},{protein_id},{start},{end},{strand},{protein_order},{organism_name},{protein_name}
+
+            Note that if you desire to only process a subset of genbank entires, you
+            can provide a file with the genome accessions (no version!) that you
+            desire.
+            """
+        ),
+    )
+    parser_seq_parse_genbank.add_argument(
+        "-i",
+        "--gb",
+        type=str,
+        required=True,
+        help="""
+        Path to the input genbank file. This should be a nucleotide genbank.
+        """,
+    )
+    parser_seq_parse_genbank.add_argument(
+        "-f",
+        "--out_fasta",
+        type=str,
+        required=True,
+        help="""
+        Path to the output fasta.
+        """,
+    )
+    parser_seq_parse_genbank.add_argument(
+        "-c",
+        "--out_csv",
+        type=str,
+        required=True,
+        help="""
+        Path to the output csv.
+        """,
+    )
+    parser_seq_parse_genbank.add_argument(
+        "-d",
+        "--delimiter",
+        type=str,
+        required=False,
+        default="__",
+        help="""
+        This is the delimiter that separates all fields of the fasta header. Default
+        is double underscore "__"
+        """,
+    )
+    parser_seq_parse_genbank.add_argument(
+        "-n",
+        "--nuc_accs_to_keep",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        Path to a file that contains desired nucleotide accessions, one per line. 
+        Only genbank entries with that accession will be parsed. Note that the accession
+        should not have the version (e.g. YP_324124 works, YP_324124.1 does not work).
+
+        This argument is optional. If not specified, all genbank entires will be parsed.
+        """,
+    )
+
+    parser_seq_parse_genbank.set_defaults(func=call_parser_seq_parse_genbank)
+
+    # -------------------------------------------------------------------------------- #
     # Parser for aln_taxa_counts subcommand
     # -------------------------------------------------------------------------------- #
     parser_aln_taxa_counts = subparsers.add_parser(
@@ -2292,6 +2370,12 @@ def call_seq_multimerize_main(args):
     from scripts.seq_multimerize import seq_multimerize_main
 
     seq_multimerize_main(args)
+
+
+def call_parser_seq_parse_genbank(args):
+    from scripts.seq_parse_genbank import seq_parse_genbank_main
+
+    seq_parse_genbank_main(args)
 
 
 def call_parser_aln_taxa_counts_main(args):
