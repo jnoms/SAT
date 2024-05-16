@@ -105,7 +105,14 @@ def aln_parse_dali_main(args):
 
             # Otherwise, we're at alignments
             line = line.split()
-            _, chain, z, rmsd, alnlen, tlen, pident, *_ = line
+            try:
+                _, chain, z, rmsd, alnlen, tlen, pident, *_ = line
+            except ValueError:
+                msg = (
+                    f"Failed to parse LINE: {line}. This probably happened because the"
+                    "RMSD is above 100 so its column merged with z score column."
+                )
+                print(msg)
 
             # Removing the chain identifier (-A for chain A, etc)
             target_id = chain[:-2]
