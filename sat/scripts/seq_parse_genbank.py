@@ -48,66 +48,110 @@ def remove_bad_characters(
     return input_string
 
 
+def parse_gb_record(record, delimiter, accs=set()):
+    """
+    record is a biopython gb record object.mro
+
+    acc_list is an iterable containing nucleotide accessions you want to keep. If
+    specified, only those will be written out.
+
+    Returns out_fasta, out_csv:
+    - out_fasta: fasta containing all protein information
+    - out_csv: csv information about each protein
+    """
+
+    genome_acc = record.name
+    organism_name = remove_bad_characters(record.name)
+
+    protein_order_tracker = 1
+
+    out_fasta = ""
+    out_csv = ""
+
+    if accs != set():
+        if genome_acc not in accs:
+            return out_fasta, out_csv
+
+    # Loop over each feature in the record
+    for feature in record.features:
+
+        # Only keep CDS'
+        if feature.type != "CDS":
+            continue
+
+        # Get feature details
+
+        # A dictionary with information such as gene name, protein ID, etc.
+        qualifiers = feature.qualifiers
+
+        location = feature.location
+        protein_id = qualifiers.get("protein_id", ["X"])[0]
+        locus_tag = qualifiers.get("locus_tag", ["X"])[0]
+        protein_name = qualifiers.get("product", ["X"])[0]
+        protein_order = pad_to_five_digits(protein_order_tracker)
+        start = int(location.start)
+        end = int(location.end)
+        strand = location.strand
+        protein_sequence = qualifiers.get("translation", ["None"])[0]
+
+        # Remove bad characters
+        locus_tag = remove_bad_characters(locus_tag)
+        protein_name = remove_bad_characters(protein_name)
+
+        # Output name!
+        output_name = f"{genome_acc}{delimiter}{protein_id}{delimiter}{locus_tag}{delimiter}{protein_order}"
+
+        # Write output fasta
+        entry = f">{output_name}\n{protein_sequence}\n"
+        out_fasta += entry
+
+        # Write output table
+        entry = f"{output_name},{genome_acc},{locus_tag},{protein_id},{start},{end},{strand},{protein_order},{organism_name},{protein_name}\n"
+        out_csv += entry
+
+        protein_order_tracker += 1
+
+    return out_fasta, out_csv
+
+
 def seq_parse_genbank_main(args):
     out_csv = "name,scaffold,locus_tag,protein_id,start,end,strand,gene_order,organism_name,protein_name\n"
     out_fasta = ""
 
+    # Parse a file including only nucleotide accessions that are desired (optional)
+    accs = set()
+    if args.nuc_accs_to_keep != "":
+        with open(args.nuc_accs_to_keep) as infile:
+            for line in infile:
+                accs.add(line.rstrip("\n"))
+
     talk_to_me("Parsing genbank file...")
-    for record in SeqIO.parse(args.gb, "genbank"):
-
-        genome_acc = record.name
-        organism_name = remove_bad_characters(record.name)
-
-        protein_order_tracker = 1
-
-        # Parse a file including only nucleotide accessions that are desired (optional)
-        if args.nuc_accs_to_keep != "":
-            accs = set()
-            with open(args.nuc_accs_to_keep) as infile:
-                for line in infile:
-                    accs.add(line.rstrip("\n"))
-
-            if genome_acc not in accs:
-                continue
-
-        # Loop over each feature in the record
-        for feature in record.features:
-
-            # Only keep CDS'
-            if feature.type != "CDS":
-                continue
-
-            # Get feature details
-
-            # A dictionary with information such as gene name, protein ID, etc.
-            qualifiers = feature.qualifiers
-
-            location = feature.location
-            protein_id = qualifiers.get("protein_id", ["X"])[0]
-            locus_tag = qualifiers.get("locus_tag", ["X"])[0]
-            protein_name = qualifiers.get("product", ["X"])[0]
-            protein_order = pad_to_five_digits(protein_order_tracker)
-            start = int(location.start)
-            end = int(location.end)
-            strand = location.strand
-            protein_sequence = qualifiers.get("translation", ["None"])[0]
-
-            # Remove bad characters
-            locus_tag = remove_bad_characters(locus_tag)
-            protein_name = remove_bad_characters(protein_name)
-
-            # Output name!
-            output_name = f"{genome_acc}{args.delimiter}{protein_id}{args.delimiter}{locus_tag}{args.delimiter}{protein_order}"
-
-            # Write output fasta
-            entry = f">{output_name}\n{protein_sequence}\n"
-            out_fasta += entry
-
-            # Write output table
-            entry = f"{output_name},{genome_acc},{locus_tag},{protein_id},{start},{end},{strand},{protein_order},{organism_name},{protein_name}\n"
-            out_csv += entry
-
-            protein_order_tracker += 1
+    # This try/except stuff is needed to parse malformed genbank entries.
+    try:
+        with open(args.gb, "r") as file:
+            while True:
+                try:
+                    # Parse the next record
+                    record = next(SeqIO.parse(file, "genbank"))
+                    out_fasta_entry, out_csv_entry = parse_gb_record(
+                        record, args.delimiter, accs
+                    )
+                    out_csv += out_csv_entry
+                    out_fasta += out_fasta_entry
+                except StopIteration:
+                    # If no more records, stop the loop
+                    break
+                except Exception as e:
+                    msg = (
+                        "An entry has an error. This record is just before the "
+                        f"one that has an error: {record.id}. Thus, the errored entry "
+                        "and the entry directly following it won't be output."
+                    )
+                    print(msg)
+                    # Skip to the next record by continuing the while loop
+                    continue
+    except Exception as e:
+        print(f"Failed to read file: {str(e)}")
 
     talk_to_me("Writing output files")
     make_output_dir(args.out_csv)
