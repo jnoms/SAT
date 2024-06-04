@@ -1802,6 +1802,27 @@ def main():
         will be left blank.
         """,
     )
+    parser_aln_parse_dali.add_argument(
+        "-L",
+        "--qlen_sheet",
+        type=str,
+        required=False,
+        default="",
+        help="""
+        DALI doesn't report query len. Thus, if there is no self alignment, it is
+        impossible to determine query len. This allows you to input a file of proteins
+        and their associated length.
+        
+        Path to a file containing protein names and their associated amino acid sequence
+        lengths. The first column should be the protein name, second column the length,
+        and the file should be tab-delimited with one protein per line. If a protein's
+        length is not present here, the script can determine qlen if there is a self
+        alignment in the alignment file. Otherwise, qlen will be kept as 0.
+
+        In this file, each file name can be the basename (with no .fasta or .pdb),
+        or you can keep the .pdb or .fasta suffix.
+        """,
+    )
     parser_aln_parse_dali.set_defaults(func=call_aln_parse_dali_main)
 
     # -------------------------------------------------------------------------------- #

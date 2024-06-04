@@ -45,6 +45,18 @@ def arg_str2bool(v):
         raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
+def remove_pdb_and_fasta_suffix(name: str) -> str:
+    """
+    Removes .pdb or .fasta from a file name.
+
+    Examples:
+    hahaha.ererere.fasta --> hahaha.ererere
+    hahaha.ererere.pdb --> hahaha.ererere
+    hahaha.ererere --> hahaha.ererere
+    """
+    return name.rstrip(".fasta").rstrip(".pdb")
+
+
 # ------------------------------------------------------------------------------------ #
 # Read/write
 # ------------------------------------------------------------------------------------ #

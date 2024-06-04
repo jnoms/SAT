@@ -1,4 +1,4 @@
-from .utils.misc import talk_to_me, make_output_dir
+from .utils.misc import talk_to_me, make_output_dir, remove_pdb_and_fasta_suffix
 
 
 def parse_structure_key(structure_key_file, delim=",,", existing_dict=dict()):
@@ -53,7 +53,6 @@ def aln_parse_dali_main(args):
     talk_to_me("Parsing the alignment file.")
     query_id = ""
     query = ""
-    qlen = 0
     out = [
         "query",
         "target",
@@ -68,6 +67,18 @@ def aln_parse_dali_main(args):
         "z",
     ]
     out = "\t".join(out) + "\n"
+
+    # Parse the qlen sheet, if specified. Here, users can add a tab delimited
+    # file with protein[tab]length. Of course, each DALI file will have a single query
+    # so a single query length, but this lets you input many at ones.
+    len_dict = dict()
+    if args.qlen_sheet != "":
+        talk_to_me("Parsing the qlen sheet.")
+        with open(args.qlen_sheet) as infile:
+            for line in infile:
+                line = line.rstrip("\n").split("\t")
+                query_base = remove_pdb_and_fasta_suffix(line[0])
+                len_dict[query_base] = line[1]
 
     with open(args.alignment_file) as infile:
 
@@ -97,6 +108,7 @@ def aln_parse_dali_main(args):
                         msg = f"Cannot find the query_id, {query_id}, in structure_key!"
                         msg += " Continuing anyway."
                         talk_to_me(msg)
+                query = remove_pdb_and_fasta_suffix(query)
                 continue
 
             # Find the colnames and the other header row
@@ -117,7 +129,7 @@ def aln_parse_dali_main(args):
             # Removing the chain identifier (-A for chain A, etc)
             target_id = chain[:-2]
             try:
-                target = structure_key[target_id]
+                target = remove_pdb_and_fasta_suffix(structure_key[target_id])
             except KeyError:
                 msg = f"Cannot find the target_id, {target_id}, in structure_key!"
                 msg += " Continuing anyway."
@@ -130,9 +142,16 @@ def aln_parse_dali_main(args):
             tlen = float(tlen)
             pident = float(pident)
 
-            # Update qlen if we get a self alignment
-            if query_id == target_id:
+            # Solve for qlen.
+            # ------------------------#
+            # If there is a qlen_sheet, lets look up the qlen. Either way, we
+            # Will check for self alignments afterwards.
+            if query in len_dict:
+                qlen = int(len_dict[query])
+            elif query_id == target_id:
                 qlen = tlen
+            else:
+                qlen = 0
 
             # Generate a "cov" column that is alnlen/(max(qlen, tlen)). If there is no
             # labeled qlen, it will just end up alnlen/tlen.
